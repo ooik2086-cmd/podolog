@@ -4,6 +4,7 @@
 # Не істейді: Node.js 20, nginx, certbot орнатады; сайтты GitHub-тағы «server» тармағынан алады;
 # әкімші құпия сөзін сұрайды; сервисті іске қосады; әр 5 минут сайын жаңартуды өзі тексереді.
 set -euo pipefail
+trap 'echo; echo "ҚАТЕ: $LINENO-жолда тоқтады. Экранның скриншотын жіберіңіз."' ERR
 DOMAIN=podology.com.kz
 REPO=https://github.com/ooik2086-cmd/podolog.git
 APP=/opt/podolog
@@ -13,11 +14,13 @@ DATA=/var/lib/podolog
 export DEBIAN_FRONTEND=noninteractive
 
 echo "==> 1/6 Пакеттер"
-apt-get update -qq
-apt-get install -y -qq ca-certificates curl git nginx certbot python3-certbot-nginx ufw >/dev/null
+A="apt-get -o DPkg::Lock::Timeout=600"
+echo "   (жаңа серверде Ubuntu өзі жаңарып жатуы мүмкін, сонда бірнеше минут күтеді)"
+$A update -qq
+$A install -y -qq ca-certificates curl git nginx certbot python3-certbot-nginx ufw >/dev/null
 if ! command -v node >/dev/null || [ "$(node -v | cut -c2- | cut -d. -f1)" -lt 20 ]; then
   curl -fsSL https://deb.nodesource.com/setup_20.x | bash - >/dev/null
-  apt-get install -y -qq nodejs >/dev/null
+  $A install -y -qq nodejs >/dev/null
 fi
 
 echo "==> 2/6 Сайт файлдары"
