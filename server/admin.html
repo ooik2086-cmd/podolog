@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Пікірлер: әкімші</title>
+<style>
+  :root { --bg: #F7FAFC; --navy: #173B57; --green: #258477; --mint: #EAF5F1; --text: #28343D; --muted: #5B6B77; --line: #DCE5EB; --red: #B42318; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 "Noto Sans", system-ui, sans-serif; background: var(--bg); color: var(--text); }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+  header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  h1 { margin: 0; font-size: 1.5rem; color: var(--navy); }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  button, select { font: inherit; border-radius: 10px; border: 1.5px solid var(--line); background: #fff; color: var(--navy); padding: 8px 14px; cursor: pointer; min-height: 40px; }
+  button.primary { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+  button.danger { color: var(--red); border-color: #F4C7C3; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; display: grid; gap: 8px; }
+  .card.hidden { opacity: .6; background: #F2F4F6; }
+  .list { display: grid; gap: 14px; }
+  .top { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+  .top b { color: var(--navy); }
+  .stars { color: #F5B301; letter-spacing: 1px; }
+  .muted { color: var(--muted); font-size: .875rem; }
+  .text { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+  .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge { font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: #FEF0C7; color: #93370D; }
+  form.login { max-width: 360px; margin: 12vh auto 0; display: grid; gap: 14px; }
+  input { font: inherit; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line); min-height: 48px; }
+  .err { color: var(--red); font-weight: 600; font-size: .875rem; min-height: 1.2em; }
+  .stat { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const L = {
+  kk: { title: 'Пікірлер', login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', hide: 'Жасыру', show: 'Көрсету', del: 'Өшіру', confirm: 'Бұл пікірді біржола өшіру керек пе?', hiddenB: 'Жасырылған', empty: 'Пікір жоқ', all: 'Барлығы', visible: 'Сайтта', hiddenN: 'Жасырылған', avg: 'Орташа баға', site: 'Сайтқа өту', filterAll: 'Барлығы', filterHidden: 'Тек жасырылған', err: 'Қате. Қайталап көріңіз.' },
+  ru: { title: 'Отзывы', login: 'Войти', pass: 'Пароль', logout: 'Выйти', hide: 'Скрыть', show: 'Показать', del: 'Удалить', confirm: 'Удалить этот отзыв навсегда?', hiddenB: 'Скрыт', empty: 'Отзывов нет', all: 'Всего', visible: 'На сайте', hiddenN: 'Скрыто', avg: 'Средняя оценка', site: 'На сайт', filterAll: 'Все', filterHidden: 'Только скрытые', err: 'Ошибка. Попробуйте ещё раз.' },
+};
+let lang = localStorage.getItem('pd_admin_lang') || 'kk';
+let t = L[lang];
+let items = [], filter = 'all';
+const app = document.getElementById('app');
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const api = (p, o = {}) => fetch(p, { ...o, headers: { 'content-type': 'application/json' }, credentials: 'same-origin' });
+const fmt = (d) => new Date(d).toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU', { dateStyle: 'medium', timeStyle: 'short' });
+const langSel = () => `<select id="lang">${Object.keys(L).map((k) => `<option value="${k}" ${k === lang ? 'selected' : ''}>${k === 'kk' ? 'Қазақша' : 'Русский'}</option>`).join('')}</select>`;
+const bindLang = () => document.getElementById('lang').onchange = (e) => { lang = e.target.value; t = L[lang]; try { localStorage.setItem('pd_admin_lang', lang); } catch {} load(); };
+
+function loginView(msg = '') {
+  document.documentElement.lang = lang;
+  app.innerHTML = `<form class="login card"><h1>${t.title}</h1>${langSel()}<input type="password" name="p" placeholder="${t.pass}" autocomplete="current-password" required autofocus><button class="primary">${t.login}</button><div class="err">${esc(msg)}</div></form>`;
+  bindLang();
+  app.querySelector('form').onsubmit = async (e) => {
+    e.preventDefault();
+    const r = await api('/api/admin/login', { method: 'POST', body: JSON.stringify({ password: e.target.p.value }) });
+    if (r.ok) return load();
+    const d = await r.json().catch(() => ({}));
+    loginView(d.error || t.err);
+  };
+}
+
+function view() {
+  document.documentElement.lang = lang;
+  const vis = items.filter((r) => !r.hidden);
+  const avg = vis.length ? (vis.reduce((s, r) => s + r.rating, 0) / vis.length).toFixed(1) : '–';
+  const shown = filter === 'hidden' ? items.filter((r) => r.hidden) : items;
+  app.innerHTML = `<header><h1>${t.title}</h1><div class="tools">${langSel()}
+    <select id="flt"><option value="all">${t.filterAll}</option><option value="hidden" ${filter === 'hidden' ? 'selected' : ''}>${t.filterHidden}</option></select>
+    <a href="/"><button type="button">${t.site}</button></a><button id="out">${t.logout}</button></div></header>
+    <div class="stat muted"><span>${t.all}: <b>${items.length}</b></span><span>${t.visible}: <b>${vis.length}</b></span><span>${t.hiddenN}: <b>${items.length - vis.length}</b></span><span>${t.avg}: <b>${avg}</b></span></div>
+    <div class="list">${shown.length ? shown.map((r) => `<article class="card ${r.hidden ? 'hidden' : ''}" data-id="${r.id}">
+      <div class="top"><b>${esc(r.name)}</b><span class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span><span class="muted">${fmt(r.createdAt)}</span>${r.hidden ? `<span class="badge">${t.hiddenB}</span>` : ''}</div>
+      <p class="text">${esc(r.text)}</p>
+      <div class="acts"><button data-act="toggle">${r.hidden ? t.show : t.hide}</button><button class="danger" data-act="del">${t.del}</button></div></article>`).join('') : `<p class="muted">${t.empty}</p>`}</div>`;
+  bindLang();
+  document.getElementById('flt').onchange = (e) => { filter = e.target.value; view(); };
+  document.getElementById('out').onclick = async () => { await api('/api/admin/logout', { method: 'POST' }); loginView(); };
+  app.querySelectorAll('[data-act]').forEach((b) => b.onclick = async () => {
+    const id = b.closest('[data-id]').dataset.id;
+    const r = items.find((x) => x.id === id);
+    let res;
+    if (b.dataset.act === 'del') { if (!confirm(t.confirm)) return; res = await api(`/api/admin/reviews/${id}`, { method: 'DELETE' }); }
+    else res = await api(`/api/admin/reviews/${id}`, { method: 'PATCH', body: JSON.stringify({ hidden: !r.hidden }) });
+    if (res.status === 401) return loginView();
+    if (!res.ok) return alert(t.err);
+    load();
+  });
+}
+
+async function load() {
+  const r = await api('/api/admin/reviews');
+  if (r.status === 401) return loginView();
+  if (!r.ok) return loginView(t.err);
+  items = (await r.json()).reviews;
+  view();
+}
+load();
+</script>
+</body>
+</html>
