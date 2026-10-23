@@ -2,7 +2,14 @@
 <html lang="kk">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="/admin.webmanifest">
+<link rel="icon" href="/admin-icon-192.png">
+<link rel="apple-touch-icon" href="/admin-icon-180.png">
+<meta name="theme-color" content="#173B57">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Подолог әкімші">
 <meta name="robots" content="noindex, nofollow">
 <title>Әкімші бөлімі</title>
 <style>
@@ -66,7 +73,8 @@
     .side { position: fixed; inset: 0 auto 0 0; width: 270px; z-index: 50; transform: translateX(-100%); transition: transform .2s ease; }
     .app.menu .side { transform: none; box-shadow: 0 0 0 100vmax rgb(0 0 0 / .35); }
     .burger { display: inline-flex; }
-    .main { padding: 16px 14px 90px; }
+    .main { padding: max(16px, env(safe-area-inset-top)) 14px 90px; }
+    input, select, textarea { font-size: 16px; } /* iPhone үлкейтіп жібермейді */
     .top h1 { font-size: 1.25rem; }
   }
 
@@ -122,6 +130,7 @@
   .dlg h3 { margin: 0; color: var(--navy); font-size: 1.15rem; }
   .dlg .pv { border-radius: 12px; overflow: hidden; background: #000; max-height: 340px; display: grid; place-items: center; }
   .dlg .pv img, .dlg .pv video { max-width: 100%; max-height: 340px; display: block; }
+  .bar { padding-bottom: max(12px, env(safe-area-inset-bottom)) !important; }
   .bar { position: sticky; bottom: 0; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(6px); padding: 12px 0; margin-top: 18px; border-top: 1px solid var(--line); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; z-index: 5; }
   .prog { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
   .prog i { display: block; height: 100%; background: var(--green); width: 0; transition: width .2s; }
@@ -146,7 +155,7 @@
   .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--navy2); color: #fff; padding: 10px 16px; border-radius: 12px; z-index: 99; font-weight: 600; box-shadow: 0 6px 24px rgb(0 0 0 / .2); max-width: calc(100vw - 32px); }
   .login { max-width: 380px; margin: 14vh auto 0; display: grid; gap: 14px; padding: 24px; }
   .login h1 { margin: 0; color: var(--navy); }
-  @media (max-width: 600px) { .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; } .chip { flex: none; } #bpill .pill { font-size: 0; gap: 0; padding: 8px; } #back .bk { display: none; } .top { gap: 8px; } .top h1 { font-size: 1.1rem; } }
+  @media (max-width: 600px) { .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; } .chip { flex: none; } #bpill .pill { font-size: 0; gap: 0; padding: 8px; } #back .bk { display: none; } .tiles { grid-template-columns: 1fr 1fr; gap: 10px; } .tile { padding: 12px; } .top { gap: 8px; } .top h1 { font-size: 1.1rem; } }
 </style>
 </head>
 <body>
@@ -155,7 +164,7 @@
 // ---------- Мәтіндер (әкімші бөлімі қазақша немесе орысша) ----------
 const L = {
   kk: {
-    admin: 'Әкімші бөлімі', back: 'Артқа',
+    admin: 'Әкімші бөлімі', back: 'Артқа', install: '📲 Телефонға орнату', instH: 'Телефонға орнату', instIos: 'iPhone: Safari-де осы бетті ашып, төмендегі «Бөлісу» (□↑) батырмасын басыңыз, сосын «На экран «Домой»» таңдаңыз.', instAnd: 'Android: Chrome-да жоғарғы оң жақтағы ⋮ батырмасын басып, «Добавить на гл. экран» немесе «Установить приложение» таңдаңыз.', instDone: 'Телефон экранында «Подолог әкімші» белгісі пайда болады. Сонымен ашсаңыз, әкімші бөлімі қосымша сияқты бірден ашылады.',
     nLive: 'Сайтты көріп өзгерту', lvPage: 'Бет', lvLang: 'Сайт тілі', lvHint: 'Сайт дәл қазіргідей көрінеді. Жасыл сызықпен белгіленген мәтінді басыңыз, сол жерде өзгертіп сақтайсыз. Сілтемелерді басып, басқа беттерге де өте аласыз.', lvEdit: 'Мәтінді өзгерту', lvOther: 'Бұл мәтін сайттың басқа беттерінде де өзгереді.', lvPhoto: 'Фото мен видео «Фотолар», «Видеолар» бөлімдерінде өзгертіледі.',
     nServices: 'Қызметтер', nProducts: 'Тауарлар', fTitle: 'Атауы', fShort: 'Қысқаша (карточкада)', fAbout: 'Сипаттама, {n}-абзац', fStep: 'Қабылдау қадамы {n}', fUse: 'Қолдану тәсілі', fIngr: 'Құрамы', fName: 'Тауар атауы', fDesc: 'Сипаттама',
     svHint: 'Қызметтер бетіндегі карточкалар мен әр қызметтің жеке беті. Басып, мәтінін, суретін өзгертіңіз немесе уақытша жасырыңыз. Бағасы «Бағалар» бөлімінде.',
@@ -193,7 +202,7 @@ const L = {
     pages: { common: 'Жалпы: мәзір, батырмалар, төменгі бөлік', index: 'Басты бет', about: 'Біз туралы', services: 'Қызметтер', 'services-item': 'Қызмет беті (жалпы жазулар)', insoles: 'Ұлтарақтар', prices: 'Бағалар беті', shop: 'Дүкен', 'shop-item': 'Тауар беті', cart: 'Себет', courses: 'Оқу', clinics: 'Клиникаларға', certificates: 'Сертификаттар беті', gallery: 'Галерея беті', reviews: 'Пікірлер беті', 'c-Reviews': 'Пікірлер блогы', feedback: 'Ұсыныстар беті', contacts: 'Байланыс беті', booking: 'Жазылу беті', mission: 'Миссия', privacy: 'Құпиялық саясаты' },
   },
   ru: {
-    admin: 'Админ-панель', back: 'Назад',
+    admin: 'Админ-панель', back: 'Назад', install: '📲 Установить на телефон', instH: 'Установить на телефон', instIos: 'iPhone: откройте эту страницу в Safari, нажмите «Поделиться» (□↑) внизу и выберите «На экран «Домой»».', instAnd: 'Android: в Chrome нажмите ⋮ вверху справа и выберите «Добавить на гл. экран» или «Установить приложение».', instDone: 'На экране телефона появится значок «Подолог әкімші». Через него админ-панель открывается сразу, как приложение.',
     nLive: 'Редактировать на сайте', lvPage: 'Страница', lvLang: 'Язык сайта', lvHint: 'Сайт выглядит как сейчас. Нажмите на текст, обведённый зелёной линией, и измените его прямо здесь. По ссылкам можно переходить на другие страницы.', lvEdit: 'Изменить текст', lvOther: 'Этот текст изменится и на других страницах сайта.', lvPhoto: 'Фото и видео меняются в разделах «Фото» и «Видео».',
     nServices: 'Услуги', nProducts: 'Товары', fTitle: 'Название', fShort: 'Кратко (в карточке)', fAbout: 'Описание, абзац {n}', fStep: 'Шаг приёма {n}', fUse: 'Способ применения', fIngr: 'Состав', fName: 'Название товара', fDesc: 'Описание',
     svHint: 'Карточки на странице «Услуги» и отдельная страница каждой услуги. Нажмите, чтобы изменить текст, фото или временно скрыть. Цена — в разделе «Цены».',
@@ -343,7 +352,7 @@ function shell() {
       ${n('services', 'list', t.nServices)}${n('products', 'bag', t.nProducts)}
       <div class="sep"></div>
       ${n('prices', 'tag', t.nPrices)}${n('contacts', 'phone', t.nContacts)}${n('texts', 'text', t.nTexts)}${n('settings', 'gear', t.nSettings)}
-      <div class="foot">${langSel()}<a class="btn sm" href="/" target="_blank" rel="noopener">${t.site} ↗</a><button class="btn sm ghost" id="out" style="color:#fff">${t.logout}</button></div>
+      <div class="foot"><button class="btn sm primary" id="inst" ${standalone ? 'hidden' : ''}>${t.install}</button>${langSel()}<a class="btn sm" href="/" target="_blank" rel="noopener">${t.site} ↗</a><button class="btn sm ghost" id="out" style="color:#fff">${t.logout}</button></div>
     </aside>
     <main class="main"><div class="top"><button class="btn sm burger" id="burger" aria-label="Menu">${ic('menu')}</button><button class="btn sm" id="back" ${view === 'home' ? 'hidden' : ''} aria-label="${t.back}">← <span class="bk">${t.back}</span></button><h1 id="h1"></h1><span id="bpill">${buildPill()}</span><span class="lsw"><button data-lg="kk" class="${lang === 'kk' ? 'on' : ''}">ҚАЗ</button><button data-lg="ru" class="${lang === 'ru' ? 'on' : ''}">РУС</button></span></div><div id="v"></div></main>
   </div>`;
@@ -351,6 +360,7 @@ function shell() {
   $$('[data-lg]').forEach((b) => b.onclick = () => { lang = b.dataset.lg; t = L[lang]; try { localStorage.setItem('pd_admin_lang2', lang); } catch {} shell(); });
   $$('.nav').forEach((b) => b.onclick = () => go(b.dataset.v));
   $('#out').onclick = async () => { await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' }); showLogin(); };
+  $('#inst').onclick = installApp;
   $('#back').onclick = () => { if (history.state?.v) history.back(); else go('home'); };
   $('#burger').onclick = () => $('.app').classList.toggle('menu');
   $('.side').addEventListener('click', (e) => { if (e.target.closest('.nav')) $('.app').classList.remove('menu'); });
@@ -492,7 +502,7 @@ V.home = (el) => {
   const c = counts();
   const vis = D.reviews.filter((r) => !r.hidden);
   const avg = vis.length ? (vis.reduce((s, r) => s + r.rating, 0) / vis.length).toFixed(1) : '–';
-  el.innerHTML = `<div class="tiles">
+  el.innerHTML = `${standalone ? '' : `<button class="btn primary" data-go="install" style="width:100%;margin-bottom:14px;min-height:48px">${t.install}</button>`}<div class="tiles">
     <button class="tile ${c.reviews ? 'hot' : ''}" data-go="reviews"><b>${c.reviews}</b><span>${t.hiNew}</span></button>
     <button class="tile ${c.sugs ? 'hot' : ''}" data-go="sugs"><b>${c.sugs}</b><span>${t.hiSugs}</span></button>
     <button class="tile ${c.orders ? 'hot' : ''}" data-go="orders"><b>${c.orders}</b><span>${t.hiOrders}</span></button>
@@ -507,7 +517,7 @@ V.home = (el) => {
     <button class="tile" data-go="texts">${ic('text').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qTexts}</b></span></button>
   </div>
   <p class="muted small">${t.bHint}.</p>`;
-  $$('[data-go]', el).forEach((b) => b.onclick = () => go(b.dataset.go));
+  $$('[data-go]', el).forEach((b) => b.onclick = () => (b.dataset.go === 'install' ? installApp() : go(b.dataset.go)));
 };
 
 // ---------- Пікірлер ----------
@@ -1008,6 +1018,15 @@ V.settings = (el) => {
 };
 
 // ---------- Іске қосу ----------
+// Android Chrome: «Телефонға қосу» батырмасы
+let instEv = null;
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); instEv = e; });
+async function installApp() {
+  if (instEv) { instEv.prompt(); const r = await instEv.userChoice.catch(() => ({})); instEv = null; if (r.outcome === 'accepted') { $$('#inst, [data-go=install]').forEach((b) => { b.hidden = true; }); return; } }
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  modal(`<h3>${t.instH}</h3><p style="margin:0">${ios ? t.instIos : t.instAnd}</p><p class="muted" style="margin:0">${ios ? t.instAnd : t.instIos}</p><p style="margin:0">${t.instDone}</p><div class="row end"><button class="btn primary" data-a="ok">OK</button></div>`, (dlg, close) => { $('[data-a=ok]', dlg).onclick = close; });
+}
 addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 async function start() {
   try { await loadAll(); } catch (e) { if (e.message !== 'login') showLogin(t.err); return; }

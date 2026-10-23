@@ -333,6 +333,17 @@ const server = createServer(async (req, res) => {
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex', ...SEC });
       return res.end(await readFile(join(here, 'admin.html')));
     }
+    // Телефонда «Басты экранға қосу»: әкімші бөлімі жеке қосымша сияқты ашылады
+    if (path === '/admin.webmanifest') {
+      res.writeHead(200, { 'content-type': 'application/manifest+json', 'cache-control': 'no-cache', ...SEC });
+      return res.end(JSON.stringify({ name: 'Подолог · Әкімші', short_name: 'Подолог әкімші', start_url: '/admin', scope: '/admin', display: 'standalone', background_color: '#F4F7FA', theme_color: '#173B57', lang: 'kk',
+        icons: [{ src: '/admin-icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' }, { src: '/admin-icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }] }));
+    }
+    const ai = path.match(/^\/admin-icon-(180|192|512)\.png$/);
+    if (ai) {
+      res.writeHead(200, { 'content-type': 'image/png', 'cache-control': 'public, max-age=86400', ...SEC });
+      return res.end(await readFile(join(here, `admin-icon-${ai[1]}.png`)));
+    }
     if (path === '/api/admin/login' && req.method === 'POST') {
       if (!sameOrigin(req)) return json(res, 403, { error: 'origin' });
       const ip = ipOf(req); const now = Date.now();
