@@ -50,6 +50,10 @@
   .top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
   .top h1 { margin: 0; font-size: 1.5rem; color: var(--navy); flex: 1; min-width: 0; }
   .burger { display: none; }
+  .burger svg { width: 22px; height: 22px; }
+  .lsw { display: inline-flex; border: 1.5px solid var(--line); border-radius: 99px; overflow: hidden; background: #fff; }
+  .lsw button { border: 0; background: none; padding: 5px 11px; font-size: .8rem; font-weight: 700; color: var(--muted); }
+  .lsw button.on { background: var(--navy); color: #fff; }
   .pill { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: var(--mint); color: var(--green); }
   .pill.busy { background: #FEF0C7; color: var(--amber); }
   .pill.bad { background: #FEE4E2; color: var(--red); }
@@ -135,6 +139,7 @@
   .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--navy2); color: #fff; padding: 10px 16px; border-radius: 12px; z-index: 99; font-weight: 600; box-shadow: 0 6px 24px rgb(0 0 0 / .2); max-width: calc(100vw - 32px); }
   .login { max-width: 380px; margin: 14vh auto 0; display: grid; gap: 14px; padding: 24px; }
   .login h1 { margin: 0; color: var(--navy); }
+  @media (max-width: 600px) { .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; } .chip { flex: none; } #bpill .pill { font-size: 0; gap: 0; padding: 8px; } }
 </style>
 </head>
 <body>
@@ -177,7 +182,7 @@ const L = {
     pages: { common: 'Общее: меню, кнопки, подвал', index: 'Главная', about: 'О нас', services: 'Услуги', 'services-item': 'Страница услуги (общие надписи)', insoles: 'Стельки', prices: 'Страница цен', shop: 'Магазин', 'shop-item': 'Страница товара', cart: 'Корзина', courses: 'Обучение', clinics: 'Для клиник', certificates: 'Страница сертификатов', gallery: 'Страница галереи', reviews: 'Страница отзывов', 'c-Reviews': 'Блок отзывов', feedback: 'Страница предложений', contacts: 'Страница контактов', booking: 'Страница записи', mission: 'Миссия', privacy: 'Политика конфиденциальности' },
   },
 };
-let lang = (() => { try { return localStorage.getItem('pd_admin_lang') || 'kk'; } catch { return 'kk'; } })();
+let lang = (() => { try { return localStorage.getItem('pd_admin_lang2') || 'kk'; } catch { return 'kk'; } })();
 if (!L[lang]) lang = 'kk';
 let t = L[lang];
 
@@ -251,7 +256,7 @@ function showLogin(msg = '') {
   };
 }
 const langSel = () => `<select id="lang" aria-label="Тіл / Язык"><option value="kk" ${lang === 'kk' ? 'selected' : ''}>Қазақша</option><option value="ru" ${lang === 'ru' ? 'selected' : ''}>Русский</option></select>`;
-const bindLang = () => { const s = $('#lang'); if (s) s.onchange = (e) => { lang = e.target.value; t = L[lang]; try { localStorage.setItem('pd_admin_lang', lang); } catch {} if ($('.app')) shell(); else showLogin(); }; };
+const bindLang = () => { const s = $('#lang'); if (s) s.onchange = (e) => { lang = e.target.value; t = L[lang]; try { localStorage.setItem('pd_admin_lang2', lang); } catch {} if ($('.app')) shell(); else showLogin(); }; };
 
 // ---------- Каркас ----------
 function counts() {
@@ -286,9 +291,10 @@ function shell() {
       ${n('prices', 'tag', t.nPrices)}${n('contacts', 'phone', t.nContacts)}${n('texts', 'text', t.nTexts)}${n('settings', 'gear', t.nSettings)}
       <div class="foot">${langSel()}<a class="btn sm" href="/" target="_blank" rel="noopener">${t.site} ↗</a><button class="btn sm ghost" id="out" style="color:#fff">${t.logout}</button></div>
     </aside>
-    <main class="main"><div class="top"><button class="btn sm burger" id="burger" aria-label="Menu">${ic('menu')}</button><h1 id="h1"></h1><span id="bpill">${buildPill()}</span></div><div id="v"></div></main>
+    <main class="main"><div class="top"><button class="btn sm burger" id="burger" aria-label="Menu">${ic('menu')}</button><h1 id="h1"></h1><span id="bpill">${buildPill()}</span><span class="lsw"><button data-lg="kk" class="${lang === 'kk' ? 'on' : ''}">ҚАЗ</button><button data-lg="ru" class="${lang === 'ru' ? 'on' : ''}">РУС</button></span></div><div id="v"></div></main>
   </div>`;
   bindLang();
+  $$('[data-lg]').forEach((b) => b.onclick = () => { lang = b.dataset.lg; t = L[lang]; try { localStorage.setItem('pd_admin_lang2', lang); } catch {} shell(); });
   $$('.nav').forEach((b) => b.onclick = () => go(b.dataset.v));
   $('#out').onclick = async () => { await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' }); showLogin(); };
   $('#burger').onclick = () => $('.app').classList.toggle('menu');
@@ -746,6 +752,7 @@ V.contacts = (el) => {
 };
 
 // ---------- Беттердегі мәтіндер ----------
+const KEYN = new Proxy({}, { get: (_, k) => ({ title: lang === 'kk' ? 'Беттің атауы (браузер қойындысы, Google)' : 'Название страницы (вкладка, Google)', desc: lang === 'kk' ? 'Google мен Яндекстегі қысқа сипаттама' : 'Краткое описание в Google и Яндексе', h1: lang === 'kk' ? 'Басты тақырып' : 'Главный заголовок', lead: lang === 'kk' ? 'Тақырып астындағы мәтін' : 'Текст под заголовком' })[k] });
 let tPage = 'index', tq = '';
 V.texts = (el) => {
   const cat = D.texts; const pages = Object.keys(cat);
@@ -757,7 +764,7 @@ V.texts = (el) => {
   const rows = Object.entries(cat[tPage]).filter(([k, v]) => !tq || [k, v.kk, v.ru, v.en, mine[k]?.kk, mine[k]?.ru].join(' ').toLowerCase().includes(tq.toLowerCase()));
   el.innerHTML = `<div class="row" style="margin-bottom:12px"><label class="f" style="flex:1;min-width:220px">${t.tPage}<select id="pg">${sorted.map((p) => `<option value="${p}" ${p === tPage ? 'selected' : ''}>${esc(t.pages[p] || p)}${ov[p] ? ' •' : ''}</option>`).join('')}</select></label><label class="f" style="flex:1;min-width:200px">${t.search}<input id="tq" type="search" value="${esc(tq)}"></label></div>
     <p class="muted small">${t.tHint}</p>
-    <div class="list">${rows.map(([k, d]) => { const cur = { ...d, ...(mine[k] || {}) }; const ch = !!mine[k]; const long = Math.max(...['kk', 'ru', 'en'].map((l) => (cur[l] || '').length)) > 70; return `<div class="tx ${ch ? 'ch' : ''}" data-k="${esc(k)}"><div class="k"><span>${esc(k)}</span>${ch ? `<span class="tag">${t.tChanged}</span><button class="btn sm ghost" data-reset title="${t.tReset}">↺</button>` : ''}</div>
+    <div class="list">${rows.map(([k, d]) => { const cur = { ...d, ...(mine[k] || {}) }; const ch = !!mine[k]; const long = Math.max(...['kk', 'ru', 'en'].map((l) => (cur[l] || '').length)) > 70; return `<div class="tx ${ch ? 'ch' : ''}" data-k="${esc(k)}"><div class="k"><span>${esc(KEYN[k] || k)}</span>${ch ? `<span class="tag">${t.tChanged}</span><button class="btn sm ghost" data-reset title="${t.tReset}">↺</button>` : ''}</div>
       <div class="grid3">${['kk', 'ru', 'en'].map((l) => `<label class="f"><span class="lg">${l === 'kk' ? 'ҚАЗ' : l === 'ru' ? 'РУС' : 'ENG'}</span><textarea data-l="${l}" rows="${long ? 3 : 1}">${esc(cur[l] || '')}</textarea></label>`).join('')}</div></div>`; }).join('')}</div>
     <div class="bar"><button class="btn primary" id="save">${t.save}</button><span id="msg" class="muted"></span></div>`;
   const collect = () => {
