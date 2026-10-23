@@ -6,13 +6,13 @@ import Photo from '../../../components/Photo.astro';
 import Icon from '../../../components/Icon.astro';
 import WaButton from '../../../components/WaButton.astro';
 import ServiceCard from '../../../components/ServiceCard.astro';
-import { services, servicesFor } from '../../../data/services';
+import { services, servicesFor, serviceHidden } from '../../../data/services';
 import { siteFor } from '../../../data/site';
 import { fmtFrom } from '../../../data/prices';
 import { getLang, localize, langPaths } from '../../../i18n';
 
 export function getStaticPaths() {
-  return langPaths(() => services.map((s) => ({ params: { slug: s.slug } })));
+  return langPaths(() => services.filter((s) => !serviceHidden(s.slug)).map((s) => ({ params: { slug: s.slug } })));
 }
 const lang = getLang(Astro);
 const u = (p: string) => localize(lang, p);

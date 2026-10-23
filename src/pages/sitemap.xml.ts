@@ -1,10 +1,10 @@
 // Іздеу жүйелеріне арналған беттер тізімі (Google, Яндекс). Әр бет үш тілде, бір-біріне сілтемемен.
-import { services } from '../data/services';
+import { services, serviceHidden } from '../data/services';
 import { visibleProducts } from '../data/products';
 import { langs, localize } from '../i18n';
 
 const pages = ['/', '/about', '/services', '/insoles', '/prices', '/shop', '/courses', '/clinics', '/certificates', '/gallery', '/reviews', '/feedback', '/contacts', '/booking', '/mission', '/privacy',
-  ...services.map((s) => `/services/${s.slug}`), ...visibleProducts.map((p) => `/shop/${p.slug}`)];
+  ...services.filter((s) => !serviceHidden(s.slug)).map((s) => `/services/${s.slug}`), ...visibleProducts.map((p) => `/shop/${p.slug}`)];
 
 export function GET({ site }: { site: URL }) {
   const abs = (l: (typeof langs)[number], p: string) => new URL(localize(l, p), site).href;

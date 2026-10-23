@@ -39,6 +39,8 @@ export interface Cms {
   videos?: Record<string, CmsVideo[]>; // топ (reviews, tips, ...) → видеолар реті
   certificates?: CmsCert[];
   texts?: Record<string, Record<string, Partial<L3>>>; // бет → жол (h1, paths.0.title) → тіл → мәтін
+  services?: Record<string, { image?: string; hidden?: boolean }>; // қызмет суреті, жасыру
+  products?: Record<string, { image?: string; thumb?: string; hidden?: boolean }>; // тауар суреті, жасыру
   seo?: { open?: boolean; google?: string; yandex?: string }; // Search Console мен Яндекс Вебмастер растау кодтары
 }
 

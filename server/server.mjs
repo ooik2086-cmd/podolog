@@ -245,7 +245,7 @@ function upload(req, res, url) {
 }
 
 // Әкімші бөлімінен келген cms бөлімдерін тексеру: тек белгілі кілттер, мәтін ұзындығы шектеулі
-const CMS_KEYS = ['contacts', 'gallery', 'videos', 'certificates', 'texts', 'seo'];
+const CMS_KEYS = ['contacts', 'gallery', 'videos', 'certificates', 'texts', 'seo', 'services', 'products'];
 const okUrl = (v) => v === null || v === '' || (typeof v === 'string' && v.length < 500 && /^(https?:\/\/|\/uploads\/|\/media\/)/.test(v));
 const okLocal = (v) => typeof v === 'string' && v.length < 300 && /^\/(uploads|media)\/[\w./-]+$/.test(v) && !v.includes('..');
 function checkCms(key, v) {
@@ -265,6 +265,7 @@ function checkCms(key, v) {
   if (key === 'certificates') return list(v, 500) && v.every((c) => str(c.id, 120) && okLocal(c.image) && okLocal(c.thumb) && l3(c.title, 400) && str(c.category, 80) && str(c.note, 120) && (c.year === null || Number.isInteger(c.year)));
   if (key === 'videos') return v && typeof v === 'object' && Object.keys(v).length <= 30 && Object.values(v).every((g) => list(g, 200) && g.every((i) => str(i.id, 120) && okLocal(i.src) && (i.poster === '' || okLocal(i.poster)) && l3(i.caption, 300)));
   if (key === 'texts') return v && typeof v === 'object' && JSON.stringify(v).length < 500000 && Object.values(v).every((pg) => pg && typeof pg === 'object' && Object.values(pg).every((x) => l3(x, 5000)));
+  if (key === 'services' || key === 'products') return v && typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length < 300 && Object.entries(v).every(([k, x]) => /^[\w-]{1,80}$/.test(k) && x && typeof x === 'object' && ['image', 'thumb'].every((f) => x[f] === undefined || okLocal(x[f])) && (x.hidden === undefined || typeof x.hidden === 'boolean'));
   if (key === 'seo') return v && typeof v === 'object' && typeof v.open === 'boolean' && ['google', 'yandex'].every((k) => v[k] === undefined || (typeof v[k] === 'string' && /^[\w-]{0,100}$/.test(v[k])));
   return false;
 }

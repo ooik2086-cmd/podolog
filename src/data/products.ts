@@ -1,3 +1,4 @@
+import { cms, pageText } from './cms';
 // PodiaFarm өнімдері. Дереккөз: өндірушінің «PodiaFarm каталог, шілде 2024» (materials/podiafarm-catalog-2024-07.pdf)
 // және «PodiaFarm каталог, қыркүйек 2026» (materials/podiafarm-catalog-2026/catalog-2026.pdf): жаңа өнімдер мен көлемдер содан қосылды.
 // page: 2026 каталогынан қосылған өнімдерде сол каталогтың беті.
@@ -408,9 +409,11 @@ export const products: Product[] = [
     variants: [v('50 мл', '410716')] },
 ];
 
-export const visibleProducts = products.filter((p) => !p.hidden);
-export const productImage = (p: Product) => `/media/products/${p.slug}.webp`;
-export const productThumb = (p: Product) => `/media/products/${p.slug}-sm.webp`;
+// Кодта жасырылғандар (тіркеуі тексерілмеген) әкімші тізімінде де жоқ; әкімші жасырғандар сайттан ғана алынады
+export const adminProducts = products.filter((p) => !p.hidden);
+export const visibleProducts = adminProducts.filter((p) => cms.products?.[p.slug]?.hidden !== true);
+export const productImage = (p: Product) => cms.products?.[p.slug]?.image || `/media/products/${p.slug}.webp`;
+export const productThumb = (p: Product) => cms.products?.[p.slug]?.thumb || cms.products?.[p.slug]?.image || `/media/products/${p.slug}-sm.webp`;
 
 const catTr: Record<'ru' | 'en', Record<CategoryId, [string, string]>> = {
   ru: {
@@ -447,15 +450,11 @@ const unitTr: Record<'ru' | 'en', [RegExp, string][]> = {
 export const sizeFor = (lang: Lang, size: string) =>
   lang === 'kk' ? size : unitTr[lang].reduce((s, [re, to]) => s.replace(re, to), size);
 
-const localizeProduct = (lang: Lang, p: Product): Product => {
-  if (lang === 'ru' && productsRu[p.slug]) {
-    const [short, about, use] = productsRu[p.slug];
-    return { ...p, short, about, use };
-  }
-  if (lang === 'en' && productsEn[p.slug]) {
-    const [name, short, about, use, ingredients] = productsEn[p.slug];
-    return { ...p, name, short, about, use, ingredients };
-  }
-  return p;
-};
+type ProductText = Pick<Product, 'name' | 'short' | 'about' | 'use' | 'ingredients'>;
+const baseT = (p: Product): ProductText => ({ name: p.name, short: p.short, about: p.about, use: p.use, ingredients: p.ingredients });
+const ruT = (p: Product): ProductText => { const r = productsRu[p.slug]; return r ? { ...baseT(p), short: r[0], about: r[1], use: r[2] } : baseT(p); };
+const enT = (p: Product): ProductText => { const e = productsEn[p.slug]; return e ? { name: e[0], short: e[1], about: e[2], use: e[3], ingredients: e[4] } : baseT(p); };
+// Әкімші бөлімінде тауар мәтінін өзгертуге болады (prd:<slug>)
+export const productText = (p: Product) => pageText(`prd:${p.slug}`, { kk: baseT(p), ru: ruT(p), en: enT(p) });
+const localizeProduct = (lang: Lang, p: Product): Product => ({ ...p, ...productText(p)[lang] });
 export const visibleProductsFor = (lang: Lang) => visibleProducts.map((p) => localizeProduct(lang, p));

@@ -95,6 +95,7 @@
   .card.new { border-color: var(--green); box-shadow: 0 0 0 2px var(--mint); }
   h2.sec { font-size: 1.1rem; color: var(--navy); margin: 26px 0 10px; }
   h2.sec:first-child { margin-top: 0; }
+  .help { margin: -8px 0 16px; padding: 10px 14px; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--green); border-radius: 10px; color: var(--muted); font-size: .9rem; }
   .empty { text-align: center; padding: 40px 16px; color: var(--muted); }
 
   /* Медиа торы */
@@ -149,7 +150,27 @@
 // ---------- Мәтіндер (әкімші бөлімі қазақша немесе орысша) ----------
 const L = {
   kk: {
-    admin: 'Әкімші бөлімі', back: 'Артқа', login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', site: 'Сайтты ашу', err: 'Қате. Қайталап көріңіз.', saved: 'Сақталды', save: 'Сақтау', cancel: 'Болдырмау', close: 'Жабу', del: 'Өшіру', hide: 'Жасыру', show: 'Көрсету', up: 'Жоғары', down: 'Төмен', edit: 'Өзгерту', add: 'Қосу', all: 'Барлығы', search: 'Іздеу',
+    admin: 'Әкімші бөлімі', back: 'Артқа',
+    nServices: 'Қызметтер', nProducts: 'Тауарлар', fTitle: 'Атауы', fShort: 'Қысқаша (карточкада)', fAbout: 'Сипаттама, {n}-абзац', fStep: 'Қабылдау қадамы {n}', fUse: 'Қолдану тәсілі', fIngr: 'Құрамы', fName: 'Тауар атауы', fDesc: 'Сипаттама',
+    svHint: 'Қызметтер бетіндегі карточкалар мен әр қызметтің жеке беті. Басып, мәтінін, суретін өзгертіңіз немесе уақытша жасырыңыз. Бағасы «Бағалар» бөлімінде.',
+    prHint: 'Дүкендегі PodiaFarm тауарлары. Басып, атын, сипаттамасын, суретін өзгертіңіз немесе жасырыңыз. Бағасы мен қоймадағы бары «Бағалар» бөлімінде.',
+    noTexts: 'Мәтіндер сайт жаңартылғаннан кейін шығады. 1–2 минуттан соң бетті жаңартыңыз.',
+    lvTitle: 'Өзгерістер сақталмады', lvText: 'Осы бетте өзгерткен нәрселеріңіз әлі сақталған жоқ.', lvSave: 'Сақтау', lvDrop: 'Сақтамай шығу', lvStay: 'Осында қалу',
+    help: {
+      home: 'Мұнда соңғы жаңалықтар мен жиі қолданылатын әрекеттер. Сол жақтағы мәзірден керек бөлімді таңдаңыз.',
+      reviews: 'Сайттағы клиент пікірлері. Пікірге орталық атынан жауап беруге, оны жасыруға немесе өшіруге болады. Жауап сайтта пікірдің астында шығады.',
+      sugs: 'Сайттағы «Ұсыныстар» формасынан келген хаттар. Бұлар сайтта жарияланбайды, тек сізге көрінеді.',
+      orders: 'Дүкен себетінен жіберілген тапсырыстар. Клиентке WhatsApp арқылы хабарласып, орындалғанда белгілеңіз.',
+      photos: 'Галерея бетіндегі суреттер. «+ Фото қосу» батырмасымен жаңа фото қосыңыз. Бар суретті басып, атын жазыңыз, ауыстырыңыз, жасырыңыз немесе өшіріңіз.',
+      videos: 'Сайттағы видеолар бөлім бойынша. Видеоны басып, атын жазыңыз, ауыстырыңыз, жасырыңыз немесе өшіріңіз.',
+      certs: 'Сертификаттар беті. Сертификаттың суретін жүктеп, атын, маманды және жылын жазыңыз.',
+      services: '', products: '',
+      prices: 'Прайс-лист пен дүкен бағалары. Санды өзгертіп, төмендегі «Сақтау» батырмасын басыңыз. Баға сайтта бірден ауысады.',
+      contacts: 'Сайттың барлық бетінде шығатын телефон, WhatsApp, Instagram, TikTok, мекенжай және жұмыс уақыты. Өзгертіп, «Сақтау» басыңыз.',
+      texts: 'Беттердегі тақырыптар мен жазулар. Жоғарыдан бетті таңдап, мәтінді өзгертіп, «Сақтау» басыңыз.',
+      settings: 'Іздеу жүйелері (Google, Яндекс) және сайтты қайта жаңарту.',
+    },
+    login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', site: 'Сайтты ашу', err: 'Қате. Қайталап көріңіз.', saved: 'Сақталды', save: 'Сақтау', cancel: 'Болдырмау', close: 'Жабу', del: 'Өшіру', hide: 'Жасыру', show: 'Көрсету', up: 'Жоғары', down: 'Төмен', edit: 'Өзгерту', add: 'Қосу', all: 'Барлығы', search: 'Іздеу',
     nHome: 'Басты', nReviews: 'Пікірлер', nSugs: 'Ұсыныстар', nOrders: 'Тапсырыстар', nPhotos: 'Фотолар', nCerts: 'Сертификаттар', nVideos: 'Видеолар', nPrices: 'Бағалар', nContacts: 'Байланыс', nTexts: 'Беттердегі мәтіндер', nSettings: 'Баптаулар',
     bOk: 'Сайт жаңа', bBusy: 'Сайт жаңартылуда…', bErr: 'Жаңарту қатесі', bNo: 'Жинау қолжетімсіз', bHint: 'Өзгерістер 1–2 минутта сайтқа шығады',
     hiNew: 'жаңа пікір (7 күн)', hiSugs: 'оқылмаған ұсыныс', hiOrders: 'жаңа тапсырыс', hiAvg: 'орташа баға', quick: 'Жылдам әрекеттер', qPhoto: 'Фото қосу', qPrice: 'Бағаны өзгерту', qContacts: 'Телефон мен әлеуметтік желі', qTexts: 'Мәтінді өзгерту',
@@ -166,7 +187,27 @@ const L = {
     pages: { common: 'Жалпы: мәзір, батырмалар, төменгі бөлік', index: 'Басты бет', about: 'Біз туралы', services: 'Қызметтер', 'services-item': 'Қызмет беті (жалпы жазулар)', insoles: 'Ұлтарақтар', prices: 'Бағалар беті', shop: 'Дүкен', 'shop-item': 'Тауар беті', cart: 'Себет', courses: 'Оқу', clinics: 'Клиникаларға', certificates: 'Сертификаттар беті', gallery: 'Галерея беті', reviews: 'Пікірлер беті', 'c-Reviews': 'Пікірлер блогы', feedback: 'Ұсыныстар беті', contacts: 'Байланыс беті', booking: 'Жазылу беті', mission: 'Миссия', privacy: 'Құпиялық саясаты' },
   },
   ru: {
-    admin: 'Админ-панель', back: 'Назад', login: 'Войти', pass: 'Пароль', logout: 'Выйти', site: 'Открыть сайт', err: 'Ошибка. Попробуйте ещё раз.', saved: 'Сохранено', save: 'Сохранить', cancel: 'Отмена', close: 'Закрыть', del: 'Удалить', hide: 'Скрыть', show: 'Показать', up: 'Выше', down: 'Ниже', edit: 'Изменить', add: 'Добавить', all: 'Все', search: 'Поиск',
+    admin: 'Админ-панель', back: 'Назад',
+    nServices: 'Услуги', nProducts: 'Товары', fTitle: 'Название', fShort: 'Кратко (в карточке)', fAbout: 'Описание, абзац {n}', fStep: 'Шаг приёма {n}', fUse: 'Способ применения', fIngr: 'Состав', fName: 'Название товара', fDesc: 'Описание',
+    svHint: 'Карточки на странице «Услуги» и отдельная страница каждой услуги. Нажмите, чтобы изменить текст, фото или временно скрыть. Цена — в разделе «Цены».',
+    prHint: 'Товары PodiaFarm в магазине. Нажмите, чтобы изменить название, описание, фото или скрыть. Цена и наличие — в разделе «Цены».',
+    noTexts: 'Тексты появятся после обновления сайта. Обновите страницу через 1–2 минуты.',
+    lvTitle: 'Изменения не сохранены', lvText: 'Вы изменили что-то на этой странице, но ещё не сохранили.', lvSave: 'Сохранить', lvDrop: 'Выйти без сохранения', lvStay: 'Остаться',
+    help: {
+      home: 'Здесь последние новости и частые действия. Выберите нужный раздел в меню слева.',
+      reviews: 'Отзывы клиентов на сайте. Можно ответить от имени центра, скрыть или удалить отзыв. Ответ показывается на сайте под отзывом.',
+      sugs: 'Письма из формы «Предложения». Они не публикуются, их видите только вы.',
+      orders: 'Заказы из корзины магазина. Свяжитесь с клиентом в WhatsApp и отметьте, когда заказ выполнен.',
+      photos: 'Фото на странице «Галерея». Кнопка «+ Добавить фото» — новое фото. Нажмите на фото, чтобы подписать, заменить, скрыть или удалить.',
+      videos: 'Видео на сайте по разделам. Нажмите на видео, чтобы подписать, заменить, скрыть или удалить.',
+      certs: 'Страница сертификатов. Загрузите фото сертификата и укажите название, специалиста и год.',
+      services: '', products: '',
+      prices: 'Прайс-лист и цены магазина. Измените число и нажмите «Сохранить» внизу. Цена на сайте меняется сразу.',
+      contacts: 'Телефоны, WhatsApp, Instagram, TikTok, адрес и режим работы на всех страницах сайта. Измените и нажмите «Сохранить».',
+      texts: 'Заголовки и надписи на страницах. Выберите страницу сверху, измените текст и нажмите «Сохранить».',
+      settings: 'Поисковые системы (Google, Яндекс) и обновление сайта.',
+    },
+    login: 'Войти', pass: 'Пароль', logout: 'Выйти', site: 'Открыть сайт', err: 'Ошибка. Попробуйте ещё раз.', saved: 'Сохранено', save: 'Сохранить', cancel: 'Отмена', close: 'Закрыть', del: 'Удалить', hide: 'Скрыть', show: 'Показать', up: 'Выше', down: 'Ниже', edit: 'Изменить', add: 'Добавить', all: 'Все', search: 'Поиск',
     nHome: 'Главная', nReviews: 'Отзывы', nSugs: 'Предложения', nOrders: 'Заказы', nPhotos: 'Фото', nCerts: 'Сертификаты', nVideos: 'Видео', nPrices: 'Цены', nContacts: 'Контакты', nTexts: 'Тексты на страницах', nSettings: 'Настройки',
     bOk: 'Сайт обновлён', bBusy: 'Сайт обновляется…', bErr: 'Ошибка обновления', bNo: 'Сборка недоступна', bHint: 'Изменения появятся на сайте через 1–2 минуты',
     hiNew: 'новых отзывов (7 дней)', hiSugs: 'непрочитанных предложений', hiOrders: 'новых заказов', hiAvg: 'средняя оценка', quick: 'Быстрые действия', qPhoto: 'Добавить фото', qPrice: 'Изменить цены', qContacts: 'Телефоны и соцсети', qTexts: 'Изменить тексты',
@@ -219,6 +260,7 @@ const I = {
   text: '<path d="M4 6h16M4 12h16M4 18h10"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
   menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  list: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
 };
 const ic = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
 
@@ -226,7 +268,7 @@ const ic = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const D = { reviews: [], sugs: [], orders: [], cms: {}, texts: {}, defs: null, catalog: null, content: { prices: {}, products: {} }, build: {}, canBuild: false };
 let view = (location.hash || '#home').slice(1);
 let dirty = false;
-const VIEWS = ['home', 'reviews', 'sugs', 'orders', 'photos', 'certs', 'videos', 'prices', 'contacts', 'texts', 'settings'];
+const VIEWS = ['home', 'reviews', 'sugs', 'orders', 'photos', 'certs', 'videos', 'services', 'products', 'prices', 'contacts', 'texts', 'settings'];
 if (!VIEWS.includes(view)) view = 'home';
 
 async function loadAll() {
@@ -290,6 +332,8 @@ function shell() {
       <div class="sep"></div>
       ${n('photos', 'img', t.nPhotos)}${n('videos', 'video', t.nVideos)}${n('certs', 'cert', t.nCerts)}
       <div class="sep"></div>
+      ${n('services', 'list', t.nServices)}${n('products', 'bag', t.nProducts)}
+      <div class="sep"></div>
       ${n('prices', 'tag', t.nPrices)}${n('contacts', 'phone', t.nContacts)}${n('texts', 'text', t.nTexts)}${n('settings', 'gear', t.nSettings)}
       <div class="foot">${langSel()}<a class="btn sm" href="/" target="_blank" rel="noopener">${t.site} ↗</a><button class="btn sm ghost" id="out" style="color:#fff">${t.logout}</button></div>
     </aside>
@@ -308,12 +352,25 @@ function shell() {
 // Бөлімдер тарихқа жазылады: телефонның «артқа» батырмасы да, беттегі ← батырмасы да алдыңғы бөлімге қайтарады
 function go(v, push = true) {
   if (v === view && push) return;
-  if (dirty && !confirm(t.leave)) { if (!push) history.pushState({ v: view }, '', `#${view}`); return; }
+  if (dirty) { if (!push) history.pushState({ v: view }, '', `#${view}`); return askLeave(() => go(v)); }
   dirty = false; view = v;
   if (push) history.pushState({ v }, '', `#${v}`);
   $$('.nav').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
   $('#back').hidden = v === 'home';
   render(); scrollTo(0, 0);
+}
+// Сақталмаған өзгеріс болса: түсінікті терезе (Сақтау / Сақтамай шығу / Қалу)
+function askLeave(next) {
+  modal(`<h3>${t.lvTitle}</h3><p class="muted" style="margin:0">${t.lvText}</p>
+    <div class="row end"><button class="btn" data-a="stay">${t.lvStay}</button><button class="btn danger" data-a="drop">${t.lvDrop}</button><button class="btn primary" data-a="save">${t.lvSave}</button></div>`, (dlg, close) => {
+    $('[data-a=stay]', dlg).onclick = close;
+    $('[data-a=drop]', dlg).onclick = () => { close(); dirty = false; setTimeout(next, 50); };
+    $('[data-a=save]', dlg).onclick = async () => {
+      close(); const b = $('#v #save, #v [type=submit]'); if (!b) return; b.click();
+      for (let i = 0; i < 50 && dirty; i++) await new Promise((r) => setTimeout(r, 100));
+      if (!dirty) setTimeout(next, 50);
+    };
+  });
 }
 addEventListener('popstate', () => {
   const m = $('.modal'); if (m) { m.remove(); document.documentElement.style.overflow = ''; return; }
@@ -322,11 +379,13 @@ addEventListener('popstate', () => {
 });
 const V = {};
 function render() {
-  const titles = { home: t.nHome, reviews: t.nReviews, sugs: t.nSugs, orders: t.nOrders, photos: t.nPhotos, certs: t.nCerts, videos: t.nVideos, prices: t.nPrices, contacts: t.nContacts, texts: t.nTexts, settings: t.nSettings };
+  const titles = { home: t.nHome, reviews: t.nReviews, sugs: t.nSugs, orders: t.nOrders, photos: t.nPhotos, certs: t.nCerts, videos: t.nVideos, services: t.nServices, products: t.nProducts, prices: t.nPrices, contacts: t.nContacts, texts: t.nTexts, settings: t.nSettings };
   $('#h1').textContent = titles[view];
   // Әр бөлім таза контейнерде ашылады: алдыңғы бөлімнің тыңдаушылары қалмайды
   const old = $('#v'); const el = old.cloneNode(false); old.replaceWith(el);
   V[view](el);
+  const h = view === 'services' ? t.svHint : view === 'products' ? t.prHint : t.help[view];
+  if (h) el.insertAdjacentHTML('afterbegin', `<p class="help">${esc(h)}</p>`);
 }
 function refreshNav() { const c = counts(); $$('.nav').forEach((b) => { const k = b.dataset.v; const cnt = k === 'sugs' ? c.sugs : k === 'orders' ? c.orders : 0; let s = $('.cnt', b); if (cnt) { if (!s) { s = document.createElement('span'); s.className = 'cnt'; b.append(s); } s.textContent = cnt; } else s?.remove(); }); }
 
@@ -672,6 +731,55 @@ function editCert(id, done) {
   });
 }
 
+// ---------- Қызметтер мен тауарлар ----------
+// Мәтіндері cms.texts['svc:<slug>'] / ['prd:<slug>'] ішінде, суреті мен жасыру cms.services / cms.products ішінде
+const fieldName = (k) => {
+  const m = k.match(/^(about|steps)\.(\d+)$/);
+  if (m) return (m[1] === 'about' ? t.fAbout : t.fStep).replace('{n}', Number(m[2]) + 1);
+  return { title: t.fTitle, short: t.fShort, name: t.fName, about: t.fDesc, use: t.fUse, ingredients: t.fIngr }[k] || k;
+};
+function itemModal({ page, title, img, imgSizes, kind, slug, done }) {
+  const rows = D.texts[page];
+  const ov = clone(D.cms.texts || {}); const mine = ov[page] || {};
+  const extra = clone(D.cms[kind] || {}); const ex = extra[slug] || {};
+  modal(`<h3>${esc(title)}</h3>
+    <div class="pv" style="background:#fff"><img src="${esc(ex.image || img)}" alt=""></div>
+    <div class="prog" hidden><i></i></div>
+    ${rows ? Object.entries(rows).map(([k, d]) => { const cur = { ...d, ...(mine[k] || {}) }; return `<div class="tx" data-k="${esc(k)}"><div class="k"><b style="color:var(--navy);font-size:.85rem">${esc(fieldName(k))}</b></div><div class="grid3">${['kk', 'ru', 'en'].map((l) => `<label class="f"><span class="lg">${l === 'kk' ? 'ҚАЗ' : l === 'ru' ? 'РУС' : 'ENG'}</span><textarea data-l="${l}" rows="${(cur[l] || '').length > 70 ? 4 : 1}">${esc(cur[l] || '')}</textarea></label>`).join('')}</div></div>`; }).join('') : `<p class="muted">${t.noTexts}</p>`}
+    <div class="row"><button class="btn sm" data-a="replace">${t.mReplace}</button><button class="btn sm" data-a="hide">${ex.hidden ? t.show : t.hide}</button></div>
+    <div class="row end"><button class="btn" data-a="close">${t.cancel}</button><button class="btn primary" data-a="save">${t.save}</button></div>`, (dlg, close) => {
+    const collect = () => { if (!rows) return; const p = {}; for (const box of $$('.tx', dlg)) { const k = box.dataset.k; const v = {}; for (const ta of $$('textarea', box)) if (ta.value !== (rows[k][ta.dataset.l] || '')) v[ta.dataset.l] = ta.value; if (Object.keys(v).length) p[k] = v; } if (Object.keys(p).length) ov[page] = p; else delete ov[page]; };
+    const saveAll = async () => {
+      collect();
+      const clean = Object.keys(ex).length ? { ...extra, [slug]: ex } : (() => { const c = { ...extra }; delete c[slug]; return c; })();
+      const a = JSON.stringify(ov) === JSON.stringify(D.cms.texts || {}) || await saveCms('texts', ov);
+      const b = JSON.stringify(clean) === JSON.stringify(D.cms[kind] || {}) || await saveCms(kind, clean);
+      if (a && b) { close(); done(); }
+    };
+    $$('[data-a]', dlg).forEach((b) => b.onclick = async () => {
+      const a = b.dataset.a;
+      if (a === 'close') return close();
+      if (a === 'save') return saveAll();
+      if (a === 'hide') { if (ex.hidden) delete ex.hidden; else ex.hidden = true; return saveAll(); }
+      if (a === 'replace') {
+        const [f] = await pickFiles('image/*'); if (!f) return;
+        const prog = $('.prog', dlg); b.disabled = true; prog.hidden = false;
+        try { const r = await uploadImage(f, imgSizes, (p) => { $('i', prog).style.width = `${p * 100}%`; }); ex.image = r[0].url; if (r[1]) ex.thumb = r[1].url; $('.pv img', dlg).src = ex.image; }
+        catch (e) { alert(e.message || t.err); } finally { b.disabled = false; prog.hidden = true; }
+      }
+    });
+  });
+}
+const itemGrid = (list, kind) => `<div class="media">${list.map((x) => { const ex = D.cms[kind]?.[x.slug] || {}; const tx = D.cms.texts?.[`${kind === 'services' ? 'svc' : 'prd'}:${x.slug}`]; const nm = (tx?.title || tx?.name)?.[lang] || pick(x.title || x.name); return `<button class="mi ${ex.hidden ? 'dim' : ''}" data-slug="${esc(x.slug)}"><div class="ph" style="background-image:url('${esc(ex.thumb || ex.image || x.image || x.thumb)}')${kind === 'products' ? ';background-size:contain;background-color:#fff' : ''}"></div>${ex.hidden ? `<span class="badge tag warn">${t.mHiddenB}</span>` : ''}<div class="cap"><b>${esc(nm)}</b></div></button>`; }).join('')}</div>`;
+V.services = (el) => {
+  el.innerHTML = itemGrid(D.catalog.services || [], 'services');
+  $$('.mi', el).forEach((b) => b.onclick = () => { const x = D.catalog.services.find((s) => s.slug === b.dataset.slug); itemModal({ page: `svc:${x.slug}`, title: pick(x.title), img: x.image, imgSizes: [1800], kind: 'services', slug: x.slug, done: () => render() }); });
+};
+V.products = (el) => {
+  el.innerHTML = itemGrid(D.catalog.products || [], 'products');
+  $$('.mi', el).forEach((b) => b.onclick = () => { const x = D.catalog.products.find((s) => s.slug === b.dataset.slug); itemModal({ page: `prd:${x.slug}`, title: pick(x.name), img: x.thumb, imgSizes: [1600, 640], kind: 'products', slug: x.slug, done: () => render() }); });
+};
+
 // ---------- Бағалар ----------
 let q = '';
 V.prices = (el, msg = '') => {
@@ -768,7 +876,7 @@ V.contacts = (el) => {
 const KEYN = new Proxy({}, { get: (_, k) => ({ title: lang === 'kk' ? 'Беттің атауы (браузер қойындысы, Google)' : 'Название страницы (вкладка, Google)', desc: lang === 'kk' ? 'Google мен Яндекстегі қысқа сипаттама' : 'Краткое описание в Google и Яндексе', h1: lang === 'kk' ? 'Басты тақырып' : 'Главный заголовок', lead: lang === 'kk' ? 'Тақырып астындағы мәтін' : 'Текст под заголовком' })[k] });
 let tPage = 'index', tq = '';
 V.texts = (el) => {
-  const cat = D.texts; const pages = Object.keys(cat);
+  const cat = D.texts; const pages = Object.keys(cat).filter((p) => !/^(svc|prd):/.test(p));
   if (!pages.length) { el.innerHTML = `<div class="empty">${t.tNone}</div>`; return; }
   if (!cat[tPage]) tPage = pages.includes('index') ? 'index' : pages[0];
   const ov = clone(D.cms.texts || {}); const mine = ov[tPage] || {};
@@ -776,8 +884,7 @@ V.texts = (el) => {
   const sorted = pages.sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99));
   const rows = Object.entries(cat[tPage]).filter(([k, v]) => !tq || [k, v.kk, v.ru, v.en, mine[k]?.kk, mine[k]?.ru].join(' ').toLowerCase().includes(tq.toLowerCase()));
   el.innerHTML = `<div class="row" style="margin-bottom:12px"><label class="f" style="flex:1;min-width:220px">${t.tPage}<select id="pg">${sorted.map((p) => `<option value="${p}" ${p === tPage ? 'selected' : ''}>${esc(t.pages[p] || p)}${ov[p] ? ' •' : ''}</option>`).join('')}</select></label><label class="f" style="flex:1;min-width:200px">${t.search}<input id="tq" type="search" value="${esc(tq)}"></label></div>
-    <p class="muted small">${t.tHint}</p>
-    <div class="list">${rows.map(([k, d]) => { const cur = { ...d, ...(mine[k] || {}) }; const ch = !!mine[k]; const long = Math.max(...['kk', 'ru', 'en'].map((l) => (cur[l] || '').length)) > 70; return `<div class="tx ${ch ? 'ch' : ''}" data-k="${esc(k)}"><div class="k"><span>${esc(KEYN[k] || k)}</span>${ch ? `<span class="tag">${t.tChanged}</span><button class="btn sm ghost" data-reset title="${t.tReset}">↺</button>` : ''}</div>
+    <div class="list">${rows.map(([k, d]) => { const cur = { ...d, ...(mine[k] || {}) }; const ch = !!mine[k]; const long = Math.max(...['kk', 'ru', 'en'].map((l) => (cur[l] || '').length)) > 70; return `<div class="tx ${ch ? 'ch' : ''}" data-k="${esc(k)}"><div class="k">${KEYN[k] ? `<b style="color:var(--navy)">${esc(KEYN[k])}</b>` : ''}${ch ? `<span class="tag">${t.tChanged}</span><button class="btn sm ghost" data-reset title="${t.tReset}">↺</button>` : ''}</div>
       <div class="grid3">${['kk', 'ru', 'en'].map((l) => `<label class="f"><span class="lg">${l === 'kk' ? 'ҚАЗ' : l === 'ru' ? 'РУС' : 'ENG'}</span><textarea data-l="${l}" rows="${long ? 3 : 1}">${esc(cur[l] || '')}</textarea></label>`).join('')}</div></div>`; }).join('')}</div>
     <div class="bar"><button class="btn primary" id="save">${t.save}</button><span id="msg" class="muted"></span></div>`;
   const collect = () => {

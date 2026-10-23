@@ -3,6 +3,7 @@
 // Ұзақтық орталық растағанда толтырылады.
 // Негізгі мәтін қазақша, орысша мен ағылшынша аудармасы төменде (servicesFor).
 import type { Lang } from '../i18n';
+import { cms, pageText } from './cms';
 
 export interface Service {
   slug: string;
@@ -261,6 +262,13 @@ const tr: Record<'ru' | 'en', Record<string, ServiceText>> = {
   },
 };
 
+// Әкімші бөлімінде мәтін (svc:<slug>), сурет пен жасыру (cms.services) өзгертіледі
+const pickT = (s: Service): ServiceText => ({ title: s.title, short: s.short, about: s.about, steps: s.steps });
+export const serviceText = (s: Service) => pageText(`svc:${s.slug}`, { kk: pickT(s), ru: { ...pickT(s), ...(tr.ru[s.slug] ?? {}) }, en: { ...pickT(s), ...(tr.en[s.slug] ?? {}) } });
+export const serviceHidden = (slug: string) => cms.services?.[slug]?.hidden === true;
 export const servicesFor = (lang: Lang): Service[] =>
-  lang === 'kk' ? services : services.map((s) => ({ ...s, ...(tr[lang][s.slug] ?? {}) }));
+  services.filter((s) => !serviceHidden(s.slug)).map((s) => {
+    const img = cms.services?.[s.slug]?.image;
+    return { ...s, ...serviceText(s)[lang], ...(img ? { image: img, photo: img, imagePos: '50% 50%' } : {}) };
+  });
 export const popularServicesFor = (lang: Lang) => servicesFor(lang).filter((s) => s.popular);
