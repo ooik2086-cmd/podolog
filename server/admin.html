@@ -8,6 +8,7 @@
 <style>
   :root { --bg: #F4F7FA; --navy: #173B57; --navy2: #0F2C42; --green: #258477; --mint: #EAF5F1; --text: #28343D; --muted: #5F6F7B; --line: #DCE5EB; --red: #B42318; --amber: #B54708; --r: 14px; }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   html, body { margin: 0; }
   body { font: 15px/1.5 "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
   a { color: var(--green); }
@@ -139,7 +140,7 @@
   .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--navy2); color: #fff; padding: 10px 16px; border-radius: 12px; z-index: 99; font-weight: 600; box-shadow: 0 6px 24px rgb(0 0 0 / .2); max-width: calc(100vw - 32px); }
   .login { max-width: 380px; margin: 14vh auto 0; display: grid; gap: 14px; padding: 24px; }
   .login h1 { margin: 0; color: var(--navy); }
-  @media (max-width: 600px) { .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; } .chip { flex: none; } #bpill .pill { font-size: 0; gap: 0; padding: 8px; } }
+  @media (max-width: 600px) { .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; } .chip { flex: none; } #bpill .pill { font-size: 0; gap: 0; padding: 8px; } #back .bk { display: none; } .top { gap: 8px; } .top h1 { font-size: 1.1rem; } }
 </style>
 </head>
 <body>
@@ -148,7 +149,7 @@
 // ---------- Мәтіндер (әкімші бөлімі қазақша немесе орысша) ----------
 const L = {
   kk: {
-    admin: 'Әкімші бөлімі', login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', site: 'Сайтты ашу', err: 'Қате. Қайталап көріңіз.', saved: 'Сақталды', save: 'Сақтау', cancel: 'Болдырмау', close: 'Жабу', del: 'Өшіру', hide: 'Жасыру', show: 'Көрсету', up: 'Жоғары', down: 'Төмен', edit: 'Өзгерту', add: 'Қосу', all: 'Барлығы', search: 'Іздеу',
+    admin: 'Әкімші бөлімі', back: 'Артқа', login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', site: 'Сайтты ашу', err: 'Қате. Қайталап көріңіз.', saved: 'Сақталды', save: 'Сақтау', cancel: 'Болдырмау', close: 'Жабу', del: 'Өшіру', hide: 'Жасыру', show: 'Көрсету', up: 'Жоғары', down: 'Төмен', edit: 'Өзгерту', add: 'Қосу', all: 'Барлығы', search: 'Іздеу',
     nHome: 'Басты', nReviews: 'Пікірлер', nSugs: 'Ұсыныстар', nOrders: 'Тапсырыстар', nPhotos: 'Фотолар', nCerts: 'Сертификаттар', nVideos: 'Видеолар', nPrices: 'Бағалар', nContacts: 'Байланыс', nTexts: 'Беттердегі мәтіндер', nSettings: 'Баптаулар',
     bOk: 'Сайт жаңа', bBusy: 'Сайт жаңартылуда…', bErr: 'Жаңарту қатесі', bNo: 'Жинау қолжетімсіз', bHint: 'Өзгерістер 1–2 минутта сайтқа шығады',
     hiNew: 'жаңа пікір (7 күн)', hiSugs: 'оқылмаған ұсыныс', hiOrders: 'жаңа тапсырыс', hiAvg: 'орташа баға', quick: 'Жылдам әрекеттер', qPhoto: 'Фото қосу', qPrice: 'Бағаны өзгерту', qContacts: 'Телефон мен әлеуметтік желі', qTexts: 'Мәтінді өзгерту',
@@ -165,7 +166,7 @@ const L = {
     pages: { common: 'Жалпы: мәзір, батырмалар, төменгі бөлік', index: 'Басты бет', about: 'Біз туралы', services: 'Қызметтер', 'services-item': 'Қызмет беті (жалпы жазулар)', insoles: 'Ұлтарақтар', prices: 'Бағалар беті', shop: 'Дүкен', 'shop-item': 'Тауар беті', cart: 'Себет', courses: 'Оқу', clinics: 'Клиникаларға', certificates: 'Сертификаттар беті', gallery: 'Галерея беті', reviews: 'Пікірлер беті', 'c-Reviews': 'Пікірлер блогы', feedback: 'Ұсыныстар беті', contacts: 'Байланыс беті', booking: 'Жазылу беті', mission: 'Миссия', privacy: 'Құпиялық саясаты' },
   },
   ru: {
-    admin: 'Админ-панель', login: 'Войти', pass: 'Пароль', logout: 'Выйти', site: 'Открыть сайт', err: 'Ошибка. Попробуйте ещё раз.', saved: 'Сохранено', save: 'Сохранить', cancel: 'Отмена', close: 'Закрыть', del: 'Удалить', hide: 'Скрыть', show: 'Показать', up: 'Выше', down: 'Ниже', edit: 'Изменить', add: 'Добавить', all: 'Все', search: 'Поиск',
+    admin: 'Админ-панель', back: 'Назад', login: 'Войти', pass: 'Пароль', logout: 'Выйти', site: 'Открыть сайт', err: 'Ошибка. Попробуйте ещё раз.', saved: 'Сохранено', save: 'Сохранить', cancel: 'Отмена', close: 'Закрыть', del: 'Удалить', hide: 'Скрыть', show: 'Показать', up: 'Выше', down: 'Ниже', edit: 'Изменить', add: 'Добавить', all: 'Все', search: 'Поиск',
     nHome: 'Главная', nReviews: 'Отзывы', nSugs: 'Предложения', nOrders: 'Заказы', nPhotos: 'Фото', nCerts: 'Сертификаты', nVideos: 'Видео', nPrices: 'Цены', nContacts: 'Контакты', nTexts: 'Тексты на страницах', nSettings: 'Настройки',
     bOk: 'Сайт обновлён', bBusy: 'Сайт обновляется…', bErr: 'Ошибка обновления', bNo: 'Сборка недоступна', bHint: 'Изменения появятся на сайте через 1–2 минуты',
     hiNew: 'новых отзывов (7 дней)', hiSugs: 'непрочитанных предложений', hiOrders: 'новых заказов', hiAvg: 'средняя оценка', quick: 'Быстрые действия', qPhoto: 'Добавить фото', qPrice: 'Изменить цены', qContacts: 'Телефоны и соцсети', qTexts: 'Изменить тексты',
@@ -292,23 +293,33 @@ function shell() {
       ${n('prices', 'tag', t.nPrices)}${n('contacts', 'phone', t.nContacts)}${n('texts', 'text', t.nTexts)}${n('settings', 'gear', t.nSettings)}
       <div class="foot">${langSel()}<a class="btn sm" href="/" target="_blank" rel="noopener">${t.site} ↗</a><button class="btn sm ghost" id="out" style="color:#fff">${t.logout}</button></div>
     </aside>
-    <main class="main"><div class="top"><button class="btn sm burger" id="burger" aria-label="Menu">${ic('menu')}</button><h1 id="h1"></h1><span id="bpill">${buildPill()}</span><span class="lsw"><button data-lg="kk" class="${lang === 'kk' ? 'on' : ''}">ҚАЗ</button><button data-lg="ru" class="${lang === 'ru' ? 'on' : ''}">РУС</button></span></div><div id="v"></div></main>
+    <main class="main"><div class="top"><button class="btn sm burger" id="burger" aria-label="Menu">${ic('menu')}</button><button class="btn sm" id="back" ${view === 'home' ? 'hidden' : ''} aria-label="${t.back}">← <span class="bk">${t.back}</span></button><h1 id="h1"></h1><span id="bpill">${buildPill()}</span><span class="lsw"><button data-lg="kk" class="${lang === 'kk' ? 'on' : ''}">ҚАЗ</button><button data-lg="ru" class="${lang === 'ru' ? 'on' : ''}">РУС</button></span></div><div id="v"></div></main>
   </div>`;
   bindLang();
   $$('[data-lg]').forEach((b) => b.onclick = () => { lang = b.dataset.lg; t = L[lang]; try { localStorage.setItem('pd_admin_lang2', lang); } catch {} shell(); });
   $$('.nav').forEach((b) => b.onclick = () => go(b.dataset.v));
   $('#out').onclick = async () => { await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' }); showLogin(); };
+  $('#back').onclick = () => { if (history.state?.v) history.back(); else go('home'); };
   $('#burger').onclick = () => $('.app').classList.toggle('menu');
   $('.side').addEventListener('click', (e) => { if (e.target.closest('.nav')) $('.app').classList.remove('menu'); });
   $('.app').addEventListener('click', (e) => { if (e.target === $('.app')) $('.app').classList.remove('menu'); });
   render();
 }
-function go(v) {
-  if (dirty && !confirm(t.leave)) return;
-  dirty = false; view = v; history.replaceState(null, '', `#${v}`);
+// Бөлімдер тарихқа жазылады: телефонның «артқа» батырмасы да, беттегі ← батырмасы да алдыңғы бөлімге қайтарады
+function go(v, push = true) {
+  if (v === view && push) return;
+  if (dirty && !confirm(t.leave)) { if (!push) history.pushState({ v: view }, '', `#${view}`); return; }
+  dirty = false; view = v;
+  if (push) history.pushState({ v }, '', `#${v}`);
   $$('.nav').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  $('#back').hidden = v === 'home';
   render(); scrollTo(0, 0);
 }
+addEventListener('popstate', () => {
+  const m = $('.modal'); if (m) { m.remove(); document.documentElement.style.overflow = ''; return; }
+  const v = (location.hash || '#home').slice(1);
+  if ($('.app') && VIEWS.includes(v)) go(v, false);
+});
 const V = {};
 function render() {
   const titles = { home: t.nHome, reviews: t.nReviews, sugs: t.nSugs, orders: t.nOrders, photos: t.nPhotos, certs: t.nCerts, videos: t.nVideos, prices: t.nPrices, contacts: t.nContacts, texts: t.nTexts, settings: t.nSettings };
@@ -396,7 +407,8 @@ const pickFiles = (accept, multiple = false) => new Promise((ok) => { const i = 
 function modal(html, bind) {
   const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="dlg" role="dialog" aria-modal="true">${html}</div>`;
   document.body.append(m); document.documentElement.style.overflow = 'hidden';
-  const close = () => { m.remove(); document.documentElement.style.overflow = ''; };
+  history.pushState({ v: view, m: 1 }, '', `#${view}`);
+  const close = () => { if (!m.isConnected) return; m.remove(); document.documentElement.style.overflow = ''; if (history.state?.m) history.back(); };
   m.addEventListener('click', (e) => { if (e.target === m) close(); });
   m.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
   bind($('.dlg', m), close);
