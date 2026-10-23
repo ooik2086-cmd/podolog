@@ -5,7 +5,7 @@
 //   PORT=8080              тыңдайтын порт
 //   HOST=127.0.0.1         nginx артында тұрса, тек ішкі адрес
 //   ADMIN_PASSWORD=...     /admin бетіне кіру құпия сөзі (міндетті)
-//   DATA_DIR=./data        reviews.json сақталатын қалта
+//   DATA_DIR=./data        reviews.json, suggestions.json, content.json сақталатын қалта
 //   TRUST_PROXY=1          nginx X-Forwarded-For жіберсе, клиент IP-ін одан алу
 //   TG_BOT_TOKEN, TG_CHAT_ID  жаңа пікір/ұсыныс туралы Telegram хабарламасы (міндетті емес)
 //   WA_PHONE, WA_APIKEY       жаңа пікір/ұсыныс туралы WhatsApp хабарламасы, CallMeBot арқылы (міндетті емес)
@@ -23,6 +23,7 @@ const DIST = normalize(process.env.DIST_DIR || join(here, '..', 'dist'));
 const DATA = process.env.DATA_DIR || join(here, 'data');
 const FILE = join(DATA, 'reviews.json');
 const SFILE = join(DATA, 'suggestions.json');
+const CFILE = join(DATA, 'content.json'); // әкімші өзгерткен бағалар мен «бар/жоқ»
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 const TRUST_PROXY = process.env.TRUST_PROXY === '1';
 if (!ADMIN_PASSWORD || ADMIN_PASSWORD.length < 10) console.warn('[warn] ADMIN_PASSWORD орнатылмаған немесе 10 таңбадан қысқа: /admin жабық тұрады');
@@ -33,6 +34,8 @@ await mkdir(DATA, { recursive: true });
 if (existsSync(FILE)) reviews = JSON.parse(readFileSync(FILE, 'utf8'));
 let suggestions = [];
 if (existsSync(SFILE)) suggestions = JSON.parse(readFileSync(SFILE, 'utf8'));
+let content = { prices: {}, products: {} };
+if (existsSync(CFILE)) content = JSON.parse(readFileSync(CFILE, 'utf8'));
 let saving = Promise.resolve();
 const write = (file, data) => (saving = saving.then(async () => {
   const tmp = `${file}.${process.pid}.tmp`;
@@ -41,6 +44,7 @@ const write = (file, data) => (saving = saving.then(async () => {
 }));
 const save = () => write(FILE, reviews);
 const saveS = () => write(SFILE, suggestions);
+const saveC = () => write(CFILE, content);
 const pub = (r) => ({ id: r.id, name: r.name, rating: r.rating, text: r.text, createdAt: r.createdAt });
 
 // ---------- Тексеру ----------
@@ -73,6 +77,24 @@ function validateS(b) {
   if (text.length < 5 || text.length > 1500) return { error: 'text' };
   if (phone && (phone.length < 10 || phone.length > 16)) return { error: 'phone' };
   return { topic, name, phone, text, reply: b.reply === true };
+}
+
+// Бағалар: теңгемен бүтін сан. Кілт — прайс жолы (топтың ru аты|жолдың ru аты) немесе өнім (slug|көлемі)
+const money = (n) => Number.isInteger(n) && n >= 0 && n <= 1e7;
+function validateC(b) {
+  const out = { prices: {}, products: {} };
+  const P = b && typeof b.prices === 'object' && b.prices ? b.prices : {};
+  const Q = b && typeof b.products === 'object' && b.products ? b.products : {};
+  if (Object.keys(P).length > 500 || Object.keys(Q).length > 1000) return null;
+  for (const [k, v] of Object.entries(P)) {
+    if (k.length > 200 || !v || !money(v.min) || !money(v.max)) return null;
+    out.prices[k] = { min: Math.min(v.min, v.max), max: Math.max(v.min, v.max), ...(v.hidden === true ? { hidden: true } : {}) };
+  }
+  for (const [k, v] of Object.entries(Q)) {
+    if (k.length > 200 || !v || !(v.price === null || (money(v.price) && v.price > 0)) || ![true, false, null].includes(v.inStock)) return null;
+    out.products[k] = { price: v.price, inStock: v.inStock };
+  }
+  return out;
 }
 
 // ---------- Жиілік шегі: бір IP-ден сағатына 3, тәулігіне 6 пікір ----------
@@ -161,6 +183,8 @@ const server = createServer(async (req, res) => {
       return json(res, 201, { review: pub(r) });
     }
 
+    if (path === '/api/content' && req.method === 'GET') return json(res, 200, content);
+
     if (path === '/api/suggestions' && req.method === 'POST') {
       if (!sameOrigin(req)) return json(res, 403, { error: 'server' });
       const ip = ipOf(req);
@@ -196,6 +220,12 @@ const server = createServer(async (req, res) => {
       if (path === '/api/admin/logout' && req.method === 'POST') { sessions.delete(cookie(req, 'pd_admin')); return json(res, 200, { ok: true }, { 'set-cookie': 'pd_admin=; Path=/; Max-Age=0' }); }
       if (path === '/api/admin/reviews' && req.method === 'GET') return json(res, 200, { reviews: [...reviews].sort((a, b) => b.createdAt.localeCompare(a.createdAt)) });
       if (path === '/api/admin/suggestions' && req.method === 'GET') return json(res, 200, { suggestions: [...suggestions].sort((a, b) => b.createdAt.localeCompare(a.createdAt)) });
+      if (path === '/api/admin/content' && req.method === 'PUT') {
+        const v = validateC(await body(req, 200000));
+        if (!v) return json(res, 400, { error: 'bad' });
+        content = { ...v, updatedAt: new Date().toISOString() }; await saveC();
+        return json(res, 200, content);
+      }
       const ms = path.match(/^\/api\/admin\/suggestions\/([\w-]+)$/);
       const sg = ms && suggestions.find((x) => x.id === ms[1]);
       if (ms && !sg) return json(res, 404, { error: 'not found' });

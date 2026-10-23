@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Әкімші: пікірлер мен ұсыныстар</title>
+<title>Әкімші бөлімі</title>
 <style>
   :root { --bg: #F7FAFC; --navy: #173B57; --green: #258477; --mint: #EAF5F1; --text: #28343D; --muted: #5B6B77; --line: #DCE5EB; --red: #B42318; }
   * { box-sizing: border-box; }
@@ -35,18 +35,34 @@
   .new { font-size: .75rem; font-weight: 700; padding: 1px 8px; border-radius: 99px; background: #D92D20; color: #fff; margin-left: 6px; }
   .card.unread { border-color: var(--green); box-shadow: 0 0 0 2px var(--mint); }
   .topic { font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--mint); color: var(--green); }
+  .sec { margin: 28px 0 10px; color: var(--navy); font-size: 1.2rem; }
+  .grp { margin: 18px 0 6px; color: var(--green); font-size: 1rem; }
+  .rows { display: grid; gap: 8px; }
+  .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+  .row.off { opacity: .55; }
+  .row .ctl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .row input[type=number] { width: 110px; min-height: 40px; padding: 6px 10px; }
+  .row select { min-height: 40px; padding: 6px 10px; }
+  .row .nm { overflow-wrap: anywhere; }
+  .row .nm small { display: block; color: var(--muted); }
+  .chk { display: inline-flex; gap: 6px; align-items: center; font-size: .875rem; color: var(--muted); }
+  .chk input { width: 18px; height: 18px; min-height: 0; accent-color: var(--green); }
+  .bar { position: sticky; bottom: 0; background: var(--bg); padding: 12px 0; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; border-top: 1px solid var(--line); margin-top: 20px; }
+  .ok { color: var(--green); font-weight: 600; }
+  @media (max-width: 600px) { .row { grid-template-columns: 1fr; } .row .ctl { justify-content: flex-start; } .row input[type=number] { width: 96px; } }
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 <script>
 const L = {
-  kk: { title: 'Пікірлер', login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', hide: 'Жасыру', show: 'Көрсету', del: 'Өшіру', confirm: 'Бұл пікірді біржола өшіру керек пе?', hiddenB: 'Жасырылған', empty: 'Пікір жоқ', all: 'Барлығы', visible: 'Сайтта', hiddenN: 'Жасырылған', avg: 'Орташа баға', site: 'Сайтқа өту', filterAll: 'Барлығы', filterHidden: 'Тек жасырылған', err: 'Қате. Қайталап көріңіз.', tabR: 'Пікірлер', tabS: 'Ұсыныстар', emptyS: 'Ұсыныс жоқ', read: 'Оқылды', unread: 'Оқылмаған деп белгілеу', newB: 'Жаңа', confirmS: 'Бұл ұсынысты біржола өшіру керек пе?', phone: 'Телефон', reply: 'Жауап күтеді', anon: 'Аты жазылмаған', unreadN: 'Оқылмаған' },
-  ru: { title: 'Отзывы', login: 'Войти', pass: 'Пароль', logout: 'Выйти', hide: 'Скрыть', show: 'Показать', del: 'Удалить', confirm: 'Удалить этот отзыв навсегда?', hiddenB: 'Скрыт', empty: 'Отзывов нет', all: 'Всего', visible: 'На сайте', hiddenN: 'Скрыто', avg: 'Средняя оценка', site: 'На сайт', filterAll: 'Все', filterHidden: 'Только скрытые', err: 'Ошибка. Попробуйте ещё раз.', tabR: 'Отзывы', tabS: 'Предложения', emptyS: 'Предложений нет', read: 'Прочитано', unread: 'Отметить непрочитанным', newB: 'Новое', confirmS: 'Удалить это предложение навсегда?', phone: 'Телефон', reply: 'Ждёт ответа', anon: 'Без имени', unreadN: 'Непрочитанных' },
+  kk: { title: 'Пікірлер', login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', hide: 'Жасыру', show: 'Көрсету', del: 'Өшіру', confirm: 'Бұл пікірді біржола өшіру керек пе?', hiddenB: 'Жасырылған', empty: 'Пікір жоқ', all: 'Барлығы', visible: 'Сайтта', hiddenN: 'Жасырылған', avg: 'Орташа баға', site: 'Сайтқа өту', filterAll: 'Барлығы', filterHidden: 'Тек жасырылған', err: 'Қате. Қайталап көріңіз.', tabR: 'Пікірлер', tabS: 'Ұсыныстар', emptyS: 'Ұсыныс жоқ', read: 'Оқылды', unread: 'Оқылмаған деп белгілеу', newB: 'Жаңа', confirmS: 'Бұл ұсынысты біржола өшіру керек пе?', phone: 'Телефон', reply: 'Жауап күтеді', anon: 'Аты жазылмаған', unreadN: 'Оқылмаған', tabP: 'Бағалар', priceList: 'Прайс-лист', shop: 'Дүкен', min: 'Бастап', max: 'Дейін', hideRow: 'Жасыру', save: 'Сақтау', saved: 'Сақталды. Сайтта бағалар ауысты.', unsaved: 'Сақталмаған өзгеріс бар', priceHint: 'Бір баға болса, екі жолға да сол санды жазыңыз. Бос қалса, «Бағасы нақтыланады» деп тұрады.', price: 'Бағасы, ₸', stock: 'Қоймада', stockU: 'Белгісіз', stockY: 'Бар', stockN: 'Жоқ', search: 'Өнімді іздеу', badNum: 'Бағаны тек санмен жазыңыз', leave: 'Сақталмаған өзгерістер жоғалады. Шыға берейік пе?' },
+  ru: { title: 'Отзывы', login: 'Войти', pass: 'Пароль', logout: 'Выйти', hide: 'Скрыть', show: 'Показать', del: 'Удалить', confirm: 'Удалить этот отзыв навсегда?', hiddenB: 'Скрыт', empty: 'Отзывов нет', all: 'Всего', visible: 'На сайте', hiddenN: 'Скрыто', avg: 'Средняя оценка', site: 'На сайт', filterAll: 'Все', filterHidden: 'Только скрытые', err: 'Ошибка. Попробуйте ещё раз.', tabR: 'Отзывы', tabS: 'Предложения', emptyS: 'Предложений нет', read: 'Прочитано', unread: 'Отметить непрочитанным', newB: 'Новое', confirmS: 'Удалить это предложение навсегда?', phone: 'Телефон', reply: 'Ждёт ответа', anon: 'Без имени', unreadN: 'Непрочитанных', tabP: 'Цены', priceList: 'Прайс-лист', shop: 'Магазин', min: 'От', max: 'До', hideRow: 'Скрыть', save: 'Сохранить', saved: 'Сохранено. Цены на сайте обновлены.', unsaved: 'Есть несохранённые изменения', priceHint: 'Если цена одна, впишите одно и то же число в оба поля. Пустое поле: на сайте будет «Цена уточняется».', price: 'Цена, ₸', stock: 'Наличие', stockU: 'Неизвестно', stockY: 'Есть', stockN: 'Нет', search: 'Поиск товара', badNum: 'Цену пишите только цифрами', leave: 'Несохранённые изменения пропадут. Выйти?' },
 };
 let lang = localStorage.getItem('pd_admin_lang') || 'kk';
 let t = L[lang];
 let items = [], sugs = [], filter = 'all', tab = 'r';
+let cat = null, content = { prices: {}, products: {} }, dirty = false, q = '';
 const app = document.getElementById('app');
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const api = (p, o = {}) => fetch(p, { ...o, headers: { 'content-type': 'application/json' }, credentials: 'same-origin' });
@@ -70,9 +86,9 @@ function loginView(msg = '') {
 function tabs() {
   const n = sugs.filter((x) => !x.read).length;
   document.title = (n ? `(${n}) ` : '') + `${t.tabR} / ${t.tabS}`;
-  return `<div class="tabs"><button data-tab="r" class="${tab === 'r' ? 'on' : ''}">${t.tabR} (${items.length})</button><button data-tab="s" class="${tab === 's' ? 'on' : ''}">${t.tabS} (${sugs.length})${n ? `<span class="new">${n}</span>` : ''}</button></div>`;
+  return `<div class="tabs"><button data-tab="r" class="${tab === 'r' ? 'on' : ''}">${t.tabR} (${items.length})</button><button data-tab="s" class="${tab === 's' ? 'on' : ''}">${t.tabS} (${sugs.length})${n ? `<span class="new">${n}</span>` : ''}</button><button data-tab="p" class="${tab === 'p' ? 'on' : ''}">${t.tabP}</button></div>`;
 }
-function bindTabs() { app.querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => { tab = b.dataset.tab; view(); }); }
+function bindTabs() { app.querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => { if (dirty && !confirm(t.leave)) return; dirty = false; tab = b.dataset.tab; view(); }); }
 
 function viewS() {
   const n = sugs.filter((x) => !x.read).length;
@@ -97,9 +113,72 @@ function viewS() {
   });
 }
 
+// Бағалар: бастапқы мән сайттың өзінен (/catalog.json), өзгерткені серверде (/api/content)
+function viewP(msg = '') {
+  if (!cat) { tab = 'r'; return view(); }
+  const nm = (o) => o[lang] || o.ru;
+  const pv = (r) => content.prices[r.id] || r;
+  const vv = (p, v) => content.products[`${p.slug}|${v.size}`] || v;
+  const prod = cat.products.filter((p) => !q || (p.name + ' ' + p.variants.map((v) => v.art).join(' ')).toLowerCase().includes(q.toLowerCase()));
+  app.innerHTML = `<header><h1>${t.tabP}</h1><div class="tools">${langSel()}<a href="/"><button type="button">${t.site}</button></a><button id="out">${t.logout}</button></div></header>${tabs()}
+    <p class="muted">${t.priceHint}</p>
+    <h2 class="sec">${t.priceList}</h2>
+    ${cat.prices.map((g) => `<h3 class="grp">${esc(nm(g.title))}</h3><div class="rows">${g.rows.map((r) => { const c = pv(r); return `<div class="row ${c.hidden ? 'off' : ''}" data-pr="${esc(r.id)}">
+      <div class="nm">${esc(nm(r.name))}</div>
+      <div class="ctl"><input type="number" min="0" step="500" inputmode="numeric" data-k="min" value="${c.min}" aria-label="${t.min}"> – <input type="number" min="0" step="500" inputmode="numeric" data-k="max" value="${c.max}" aria-label="${t.max}">
+      <label class="chk"><input type="checkbox" data-k="hidden" ${c.hidden ? 'checked' : ''}>${t.hideRow}</label></div></div>`; }).join('')}</div>`).join('')}
+    <h2 class="sec">${t.shop}</h2>
+    <input id="q" type="search" placeholder="${t.search}" value="${esc(q)}" style="width:100%;max-width:420px;margin-bottom:12px">
+    <div class="rows">${prod.map((p) => p.variants.map((v) => { const c = vv(p, v); return `<div class="row" data-pp="${esc(p.slug)}|${esc(v.size)}">
+      <div class="nm">${esc(p.name)}<small>${esc(v.size)} · арт. ${esc(v.art)}</small></div>
+      <div class="ctl"><input type="number" min="0" step="100" inputmode="numeric" data-k="price" value="${c.price ?? ''}" placeholder="${t.price}" aria-label="${t.price}">
+      <select data-k="stock" aria-label="${t.stock}"><option value="">${t.stock}: ${t.stockU}</option><option value="1" ${c.inStock === true ? 'selected' : ''}>${t.stockY}</option><option value="0" ${c.inStock === false ? 'selected' : ''}>${t.stockN}</option></select></div></div>`; }).join('')).join('')}</div>
+    <div class="bar"><button class="primary" id="save">${t.save}</button><span id="msg" class="${msg ? 'ok' : 'muted'}">${esc(msg)}</span></div>`;
+  bindLang(); bindTabs();
+  document.getElementById('out').onclick = async () => { await api('/api/admin/logout', { method: 'POST' }); loginView(); };
+  const mark = () => { dirty = true; const m = document.getElementById('msg'); m.className = 'err'; m.textContent = t.unsaved; };
+  app.querySelectorAll('.row input, .row select').forEach((el) => { el.oninput = mark; el.onchange = (e) => { mark(); if (el.dataset.k === 'hidden') el.closest('.row').classList.toggle('off', el.checked); }; });
+  // Іздегенде енгізілген мәндер жоғалмасын: алдымен жадқа жинаймыз
+  document.getElementById('q').oninput = (e) => { const c = collect(); if (!c) return; content = c; q = e.target.value; viewP(); const i = document.getElementById('q'); i.focus(); i.setSelectionRange(q.length, q.length); if (dirty) mark(); };
+  document.getElementById('save').onclick = async () => {
+    const c = collect(); if (!c) return;
+    const res = await api('/api/admin/content', { method: 'PUT', body: JSON.stringify(c) });
+    if (res.status === 401) return loginView();
+    if (!res.ok) return alert(t.err);
+    content = await res.json(); dirty = false; viewP(t.saved);
+  };
+}
+// Тек бастапқы мәннен өзгеше жолдар сақталады
+function collect() {
+  const out = { prices: { ...content.prices }, products: { ...content.products } };
+  const int = (el) => el.value.trim() === '' ? null : /^\d+$/.test(el.value.trim()) ? Number(el.value) : NaN;
+  const rows = Object.fromEntries(cat.prices.flatMap((g) => g.rows.map((r) => [r.id, r])));
+  for (const el of app.querySelectorAll('[data-pr]')) {
+    const r = rows[el.dataset.pr];
+    const min = int(el.querySelector('[data-k=min]')), max = int(el.querySelector('[data-k=max]'));
+    const hidden = el.querySelector('[data-k=hidden]').checked;
+    if (Number.isNaN(min) || Number.isNaN(max) || min === null || max === null) { alert(t.badNum); el.querySelector('input').focus(); return null; }
+    const lo = Math.min(min, max), hi = Math.max(min, max);
+    if (lo === r.min && hi === r.max && !hidden) delete out.prices[r.id]; else out.prices[r.id] = { min: lo, max: hi, ...(hidden ? { hidden: true } : {}) };
+  }
+  const vars = Object.fromEntries(cat.products.flatMap((p) => p.variants.map((v) => [`${p.slug}|${v.size}`, v])));
+  for (const el of app.querySelectorAll('[data-pp]')) {
+    const v = vars[el.dataset.pp];
+    const price = int(el.querySelector('[data-k=price]'));
+    if (Number.isNaN(price)) { alert(t.badNum); el.querySelector('input').focus(); return null; }
+    const st = el.querySelector('[data-k=stock]').value;
+    const inStock = st === '' ? null : st === '1';
+    const p = price || null;
+    if (p === v.price && inStock === v.inStock) delete out.products[el.dataset.pp]; else out.products[el.dataset.pp] = { price: p, inStock };
+  }
+  return out;
+}
+addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+
 function view() {
   document.documentElement.lang = lang;
   if (tab === 's') return viewS();
+  if (tab === 'p') return viewP();
   const vis = items.filter((r) => !r.hidden);
   const avg = vis.length ? (vis.reduce((s, r) => s + r.rating, 0) / vis.length).toFixed(1) : '–';
   const shown = filter === 'hidden' ? items.filter((r) => r.hidden) : items;
@@ -133,6 +212,12 @@ async function load(quiet) {
   if (!r.ok || !s.ok) return quiet ? null : loginView(t.err);
   items = (await r.json()).reviews;
   sugs = (await s.json()).suggestions;
+  if (!cat) {
+    const [c, k] = await Promise.all([fetch('/catalog.json'), fetch('/api/content')]);
+    if (c.ok && k.ok) { cat = await c.json(); content = await k.json(); }
+  }
+  if (quiet && tab === 'p') return; // бағаларды енгізіп жатқанда бетті қайта салмаймыз
+  if (!cat && tab === 'p') tab = 'r';
   view();
   clearInterval(timer);
   timer = setInterval(() => { if (!document.querySelector('form.login')) load(true); }, 60000); // әр минут сайын жаңалау
