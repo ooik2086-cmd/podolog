@@ -131,6 +131,17 @@ const clientT = {"cart":"Корзина","cartN":"Корзина: {n} шт.","ad
         window.dispatchEvent(new Event('themechange'));
       });
     })();
+  </script> <script>
+    document.addEventListener('play', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO' || v.muted) return;
+      document.querySelectorAll('video').forEach(function (o) { if (o !== v && !o.paused && !o.muted) o.pause(); });
+    }, true);
+    document.addEventListener('volumechange', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO' || v.muted || v.paused) return;
+      document.querySelectorAll('video').forEach(function (o) { if (o !== v && !o.paused && !o.muted) o.pause(); });
+    }, true);
   </script> </body> </html>  <script>(function(){const CT = {"phone":"77059525231","head":"Здравствуйте! Предложение для центра «Подолог»:","topicL":"Тема","nameL":"Имя","reply":"Жду ответа","err":"Напишите ваше предложение (не менее 5 символов).","thanks":"Спасибо! Ваши предложения помогают нам становиться лучше."};
 
   const f = document.querySelector('[data-fb]');
