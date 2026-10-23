@@ -119,14 +119,12 @@ ufw allow OpenSSH >/dev/null; ufw allow 'Nginx Full' >/dev/null; ufw --force ena
 
 echo "==> 6/6 HTTPS"
 IP=$(curl -fsS -4 https://api.ipify.org || true)
-DNSIP=$(getent ahostsv4 $DOMAIN | awk 'NR==1{print $1}' || true)
-if [ -n "$IP" ] && [ "$IP" = "$DNSIP" ]; then
-  certbot --nginx -n --agree-tos --register-unsafely-without-email --redirect -d $DOMAIN -d www.$DOMAIN || \
-  certbot --nginx -n --agree-tos --register-unsafely-without-email --redirect -d $DOMAIN || true
-else
-  echo "Домен әлі бұл серверге бағытталмаған (домен: ${DNSIP:-жоқ}, сервер: ${IP:-?})."
-  echo "DNS-ті ауыстырғаннан кейін осы команданы қайта іске қосыңыз, HTTPS сонда қосылады."
-fi
+# Серверде DNS ескі жазбаны кэште ұстауы мүмкін, сондықтан certbot-ты әрқашан байқап көреміз
+certbot --nginx -n --agree-tos --register-unsafely-without-email --redirect -d $DOMAIN -d www.$DOMAIN || \
+certbot --nginx -n --agree-tos --register-unsafely-without-email --redirect -d $DOMAIN || {
+  echo "HTTPS әзірге қосылмады: домен бұл серверге (${IP:-?}) әлі бағытталмаған болуы мүмкін."
+  echo "DNS-ті ауыстырғаннан кейін 30 минут күтіп, осы команданы қайта іске қосыңыз."
+}
 
 sleep 1
 if curl -fsS -o /dev/null http://127.0.0.1:8080/; then echo; echo "ДАЙЫН. Сайт жұмыс істеп тұр. Сервер IP: ${IP:-белгісіз}"
