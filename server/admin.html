@@ -96,6 +96,11 @@
   h2.sec { font-size: 1.1rem; color: var(--navy); margin: 26px 0 10px; }
   h2.sec:first-child { margin-top: 0; }
   .help { margin: -8px 0 16px; padding: 10px 14px; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--green); border-radius: 10px; color: var(--muted); font-size: .9rem; }
+  .live { display: grid; gap: 10px; }
+  .live .bar2 { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .live .bar2 select { width: auto; min-width: 200px; }
+  .live iframe { width: 100%; height: calc(100vh - 210px); min-height: 70vh; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+  @media (max-width: 900px) { .live iframe { height: calc(100vh - 230px); } }
   .empty { text-align: center; padding: 40px 16px; color: var(--muted); }
 
   /* Медиа торы */
@@ -151,6 +156,7 @@
 const L = {
   kk: {
     admin: 'Әкімші бөлімі', back: 'Артқа',
+    nLive: 'Сайтты көріп өзгерту', lvPage: 'Бет', lvLang: 'Сайт тілі', lvHint: 'Сайт дәл қазіргідей көрінеді. Жасыл сызықпен белгіленген мәтінді басыңыз, сол жерде өзгертіп сақтайсыз. Сілтемелерді басып, басқа беттерге де өте аласыз.', lvEdit: 'Мәтінді өзгерту', lvOther: 'Бұл мәтін сайттың басқа беттерінде де өзгереді.', lvPhoto: 'Фото мен видео «Фотолар», «Видеолар» бөлімдерінде өзгертіледі.',
     nServices: 'Қызметтер', nProducts: 'Тауарлар', fTitle: 'Атауы', fShort: 'Қысқаша (карточкада)', fAbout: 'Сипаттама, {n}-абзац', fStep: 'Қабылдау қадамы {n}', fUse: 'Қолдану тәсілі', fIngr: 'Құрамы', fName: 'Тауар атауы', fDesc: 'Сипаттама',
     svHint: 'Қызметтер бетіндегі карточкалар мен әр қызметтің жеке беті. Басып, мәтінін, суретін өзгертіңіз немесе уақытша жасырыңыз. Бағасы «Бағалар» бөлімінде.',
     prHint: 'Дүкендегі PodiaFarm тауарлары. Басып, атын, сипаттамасын, суретін өзгертіңіз немесе жасырыңыз. Бағасы мен қоймадағы бары «Бағалар» бөлімінде.',
@@ -188,6 +194,7 @@ const L = {
   },
   ru: {
     admin: 'Админ-панель', back: 'Назад',
+    nLive: 'Редактировать на сайте', lvPage: 'Страница', lvLang: 'Язык сайта', lvHint: 'Сайт выглядит как сейчас. Нажмите на текст, обведённый зелёной линией, и измените его прямо здесь. По ссылкам можно переходить на другие страницы.', lvEdit: 'Изменить текст', lvOther: 'Этот текст изменится и на других страницах сайта.', lvPhoto: 'Фото и видео меняются в разделах «Фото» и «Видео».',
     nServices: 'Услуги', nProducts: 'Товары', fTitle: 'Название', fShort: 'Кратко (в карточке)', fAbout: 'Описание, абзац {n}', fStep: 'Шаг приёма {n}', fUse: 'Способ применения', fIngr: 'Состав', fName: 'Название товара', fDesc: 'Описание',
     svHint: 'Карточки на странице «Услуги» и отдельная страница каждой услуги. Нажмите, чтобы изменить текст, фото или временно скрыть. Цена — в разделе «Цены».',
     prHint: 'Товары PodiaFarm в магазине. Нажмите, чтобы изменить название, описание, фото или скрыть. Цена и наличие — в разделе «Цены».',
@@ -260,6 +267,7 @@ const I = {
   text: '<path d="M4 6h16M4 12h16M4 18h10"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
   menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
   list: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
 };
 const ic = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
@@ -268,7 +276,7 @@ const ic = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const D = { reviews: [], sugs: [], orders: [], cms: {}, texts: {}, defs: null, catalog: null, content: { prices: {}, products: {} }, build: {}, canBuild: false };
 let view = (location.hash || '#home').slice(1);
 let dirty = false;
-const VIEWS = ['home', 'reviews', 'sugs', 'orders', 'photos', 'certs', 'videos', 'services', 'products', 'prices', 'contacts', 'texts', 'settings'];
+const VIEWS = ['home', 'live', 'reviews', 'sugs', 'orders', 'photos', 'certs', 'videos', 'services', 'products', 'prices', 'contacts', 'texts', 'settings'];
 if (!VIEWS.includes(view)) view = 'home';
 
 async function loadAll() {
@@ -326,7 +334,7 @@ function shell() {
   root.innerHTML = `<div class="app">
     <aside class="side">
       <div class="brand"><i>П</i><div>Подолог<small>${t.admin}</small></div></div>
-      ${n('home', 'home', t.nHome)}
+      ${n('home', 'home', t.nHome)}${n('live', 'edit', t.nLive)}
       <div class="sep"></div>
       ${n('reviews', 'star', t.nReviews)}${n('sugs', 'msg', t.nSugs, c.sugs)}${n('orders', 'bag', t.nOrders, c.orders)}
       <div class="sep"></div>
@@ -372,19 +380,21 @@ function askLeave(next) {
     };
   });
 }
+let skipPop = false;
 addEventListener('popstate', () => {
+  if (skipPop) { skipPop = false; return; }
   const m = $('.modal'); if (m) { m.remove(); document.documentElement.style.overflow = ''; return; }
   const v = (location.hash || '#home').slice(1);
   if ($('.app') && VIEWS.includes(v)) go(v, false);
 });
 const V = {};
 function render() {
-  const titles = { home: t.nHome, reviews: t.nReviews, sugs: t.nSugs, orders: t.nOrders, photos: t.nPhotos, certs: t.nCerts, videos: t.nVideos, services: t.nServices, products: t.nProducts, prices: t.nPrices, contacts: t.nContacts, texts: t.nTexts, settings: t.nSettings };
+  const titles = { home: t.nHome, live: t.nLive, reviews: t.nReviews, sugs: t.nSugs, orders: t.nOrders, photos: t.nPhotos, certs: t.nCerts, videos: t.nVideos, services: t.nServices, products: t.nProducts, prices: t.nPrices, contacts: t.nContacts, texts: t.nTexts, settings: t.nSettings };
   $('#h1').textContent = titles[view];
   // Әр бөлім таза контейнерде ашылады: алдыңғы бөлімнің тыңдаушылары қалмайды
   const old = $('#v'); const el = old.cloneNode(false); old.replaceWith(el);
   V[view](el);
-  const h = view === 'services' ? t.svHint : view === 'products' ? t.prHint : t.help[view];
+  const h = view === 'live' ? '' : view === 'services' ? t.svHint : view === 'products' ? t.prHint : t.help[view];
   if (h) el.insertAdjacentHTML('afterbegin', `<p class="help">${esc(h)}</p>`);
 }
 function refreshNav() { const c = counts(); $$('.nav').forEach((b) => { const k = b.dataset.v; const cnt = k === 'sugs' ? c.sugs : k === 'orders' ? c.orders : 0; let s = $('.cnt', b); if (cnt) { if (!s) { s = document.createElement('span'); s.className = 'cnt'; b.append(s); } s.textContent = cnt; } else s?.remove(); }); }
@@ -467,7 +477,7 @@ function modal(html, bind) {
   const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="dlg" role="dialog" aria-modal="true">${html}</div>`;
   document.body.append(m); document.documentElement.style.overflow = 'hidden';
   history.pushState({ v: view, m: 1 }, '', `#${view}`);
-  const close = () => { if (!m.isConnected) return; m.remove(); document.documentElement.style.overflow = ''; if (history.state?.m) history.back(); };
+  const close = () => { if (!m.isConnected) return; m.remove(); document.documentElement.style.overflow = ''; if (history.state?.m) { skipPop = true; history.back(); } };
   m.addEventListener('click', (e) => { if (e.target === m) close(); });
   m.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
   bind($('.dlg', m), close);
@@ -490,6 +500,7 @@ V.home = (el) => {
   </div>
   <h2 class="sec">${t.quick}</h2>
   <div class="tiles">
+    <button class="tile" data-go="live">${ic('edit').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.nLive}</b></span></button>
     <button class="tile" data-go="photos">${ic('img').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qPhoto}</b></span></button>
     <button class="tile" data-go="prices">${ic('tag').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qPrice}</b></span></button>
     <button class="tile" data-go="contacts">${ic('phone').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qContacts}</b></span></button>
@@ -730,6 +741,87 @@ function editCert(id, done) {
     });
   });
 }
+
+// ---------- Сайтты көріп өзгерту ----------
+// Сайт iframe ішінде ашылады. Беттегі мәтін әкімші тізіміндегі мәтінмен (D.texts) сәйкес келсе, оны басып өзгертуге болады.
+const LIVE_PAGES = ['/', '/about', '/services', '/insoles', '/prices', '/shop', '/courses', '/clinics', '/certificates', '/gallery', '/reviews', '/feedback', '/contacts', '/booking', '/mission', '/privacy', '/cart'];
+const routeKey = { '/': 'index', '/cart': 'cart' };
+let livePath = '/', liveLang = 'ru';
+const sitePath = (l, p) => l === 'ru' ? p : p === '/' ? `/${l}` : `/${l}${p}`;
+// Мәтін → (бет, жол) тізімі. Беттің өз мәтіндері бірінші, сосын жалпы мәтіндер.
+function textIndex(l, path) {
+  const ov = D.cms.texts || {}; const idx = new Map();
+  const seg = path.split('/').filter(Boolean);
+  const own = seg.length === 2 ? [seg[0] === 'services' ? `svc:${seg[1]}` : `prd:${seg[1]}`, seg[0] === 'services' ? 'services-item' : 'shop-item'] : [routeKey[path] || seg[0]];
+  const order = [...own, 'common', 'c-Reviews', ...Object.keys(D.texts)];
+  for (const page of [...new Set(order)]) {
+    const rows = D.texts[page]; if (!rows) continue;
+    for (const [k, d] of Object.entries(rows)) {
+      const cur = (ov[page]?.[k]?.[l]) || d[l]; if (!cur || cur.length < 2) continue;
+      const key = cur.replace(/\s+/g, ' ').trim();
+      if (!idx.has(key)) idx.set(key, { page, k });
+    }
+  }
+  return idx;
+}
+function liveMark(fr) {
+  const doc = fr.contentDocument; if (!doc?.body) return;
+  const p = decodeURIComponent(new URL(fr.contentWindow.location.href).pathname).replace(/\.html$/, '').replace(/\/index$/, '') || '/';
+  const m = p.match(/^\/(kk|en)(\/.*)?$/); const l = m ? m[1] : 'ru'; const path = m ? (m[2] || '/') : p;
+  liveLang = l; livePath = path; const ls = $('#lvl'); if (ls) ls.value = l; const ps = $('#lvp'); if (ps && LIVE_PAGES.includes(path)) ps.value = path;
+  const idx = textIndex(l, path);
+  const st = doc.createElement('style');
+  st.textContent = '[data-pd-edit]{outline:2px dashed rgb(37 132 119 / .55);outline-offset:2px;cursor:text!important;border-radius:3px}[data-pd-edit]:hover{outline:2px solid #258477;background:rgb(234 245 241 / .6)}';
+  doc.head.append(st);
+  const els = doc.body.querySelectorAll('h1,h2,h3,h4,h5,p,li,a,span,b,strong,em,small,button,label,dt,dd,td,th,figcaption,blockquote,summary,div');
+  for (const e of els) {
+    if (e.closest('[data-pd-edit]') || e.closest('script,style,svg,noscript,.sr') || e.querySelector('.sr')) continue; // .sr: тек экран оқитын бағдарламаға арналған жазу
+    const txt = e.textContent.replace(/\s+/g, ' ').trim(); if (!txt) continue;
+    const hit = idx.get(txt); if (!hit) continue;
+    // Ішінде басқа белгіленетін мәтін бар үлкен блоктарды өткізіп жібереміз
+    if (e.tagName === 'DIV' && e.children.length > 1) continue;
+    e.setAttribute('data-pd-edit', `${hit.page}|${hit.k}`);
+  }
+  doc.addEventListener('click', (ev) => {
+    const e = ev.target.closest('[data-pd-edit]'); if (!e) return;
+    ev.preventDefault(); ev.stopPropagation();
+    const [page, k] = e.getAttribute('data-pd-edit').split('|');
+    liveEdit(page, k, l, (val) => { doc.querySelectorAll(`[data-pd-edit="${page}|${k}"]`).forEach((x) => { const svg = x.querySelector('svg'); x.textContent = val; if (svg) x.prepend(svg, ' '); }); });
+  }, true);
+}
+function liveEdit(page, k, l, applied) {
+  const d = D.texts[page][k]; const ov = clone(D.cms.texts || {}); const cur = { ...d, ...(ov[page]?.[k] || {}) };
+  const where = t.pages[page] || (page.startsWith('svc:') ? t.nServices : page.startsWith('prd:') ? t.nProducts : page);
+  const long = Math.max(...['kk', 'ru', 'en'].map((x) => (cur[x] || '').length)) > 60;
+  modal(`<h3>${t.lvEdit}</h3><p class="muted small" style="margin:0">${esc(where)}${page === 'common' || page === 'c-Reviews' ? ` · ${t.lvOther}` : ''}</p>
+    <div class="grid3">${['kk', 'ru', 'en'].map((x) => `<label class="f"><span class="lg">${x === 'kk' ? 'ҚАЗ' : x === 'ru' ? 'РУС' : 'ENG'}</span><textarea data-l="${x}" rows="${long ? 5 : 2}">${esc(cur[x] || '')}</textarea></label>`).join('')}</div>
+    <div class="row">${ov[page]?.[k] ? `<button class="btn sm" data-a="reset">↺ ${t.tReset}</button>` : ''}<span class="sp"></span><button class="btn" data-a="close">${t.cancel}</button><button class="btn primary" data-a="save">${t.save}</button></div>`, (dlg, close) => {
+    setTimeout(() => $(`textarea[data-l="${l}"]`, dlg)?.focus(), 30);
+    const store = async (vals) => {
+      const v = {}; for (const x of ['kk', 'ru', 'en']) if (vals[x] !== undefined && vals[x] !== (d[x] || '')) v[x] = vals[x];
+      ov[page] = { ...(ov[page] || {}) }; if (Object.keys(v).length) ov[page][k] = v; else delete ov[page][k];
+      if (!Object.keys(ov[page]).length) delete ov[page];
+      if (await saveCms('texts', ov)) { close(); applied(vals[l] || d[l] || ''); }
+    };
+    $('[data-a=close]', dlg).onclick = close;
+    $('[data-a=save]', dlg).onclick = () => { const vals = {}; $$('textarea', dlg).forEach((ta) => { vals[ta.dataset.l] = ta.value; }); store(vals); };
+    $('[data-a=reset]', dlg)?.addEventListener('click', () => store({ ...d }));
+  });
+}
+V.live = (el) => {
+  if (!Object.keys(D.texts).length) { el.innerHTML = `<div class="empty">${t.tNone}</div>`; return; }
+  el.innerHTML = `<div class="live"><p class="help" style="margin:0">${t.lvHint} ${t.lvPhoto}</p>
+    <div class="bar2"><select id="lvp" aria-label="${t.lvPage}">${LIVE_PAGES.map((p) => `<option value="${p}" ${p === livePath ? 'selected' : ''}>${esc(t.pages[routeKey[p] || p.slice(1)] || p)}</option>`).join('')}</select>
+    <select id="lvl" aria-label="${t.lvLang}"><option value="kk">Қазақша</option><option value="ru">Русский</option><option value="en">English</option></select>
+    <a class="btn sm" id="lvopen" target="_blank" rel="noopener">${t.site} ↗</a></div>
+    <iframe id="lvf" title="${t.nLive}"></iframe></div>`;
+  const fr = $('#lvf', el); const load = () => { const u = sitePath(liveLang, livePath); fr.src = u; $('#lvopen', el).href = u; };
+  $('#lvl', el).value = liveLang;
+  fr.addEventListener('load', () => { try { liveMark(fr); $('#lvopen', el).href = fr.contentWindow.location.pathname; } catch {} });
+  $('#lvp', el).onchange = (e) => { livePath = e.target.value; load(); };
+  $('#lvl', el).onchange = (e) => { liveLang = e.target.value; load(); };
+  load();
+};
 
 // ---------- Қызметтер мен тауарлар ----------
 // Мәтіндері cms.texts['svc:<slug>'] / ['prd:<slug>'] ішінде, суреті мен жасыру cms.services / cms.products ішінде
