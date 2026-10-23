@@ -201,6 +201,7 @@ const jput = async (p, v, m = 'PUT') => { const r = await api(p, { method: m, bo
 const fmtD = (d) => new Date(d).toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU', { dateStyle: 'medium', timeStyle: 'short' });
 const money = (n) => `${Number(n).toLocaleString('ru-RU').replace(/\s/g, ' ')} ₸`;
 const L3 = (v) => ({ kk: v?.kk || '', ru: v?.ru || '', en: v?.en || '' });
+const catN = (kind, c) => { if (lang === 'kk') return c; const list = kind === 'g' ? D.defs.galleryCategories : D.defs.certCategories; const i = list.indexOf(c); return (i >= 0 && D.defs.catNames?.[kind === 'g' ? 'gallery' : 'cert']?.ru?.[i]) || c; };
 const pick = (v) => (v && (v[lang] || v.ru || v.kk)) || '';
 let tt;
 const toast = (m) => { let el = $('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; document.body.append(el); } el.textContent = m; el.hidden = false; clearTimeout(tt); tt = setTimeout(() => { el.hidden = true; }, 2600); };
@@ -500,8 +501,8 @@ V.photos = (el) => {
   const photos = all.filter((g) => !g.video);
   const cats = D.defs.galleryCategories;
   const shown = photos.filter((g) => gCat === 'all' || g.category === gCat);
-  el.innerHTML = `<div class="chips"><button class="chip ${gCat === 'all' ? 'on' : ''}" data-c="all">${t.all} (${photos.length})</button>${cats.map((c) => { const n = photos.filter((g) => g.category === c).length; return `<button class="chip ${gCat === c ? 'on' : ''}" data-c="${esc(c)}">${esc(c)} (${n})</button>`; }).join('')}</div>
-    <div class="media"><button class="add" id="addp">${t.mAdd}</button>${shown.map((g) => `<button class="mi ${g.hidden ? 'dim' : ''}" data-id="${esc(g.id)}"><div class="ph" style="background-image:url('${esc(g.image)}')"></div>${g.hidden ? `<span class="badge tag warn">${t.mHiddenB}</span>` : ''}<div class="cap"><b>${esc(pick(g.caption) || t.mNoCap)}</b><span class="muted">${esc(g.category)}</span></div></button>`).join('')}</div>
+  el.innerHTML = `<div class="chips"><button class="chip ${gCat === 'all' ? 'on' : ''}" data-c="all">${t.all} (${photos.length})</button>${cats.map((c) => { const n = photos.filter((g) => g.category === c).length; return `<button class="chip ${gCat === c ? 'on' : ''}" data-c="${esc(c)}">${esc(catN('g', c))} (${n})</button>`; }).join('')}</div>
+    <div class="media"><button class="add" id="addp">${t.mAdd}</button>${shown.map((g) => `<button class="mi ${g.hidden ? 'dim' : ''}" data-id="${esc(g.id)}"><div class="ph" style="background-image:url('${esc(g.image)}')"></div>${g.hidden ? `<span class="badge tag warn">${t.mHiddenB}</span>` : ''}<div class="cap"><b>${esc(pick(g.caption) || t.mNoCap)}</b><span class="muted">${esc(catN('g', g.category))}</span></div></button>`).join('')}</div>
     ${D.cms.gallery ? `<div class="bar"><span class="sp"></span><button class="btn sm" id="resetg">${t.mReset}</button></div>` : ''}`;
   $$('[data-c]', el).forEach((b) => b.onclick = () => { gCat = b.dataset.c; V.photos(el); });
   $$('.mi', el).forEach((b) => b.onclick = () => editMedia(b.dataset.id, () => V.photos(el)));
@@ -528,7 +529,7 @@ function editMedia(id, done) {
     <div class="prog" hidden><i></i></div>
     ${l3Fields('cap', t.mCap, g.caption)}
     ${isV ? '' : l3Fields('sub', t.mSub, g.sub, true, false)}
-    <label class="f">${t.mCat}<select id="cat">${cats.map((c) => `<option ${c === g.category ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></label>
+    <label class="f">${t.mCat}<select id="cat">${cats.map((c) => `<option value="${esc(c)}" ${c === g.category ? 'selected' : ''}>${esc(catN('g', c))}</option>`).join('')}</select></label>
     <div class="row"><button class="btn sm" data-a="replace">${isV ? t.mReplaceV : t.mReplace}</button>${isV ? `<button class="btn sm" data-a="poster">${t.mPoster}</button>` : ''}<button class="btn sm" data-a="up">↑ ${t.up}</button><button class="btn sm" data-a="down">↓ ${t.down}</button><button class="btn sm" data-a="hide">${g.hidden ? t.show : t.hide}</button><span class="sp"></span><button class="btn sm danger" data-a="del">${t.del}</button></div>
     <div class="row end"><button class="btn" data-a="close">${t.cancel}</button><button class="btn primary" data-a="save">${t.save}</button></div>`, (dlg, close) => {
     const prog = $('.prog', dlg);
@@ -564,7 +565,7 @@ V.videos = (el) => {
     ${!g.single || !g.items.length ? `<button class="add" data-addv="${g.id}">${t.mAddV}</button>` : ''}</div>
     ${!g.items.filter((x) => !x.hidden).length ? `<p class="muted small">${t.vEmpty}</p>` : ''}`).join('') +
     `<h2 class="sec">${esc(t.nPhotos)} → ${lang === 'kk' ? 'Галерея беті' : 'Страница галереи'}</h2>
-    <div class="media">${galV.map((g) => `<button class="mi ${g.hidden ? 'dim' : ''}" data-gid="${esc(g.id)}"><div class="ph" style="background-image:url('${esc(g.image)}')"><span class="play">▶</span></div><div class="cap"><b>${esc(pick(g.caption) || t.mNoCap)}</b><span class="muted">${esc(g.category)}</span></div></button>`).join('')}<button class="add" id="addgv">${t.mAddV}</button></div>`;
+    <div class="media">${galV.map((g) => `<button class="mi ${g.hidden ? 'dim' : ''}" data-gid="${esc(g.id)}"><div class="ph" style="background-image:url('${esc(g.image)}')"><span class="play">▶</span></div><div class="cap"><b>${esc(pick(g.caption) || t.mNoCap)}</b><span class="muted">${esc(catN('g', g.category))}</span></div></button>`).join('')}<button class="add" id="addgv">${t.mAddV}</button></div>`;
   $$('[data-g] .mi', el).forEach((b) => b.onclick = () => editVideo(b.closest('[data-g]').dataset.g, Number(b.dataset.k), () => V.videos(el)));
   $$('[data-gid]', el).forEach((b) => b.onclick = () => editMedia(b.dataset.gid, () => V.videos(el)));
   const addTo = async (b, save) => {
@@ -617,7 +618,7 @@ const certs = () => clone(D.cms.certificates ?? D.defs.certificates);
 V.certs = (el) => {
   const all = certs(); const cats = D.defs.certCategories;
   const shown = all.filter((c) => cCat === 'all' || c.category === cCat);
-  el.innerHTML = `<div class="chips"><button class="chip ${cCat === 'all' ? 'on' : ''}" data-c="all">${t.all} (${all.length})</button>${cats.map((c) => `<button class="chip ${cCat === c ? 'on' : ''}" data-c="${esc(c)}">${esc(c)} (${all.filter((x) => x.category === c).length})</button>`).join('')}</div>
+  el.innerHTML = `<div class="chips"><button class="chip ${cCat === 'all' ? 'on' : ''}" data-c="all">${t.all} (${all.length})</button>${cats.map((c) => `<button class="chip ${cCat === c ? 'on' : ''}" data-c="${esc(c)}">${esc(catN('c', c))} (${all.filter((x) => x.category === c).length})</button>`).join('')}</div>
     <div class="media"><button class="add" id="addc">${t.cAdd}</button>${shown.map((c) => `<button class="mi ${c.hidden ? 'dim' : ''}" data-id="${esc(c.id)}"><div class="ph" style="background-image:url('${esc(c.thumb)}');background-size:contain;background-color:#fff"></div>${c.hidden ? `<span class="badge tag warn">${t.mHiddenB}</span>` : ''}<div class="cap"><b>${esc(pick(c.title))}</b><span class="muted">${esc(c.note || '')}${c.year ? ` · ${c.year}` : ''}</span></div></button>`).join('')}</div>
     ${D.cms.certificates ? `<div class="bar"><span class="sp"></span><button class="btn sm" id="resetc">${t.mReset}</button></div>` : ''}`;
   $$('[data-c]', el).forEach((b) => b.onclick = () => { cCat = b.dataset.c; V.certs(el); });
@@ -639,7 +640,7 @@ function editCert(id, done) {
   modal(`<h3>${esc(pick(c.title) || t.mNoCap)}</h3>
     <div class="pv" style="background:#fff"><img src="${esc(c.thumb)}" alt=""></div>
     ${l3Fields('title', t.cTitle, c.title, true)}
-    <div class="grid2"><label class="f">${t.mCat}<select id="cat">${D.defs.certCategories.map((x) => `<option ${x === c.category ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></label>
+    <div class="grid2"><label class="f">${t.mCat}<select id="cat">${D.defs.certCategories.map((x) => `<option value="${esc(x)}" ${x === c.category ? 'selected' : ''}>${esc(catN('c', x))}</option>`).join('')}</select></label>
     <label class="f">${t.cNote}<input id="note" value="${esc(c.note || '')}"></label>
     <label class="f">${t.cYear}<input id="year" type="number" min="1990" max="2100" value="${c.year ?? ''}"></label></div>
     <div class="row"><button class="btn sm" data-a="replace">${t.mReplace}</button><button class="btn sm" data-a="up">↑ ${t.up}</button><button class="btn sm" data-a="down">↓ ${t.down}</button><button class="btn sm" data-a="hide">${c.hidden ? t.show : t.hide}</button><span class="sp"></span><button class="btn sm danger" data-a="del">${t.del}</button></div>
@@ -665,7 +666,7 @@ V.prices = (el, msg = '') => {
   const cat = D.catalog, content = D.content;
   const pv = (r) => content.prices[r.id] || r;
   const vv = (p, v) => content.products[`${p.slug}|${v.size}`] || v;
-  const prod = cat.products.filter((p) => !q || (p.name + ' ' + p.variants.map((v) => v.art).join(' ')).toLowerCase().includes(q.toLowerCase()));
+  const prod = cat.products.filter((p) => !q || (pick(p.name) + ' ' + p.name.ru + ' ' + p.variants.map((v) => v.art).join(' ')).toLowerCase().includes(q.toLowerCase()));
   el.innerHTML = `<p class="muted">${t.pHint}</p>
     <h2 class="sec">${t.pList}</h2>
     ${cat.prices.map((g) => `<h3 style="color:var(--green);font-size:1rem;margin:16px 0 6px">${esc(pick(g.title))}</h3><div class="rows">${g.rows.map((r) => { const c = pv(r); return `<div class="pr ${c.hidden ? 'off' : ''}" data-pr="${esc(r.id)}">
@@ -675,7 +676,7 @@ V.prices = (el, msg = '') => {
     <h2 class="sec">${t.pShop}</h2>
     <input id="q" type="search" placeholder="${t.search}" value="${esc(q)}" style="max-width:420px;margin-bottom:12px">
     <div class="rows">${prod.map((p) => p.variants.map((v) => { const c = vv(p, v); return `<div class="pr" data-pp="${esc(p.slug)}|${esc(v.size)}">
-      <div>${esc(p.name)}<small>${esc(v.size)} · арт. ${esc(v.art)}</small></div>
+      <div>${esc(pick(p.name))}<small>${esc(v.size)} · арт. ${esc(v.art)}</small></div>
       <div class="ctl"><input type="number" min="0" step="100" inputmode="numeric" data-k="price" value="${c.price ?? ''}" placeholder="${t.pPrice}" aria-label="${t.pPrice}">
       <select data-k="stock" aria-label="${t.pStock}"><option value="">${t.pStock}: ${t.pU}</option><option value="1" ${c.inStock === true ? 'selected' : ''}>${t.pY}</option><option value="0" ${c.inStock === false ? 'selected' : ''}>${t.pN}</option></select></div></div>`; }).join('')).join('')}</div>
     <div class="bar"><button class="btn primary" id="save">${t.save}</button><span id="msg" class="${msg ? '' : 'muted'}" style="${msg ? 'color:var(--green);font-weight:600' : ''}">${esc(msg)}</span></div>`;
