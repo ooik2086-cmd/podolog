@@ -28,7 +28,7 @@ id podolog >/dev/null 2>&1 || useradd --system --home "$APP" --shell /usr/sbin/n
 if [ -d "$APP/.git" ]; then git -C "$APP" fetch -q origin server && git -C "$APP" reset -q --hard origin/server
 else rm -rf "$APP"; git clone -q --depth 1 -b server "$REPO" "$APP"; fi
 mkdir -p "$DATA"; chown -R podolog:podolog "$DATA" "$APP"
-git config --global --add safe.directory "$APP" 2>/dev/null || true
+git config --system --get-all safe.directory 2>/dev/null | grep -qx "$APP" || git config --system --add safe.directory "$APP"
 # Әкімші бөлімінен өзгерткенде сайт серверде қайта жиналады, оған Astro керек
 echo "   (сайт жинағышын орнатып жатыр, 1–3 минут)"
 runuser -u podolog -- env npm_config_cache="$DATA/npm-cache" npm ci --omit=dev --no-audit --no-fund --loglevel=error --prefix "$APP" >/dev/null
@@ -76,6 +76,7 @@ UNIT
 # Жаңарту: GitHub-та өзгеріс болса, тартып алып, сервисті қайта қосады
 cat > /usr/local/bin/podolog-update <<UPD
 #!/bin/sh
+export HOME=/root
 cd $APP || exit 1
 git fetch -q origin server || exit 0
 [ "\$(git rev-parse HEAD)" = "\$(git rev-parse origin/server)" ] && exit 0
