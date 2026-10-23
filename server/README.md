@@ -9,7 +9,7 @@ npm ci && npm run build          # dist/ жасалады
 ADMIN_PASSWORD='ұзын-құпия-сөз' TRUST_PROXY=1 COOKIE_SECURE=1 node server/server.mjs
 ```
 
-Пікірлер `server/data/reviews.json` файлында сақталады. Бұл файлды күнде сақтық көшірмеге алу керек.
+Пікірлер `server/data/reviews.json`, ұсыныстар `server/data/suggestions.json` файлында сақталады. Бұл файлды күнде сақтық көшірмеге алу керек.
 
 ### systemd (`/etc/systemd/system/podolog.service`)
 
@@ -34,8 +34,10 @@ WantedBy=multi-user.target
 
 ```
 ADMIN_PASSWORD=...
-TG_BOT_TOKEN=...   # міндетті емес: жаңа пікір туралы Telegram хабарламасы
+TG_BOT_TOKEN=...   # міндетті емес: жаңа пікір/ұсыныс туралы Telegram хабарламасы
 TG_CHAT_ID=...
+WA_PHONE=+77059525231  # міндетті емес: жаңа пікір/ұсыныс туралы WhatsApp хабарламасы (CallMeBot)
+WA_APIKEY=...
 ```
 
 ### nginx

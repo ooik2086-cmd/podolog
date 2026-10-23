@@ -7,7 +7,8 @@
 //   ADMIN_PASSWORD=...     /admin бетіне кіру құпия сөзі (міндетті)
 //   DATA_DIR=./data        reviews.json сақталатын қалта
 //   TRUST_PROXY=1          nginx X-Forwarded-For жіберсе, клиент IP-ін одан алу
-//   TG_BOT_TOKEN, TG_CHAT_ID  жаңа пікір туралы Telegram хабарламасы (міндетті емес)
+//   TG_BOT_TOKEN, TG_CHAT_ID  жаңа пікір/ұсыныс туралы Telegram хабарламасы (міндетті емес)
+//   WA_PHONE, WA_APIKEY       жаңа пікір/ұсыныс туралы WhatsApp хабарламасы, CallMeBot арқылы (міндетті емес)
 import { createServer } from 'node:http';
 import { readFile, writeFile, rename, mkdir, stat } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
@@ -21,6 +22,7 @@ const HOST = process.env.HOST || '127.0.0.1';
 const DIST = normalize(process.env.DIST_DIR || join(here, '..', 'dist'));
 const DATA = process.env.DATA_DIR || join(here, 'data');
 const FILE = join(DATA, 'reviews.json');
+const SFILE = join(DATA, 'suggestions.json');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 const TRUST_PROXY = process.env.TRUST_PROXY === '1';
 if (!ADMIN_PASSWORD || ADMIN_PASSWORD.length < 10) console.warn('[warn] ADMIN_PASSWORD орнатылмаған немесе 10 таңбадан қысқа: /admin жабық тұрады');
@@ -29,12 +31,16 @@ if (!ADMIN_PASSWORD || ADMIN_PASSWORD.length < 10) console.warn('[warn] ADMIN_PA
 let reviews = [];
 await mkdir(DATA, { recursive: true });
 if (existsSync(FILE)) reviews = JSON.parse(readFileSync(FILE, 'utf8'));
+let suggestions = [];
+if (existsSync(SFILE)) suggestions = JSON.parse(readFileSync(SFILE, 'utf8'));
 let saving = Promise.resolve();
-const save = () => (saving = saving.then(async () => {
-  const tmp = `${FILE}.${process.pid}.tmp`;
-  await writeFile(tmp, JSON.stringify(reviews, null, 1));
-  await rename(tmp, FILE);
+const write = (file, data) => (saving = saving.then(async () => {
+  const tmp = `${file}.${process.pid}.tmp`;
+  await writeFile(tmp, JSON.stringify(data, null, 1));
+  await rename(tmp, file);
 }));
+const save = () => write(FILE, reviews);
+const saveS = () => write(SFILE, suggestions);
 const pub = (r) => ({ id: r.id, name: r.name, rating: r.rating, text: r.text, createdAt: r.createdAt });
 
 // ---------- Тексеру ----------
@@ -53,6 +59,20 @@ function validate(b) {
   if (BAD.test(name) || BAD.test(text) || PHONE.test(text)) return { error: 'link' };
   if (b.consent !== true) return { error: 'consent' };
   return { name, text, rating };
+}
+
+// Ұсыныс жарияланбайды, сондықтан телефон жазуға болады (жауап күтсе)
+function validateS(b) {
+  const topic = clean(b.topic).replace(/\s+/g, ' ').slice(0, 60);
+  const name = clean(b.name).replace(/\s+/g, ' ');
+  const phone = clean(b.phone).replace(/[^\d+]/g, '');
+  const text = clean(b.text);
+  if (b.website) return { error: 'server', spam: true };
+  if (Number(b.elapsed) < 3000) return { error: 'fast' };
+  if (name.length > 60) return { error: 'name' };
+  if (text.length < 5 || text.length > 1500) return { error: 'text' };
+  if (phone && (phone.length < 10 || phone.length > 16)) return { error: 'phone' };
+  return { topic, name, phone, text, reply: b.reply === true };
 }
 
 // ---------- Жиілік шегі: бір IP-ден сағатына 3, тәулігіне 6 пікір ----------
@@ -74,13 +94,14 @@ const passOk = (p) => ADMIN_PASSWORD.length >= 10 && timingSafeEqual(sha(String(
 const cookie = (req, k) => (req.headers.cookie || '').split(/;\s*/).map((c) => c.split('=')).find(([n]) => n === k)?.[1];
 const isAdmin = (req) => { const t = cookie(req, 'pd_admin'); const e = t && sessions.get(t); return !!e && e > Date.now(); };
 
-// ---------- Telegram (міндетті емес) ----------
-async function notify(r) {
-  const { TG_BOT_TOKEN: tok, TG_CHAT_ID: chat } = process.env;
-  if (!tok || !chat) return;
-  const text = `Жаңа пікір ${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}\n${r.name}: ${r.text}\n\nӨшіру не жасыру: /admin`;
-  fetch(`https://api.telegram.org/bot${tok}/sendMessage`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chat_id: chat, text }) }).catch(() => {});
+// ---------- Хабарлама: Telegram және WhatsApp (міндетті емес) ----------
+function send(text) {
+  const { TG_BOT_TOKEN: tok, TG_CHAT_ID: chat, WA_PHONE: wa, WA_APIKEY: key } = process.env;
+  if (tok && chat) fetch(`https://api.telegram.org/bot${tok}/sendMessage`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chat_id: chat, text }) }).catch(() => {});
+  if (wa && key) fetch(`https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(wa)}&apikey=${encodeURIComponent(key)}&text=${encodeURIComponent(text)}`).catch(() => {});
 }
+const notify = (r) => send(`Жаңа пікір ${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}\n${r.name}: ${r.text}\n\nӨшіру не жасыру: /admin`);
+const notifyS = (r) => send(`Жаңа ұсыныс: ${r.topic || '–'}\n${r.text}\n${r.name ? `\nАты: ${r.name}` : ''}${r.phone ? `\nТелефон: ${r.phone}` : ''}${r.reply ? '\nЖауап күтеді' : ''}\n\nБарлығы: /admin`);
 
 // ---------- Көмекшілер ----------
 const ipOf = (req) => (TRUST_PROXY && String(req.headers['x-forwarded-for'] || '').split(',')[0].trim()) || req.socket.remoteAddress || '';
@@ -140,6 +161,19 @@ const server = createServer(async (req, res) => {
       return json(res, 201, { review: pub(r) });
     }
 
+    if (path === '/api/suggestions' && req.method === 'POST') {
+      if (!sameOrigin(req)) return json(res, 403, { error: 'server' });
+      const ip = ipOf(req);
+      if (limited(ip)) return json(res, 429, { error: 'rate' });
+      const v = validateS(await body(req));
+      if (v.spam) return json(res, 201, { ok: true });
+      if (v.error) return json(res, 400, { error: v.error });
+      hit(ip);
+      const r = { id: randomUUID(), ...v, createdAt: new Date().toISOString(), read: false };
+      suggestions.push(r); await saveS(); notifyS(r);
+      return json(res, 201, { ok: true });
+    }
+
     // Әкімші
     if (path === '/admin' || path === '/admin/') {
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex', ...SEC });
@@ -161,6 +195,12 @@ const server = createServer(async (req, res) => {
       if (req.method !== 'GET' && !sameOrigin(req)) return json(res, 403, { error: 'origin' });
       if (path === '/api/admin/logout' && req.method === 'POST') { sessions.delete(cookie(req, 'pd_admin')); return json(res, 200, { ok: true }, { 'set-cookie': 'pd_admin=; Path=/; Max-Age=0' }); }
       if (path === '/api/admin/reviews' && req.method === 'GET') return json(res, 200, { reviews: [...reviews].sort((a, b) => b.createdAt.localeCompare(a.createdAt)) });
+      if (path === '/api/admin/suggestions' && req.method === 'GET') return json(res, 200, { suggestions: [...suggestions].sort((a, b) => b.createdAt.localeCompare(a.createdAt)) });
+      const ms = path.match(/^\/api\/admin\/suggestions\/([\w-]+)$/);
+      const sg = ms && suggestions.find((x) => x.id === ms[1]);
+      if (ms && !sg) return json(res, 404, { error: 'not found' });
+      if (sg && req.method === 'PATCH') { const b = await body(req, 1024); sg.read = !!b.read; await saveS(); return json(res, 200, { suggestion: sg }); }
+      if (sg && req.method === 'DELETE') { suggestions = suggestions.filter((x) => x !== sg); await saveS(); return json(res, 200, { ok: true }); }
       const m = path.match(/^\/api\/admin\/reviews\/([\w-]+)$/);
       const r = m && reviews.find((x) => x.id === m[1]);
       if (m && !r) return json(res, 404, { error: 'not found' });

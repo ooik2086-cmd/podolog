@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Пікірлер: әкімші</title>
+<title>Әкімші: пікірлер мен ұсыныстар</title>
 <style>
   :root { --bg: #F7FAFC; --navy: #173B57; --green: #258477; --mint: #EAF5F1; --text: #28343D; --muted: #5B6B77; --line: #DCE5EB; --red: #B42318; }
   * { box-sizing: border-box; }
@@ -30,18 +30,23 @@
   input { font: inherit; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line); min-height: 48px; }
   .err { color: var(--red); font-weight: 600; font-size: .875rem; min-height: 1.2em; }
   .stat { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tabs button.on { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 600; }
+  .new { font-size: .75rem; font-weight: 700; padding: 1px 8px; border-radius: 99px; background: #D92D20; color: #fff; margin-left: 6px; }
+  .card.unread { border-color: var(--green); box-shadow: 0 0 0 2px var(--mint); }
+  .topic { font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--mint); color: var(--green); }
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 <script>
 const L = {
-  kk: { title: 'Пікірлер', login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', hide: 'Жасыру', show: 'Көрсету', del: 'Өшіру', confirm: 'Бұл пікірді біржола өшіру керек пе?', hiddenB: 'Жасырылған', empty: 'Пікір жоқ', all: 'Барлығы', visible: 'Сайтта', hiddenN: 'Жасырылған', avg: 'Орташа баға', site: 'Сайтқа өту', filterAll: 'Барлығы', filterHidden: 'Тек жасырылған', err: 'Қате. Қайталап көріңіз.' },
-  ru: { title: 'Отзывы', login: 'Войти', pass: 'Пароль', logout: 'Выйти', hide: 'Скрыть', show: 'Показать', del: 'Удалить', confirm: 'Удалить этот отзыв навсегда?', hiddenB: 'Скрыт', empty: 'Отзывов нет', all: 'Всего', visible: 'На сайте', hiddenN: 'Скрыто', avg: 'Средняя оценка', site: 'На сайт', filterAll: 'Все', filterHidden: 'Только скрытые', err: 'Ошибка. Попробуйте ещё раз.' },
+  kk: { title: 'Пікірлер', login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', hide: 'Жасыру', show: 'Көрсету', del: 'Өшіру', confirm: 'Бұл пікірді біржола өшіру керек пе?', hiddenB: 'Жасырылған', empty: 'Пікір жоқ', all: 'Барлығы', visible: 'Сайтта', hiddenN: 'Жасырылған', avg: 'Орташа баға', site: 'Сайтқа өту', filterAll: 'Барлығы', filterHidden: 'Тек жасырылған', err: 'Қате. Қайталап көріңіз.', tabR: 'Пікірлер', tabS: 'Ұсыныстар', emptyS: 'Ұсыныс жоқ', read: 'Оқылды', unread: 'Оқылмаған деп белгілеу', newB: 'Жаңа', confirmS: 'Бұл ұсынысты біржола өшіру керек пе?', phone: 'Телефон', reply: 'Жауап күтеді', anon: 'Аты жазылмаған', unreadN: 'Оқылмаған' },
+  ru: { title: 'Отзывы', login: 'Войти', pass: 'Пароль', logout: 'Выйти', hide: 'Скрыть', show: 'Показать', del: 'Удалить', confirm: 'Удалить этот отзыв навсегда?', hiddenB: 'Скрыт', empty: 'Отзывов нет', all: 'Всего', visible: 'На сайте', hiddenN: 'Скрыто', avg: 'Средняя оценка', site: 'На сайт', filterAll: 'Все', filterHidden: 'Только скрытые', err: 'Ошибка. Попробуйте ещё раз.', tabR: 'Отзывы', tabS: 'Предложения', emptyS: 'Предложений нет', read: 'Прочитано', unread: 'Отметить непрочитанным', newB: 'Новое', confirmS: 'Удалить это предложение навсегда?', phone: 'Телефон', reply: 'Ждёт ответа', anon: 'Без имени', unreadN: 'Непрочитанных' },
 };
 let lang = localStorage.getItem('pd_admin_lang') || 'kk';
 let t = L[lang];
-let items = [], filter = 'all';
+let items = [], sugs = [], filter = 'all', tab = 'r';
 const app = document.getElementById('app');
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const api = (p, o = {}) => fetch(p, { ...o, headers: { 'content-type': 'application/json' }, credentials: 'same-origin' });
@@ -62,20 +67,51 @@ function loginView(msg = '') {
   };
 }
 
+function tabs() {
+  const n = sugs.filter((x) => !x.read).length;
+  document.title = (n ? `(${n}) ` : '') + `${t.tabR} / ${t.tabS}`;
+  return `<div class="tabs"><button data-tab="r" class="${tab === 'r' ? 'on' : ''}">${t.tabR} (${items.length})</button><button data-tab="s" class="${tab === 's' ? 'on' : ''}">${t.tabS} (${sugs.length})${n ? `<span class="new">${n}</span>` : ''}</button></div>`;
+}
+function bindTabs() { app.querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => { tab = b.dataset.tab; view(); }); }
+
+function viewS() {
+  const n = sugs.filter((x) => !x.read).length;
+  app.innerHTML = `<header><h1>${t.tabS}</h1><div class="tools">${langSel()}<a href="/"><button type="button">${t.site}</button></a><button id="out">${t.logout}</button></div></header>${tabs()}
+    <div class="stat muted"><span>${t.all}: <b>${sugs.length}</b></span><span>${t.unreadN}: <b>${n}</b></span></div>
+    <div class="list">${sugs.length ? sugs.map((r) => `<article class="card ${r.read ? '' : 'unread'}" data-id="${r.id}">
+      <div class="top">${r.topic ? `<span class="topic">${esc(r.topic)}</span>` : ''}<b>${r.name ? esc(r.name) : `<span class="muted">${t.anon}</span>`}</b><span class="muted">${fmt(r.createdAt)}</span>${r.read ? '' : `<span class="badge">${t.newB}</span>`}</div>
+      <p class="text">${esc(r.text)}</p>
+      ${r.phone || r.reply ? `<div class="muted">${r.phone ? `${t.phone}: <a href="https://wa.me/${esc(r.phone.replace(/\D/g, ''))}" target="_blank" rel="noopener">${esc(r.phone)}</a>` : ''} ${r.reply ? `· ${t.reply}` : ''}</div>` : ''}
+      <div class="acts"><button data-act="read">${r.read ? t.unread : t.read}</button><button class="danger" data-act="del">${t.del}</button></div></article>`).join('') : `<p class="muted">${t.emptyS}</p>`}</div>`;
+  bindLang(); bindTabs();
+  document.getElementById('out').onclick = async () => { await api('/api/admin/logout', { method: 'POST' }); loginView(); };
+  app.querySelectorAll('[data-act]').forEach((b) => b.onclick = async () => {
+    const id = b.closest('[data-id]').dataset.id;
+    const r = sugs.find((x) => x.id === id);
+    let res;
+    if (b.dataset.act === 'del') { if (!confirm(t.confirmS)) return; res = await api(`/api/admin/suggestions/${id}`, { method: 'DELETE' }); }
+    else res = await api(`/api/admin/suggestions/${id}`, { method: 'PATCH', body: JSON.stringify({ read: !r.read }) });
+    if (res.status === 401) return loginView();
+    if (!res.ok) return alert(t.err);
+    load();
+  });
+}
+
 function view() {
   document.documentElement.lang = lang;
+  if (tab === 's') return viewS();
   const vis = items.filter((r) => !r.hidden);
   const avg = vis.length ? (vis.reduce((s, r) => s + r.rating, 0) / vis.length).toFixed(1) : '–';
   const shown = filter === 'hidden' ? items.filter((r) => r.hidden) : items;
   app.innerHTML = `<header><h1>${t.title}</h1><div class="tools">${langSel()}
     <select id="flt"><option value="all">${t.filterAll}</option><option value="hidden" ${filter === 'hidden' ? 'selected' : ''}>${t.filterHidden}</option></select>
-    <a href="/"><button type="button">${t.site}</button></a><button id="out">${t.logout}</button></div></header>
+    <a href="/"><button type="button">${t.site}</button></a><button id="out">${t.logout}</button></div></header>${tabs()}
     <div class="stat muted"><span>${t.all}: <b>${items.length}</b></span><span>${t.visible}: <b>${vis.length}</b></span><span>${t.hiddenN}: <b>${items.length - vis.length}</b></span><span>${t.avg}: <b>${avg}</b></span></div>
     <div class="list">${shown.length ? shown.map((r) => `<article class="card ${r.hidden ? 'hidden' : ''}" data-id="${r.id}">
       <div class="top"><b>${esc(r.name)}</b><span class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span><span class="muted">${fmt(r.createdAt)}</span>${r.hidden ? `<span class="badge">${t.hiddenB}</span>` : ''}</div>
       <p class="text">${esc(r.text)}</p>
       <div class="acts"><button data-act="toggle">${r.hidden ? t.show : t.hide}</button><button class="danger" data-act="del">${t.del}</button></div></article>`).join('') : `<p class="muted">${t.empty}</p>`}</div>`;
-  bindLang();
+  bindLang(); bindTabs();
   document.getElementById('flt').onchange = (e) => { filter = e.target.value; view(); };
   document.getElementById('out').onclick = async () => { await api('/api/admin/logout', { method: 'POST' }); loginView(); };
   app.querySelectorAll('[data-act]').forEach((b) => b.onclick = async () => {
@@ -90,12 +126,16 @@ function view() {
   });
 }
 
-async function load() {
-  const r = await api('/api/admin/reviews');
-  if (r.status === 401) return loginView();
-  if (!r.ok) return loginView(t.err);
+let timer;
+async function load(quiet) {
+  const [r, s] = await Promise.all([api('/api/admin/reviews'), api('/api/admin/suggestions')]);
+  if (r.status === 401) { clearInterval(timer); return loginView(); }
+  if (!r.ok || !s.ok) return quiet ? null : loginView(t.err);
   items = (await r.json()).reviews;
+  sugs = (await s.json()).suggestions;
   view();
+  clearInterval(timer);
+  timer = setInterval(() => { if (!document.querySelector('form.login')) load(true); }, 60000); // әр минут сайын жаңалау
 }
 load();
 </script>
