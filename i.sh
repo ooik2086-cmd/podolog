@@ -42,6 +42,16 @@ if [ ! -f /etc/podolog.env ]; then
   chmod 600 /etc/podolog.env
 else echo "бұрыннан бар, өзгертілмеді (/etc/podolog.env)"; fi
 
+# WhatsApp хабарламасы (CallMeBot): кілт әлі енгізілмесе ғана сұраймыз, Enter басса өткізіп жібереді
+if ! grep -q '^WA_APIKEY=' /etc/podolog.env; then
+  echo "Жаңа пікір мен ұсыныс WhatsApp-қа келсін десеңіз, CallMeBot кілтін жазыңыз (жоқ болса Enter басыңыз)."
+  read -rp "CallMeBot apikey: " WAK </dev/tty
+  if [ -n "$WAK" ]; then
+    read -rp "Хабарлама келетін WhatsApp нөмірі [+77059525231]: " WAP </dev/tty
+    printf 'WA_PHONE=%s\nWA_APIKEY=%s\n' "${WAP:-+77059525231}" "$WAK" >> /etc/podolog.env
+  fi
+fi
+
 echo "==> 4/6 Сервис"
 cat > /etc/systemd/system/podolog.service <<UNIT
 [Unit]
