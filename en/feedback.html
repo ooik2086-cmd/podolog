@@ -131,6 +131,17 @@ const clientT = {"cart":"Cart","cartN":"Cart: {n} items","added":"Added to cart"
         window.dispatchEvent(new Event('themechange'));
       });
     })();
+  </script> <script>
+    document.addEventListener('play', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO' || v.muted) return;
+      document.querySelectorAll('video').forEach(function (o) { if (o !== v && !o.paused && !o.muted) o.pause(); });
+    }, true);
+    document.addEventListener('volumechange', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO' || v.muted || v.paused) return;
+      document.querySelectorAll('video').forEach(function (o) { if (o !== v && !o.paused && !o.muted) o.pause(); });
+    }, true);
   </script> </body> </html>  <script>(function(){const CT = {"phone":"77059525231","head":"Hello! A suggestion for the Podolog center:","topicL":"Topic","nameL":"Name","reply":"I would like a reply","err":"Please write your suggestion (at least 5 characters).","thanks":"Thank you! Your suggestions help us get better."};
 
   const f = document.querySelector('[data-fb]');

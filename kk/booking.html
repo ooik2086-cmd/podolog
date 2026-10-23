@@ -131,4 +131,15 @@ const clientT = {"cart":"Себет","cartN":"Себет: {n} тауар","added
         window.dispatchEvent(new Event('themechange'));
       });
     })();
+  </script> <script>
+    document.addEventListener('play', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO' || v.muted) return;
+      document.querySelectorAll('video').forEach(function (o) { if (o !== v && !o.paused && !o.muted) o.pause(); });
+    }, true);
+    document.addEventListener('volumechange', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO' || v.muted || v.paused) return;
+      document.querySelectorAll('video').forEach(function (o) { if (o !== v && !o.paused && !o.muted) o.pause(); });
+    }, true);
   </script> </body> </html>  

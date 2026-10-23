@@ -131,6 +131,17 @@ const clientT = {"cart":"Cart","cartN":"Cart: {n} items","added":"Added to cart"
         window.dispatchEvent(new Event('themechange'));
       });
     })();
+  </script> <script>
+    document.addEventListener('play', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO' || v.muted) return;
+      document.querySelectorAll('video').forEach(function (o) { if (o !== v && !o.paused && !o.muted) o.pause(); });
+    }, true);
+    document.addEventListener('volumechange', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO' || v.muted || v.paused) return;
+      document.querySelectorAll('video').forEach(function (o) { if (o !== v && !o.paused && !o.muted) o.pause(); });
+    }, true);
   </script> </body> </html>  <script>(function(){const CT = {"art":"item","hello":"Hello! PodiaFarm product order","name":"Name","phone":"Phone","delivery":"How to receive","address":"Address","note":"Comment","bye":"Please confirm the price and availability.","copied":"Text copied","deliveries":{"pickup":"Pick up at the center","city":"Delivery in Kyzylorda","other":"Shipping to another city"}};
 
   (() => {
