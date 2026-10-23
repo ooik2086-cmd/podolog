@@ -1,0 +1,30 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import MediaGrid from '../../components/MediaGrid.astro';
+import Lightbox from '../../components/Lightbox.astro';
+import { certificatesFor, certCategoriesFor } from '../../data/media';
+import { getLang, langPaths } from '../../i18n';
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const certificates = certificatesFor(lang);
+const items = certificates.map((c) => ({ image: c.image, thumb: c.thumb, caption: c.title, category: c.category, sub: [c.note, c.year].filter(Boolean).join(' · ') }));
+const n = certificates.length;
+const T = pageText('certificates', {
+  kk: { title: 'Сертификаттар', eyebrow: 'Біліктілік', h1: 'Сертификаттар және кәсіби жетістіктер', desc: 'Подолог орталығы мамандарының сертификаттары: подология, ортопедия, ұлтарақтар, PodiaFarm, семинарлар.', lead: `Мамандарымыздың ${n} құжаты. Құжатты басып, толық көлемде қараңыз.`, emptyT: 'Сертификаттар қосылады', emptyD: 'Әр құжаттың түпнұсқа суреті, атауы мен жылы жарияланады.' },
+  ru: { title: 'Сертификаты', eyebrow: 'Квалификация', h1: 'Сертификаты и профессиональные достижения', desc: 'Сертификаты специалистов центра «Подолог»: подология, ортопедия, стельки, PodiaFarm, семинары.', lead: `Документов наших специалистов: ${n}. Нажмите на документ, чтобы посмотреть его полностью.`, emptyT: 'Сертификаты скоро появятся', emptyD: 'Будут опубликованы оригинальные фото, названия и годы документов.' },
+  en: { title: 'Certificates', eyebrow: 'Qualifications', h1: 'Certificates and professional achievements', desc: 'Certificates of the Podolog center specialists: podiatry, orthopedics, insoles, PodiaFarm, seminars.', lead: `${n} documents from our specialists. Tap a document to view it in full.`, emptyT: 'Certificates coming soon', emptyD: 'Original photos, titles and years of each document will be published.' },
+})[lang];
+---
+<Base title={T.title} path="/certificates" description={T.desc}>
+  <PageHero eyebrow={T.eyebrow} title={T.h1} lead={T.lead} crumbs={[{ href: '/certificates', label: T.title }]} />
+  <section class="section" style="padding-top: 32px;">
+    <div class="wrap">
+      <MediaGrid id="cert-f" categories={certCategoriesFor(lang)} items={items} tall emptyTitle={T.emptyT} emptyText={T.emptyD} />
+    </div>
+  </section>
+  <Lightbox />
+</Base>

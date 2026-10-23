@@ -1,0 +1,159 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import WaButton from '../../components/WaButton.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { visibleProductsFor, categoriesFor, audienceFor } from '../../data/products';
+import { getLang, langPaths } from '../../i18n';
+// PodiaFarm каталогы (шілде 2024). Сүзгі мен іздеу браузерде, data-* атрибуттары арқылы.
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const visibleProducts = visibleProductsFor(lang);
+const audienceLabel = audienceFor(lang);
+const cats = categoriesFor(lang).filter((c) => visibleProducts.some((p) => p.category === c.id));
+const countBy = (id: string) => visibleProducts.filter((p) => p.category === id).length;
+const T = pageText('shop', {
+  kk: {
+    title: 'PodiaFarm өнімдері', eyebrow: 'Интернет-дүкен', crumb: 'Өнімдер',
+    desc: 'PodiaFarm табан және тырнақ күтім өнімдерінің каталогы, Қызылорда. Себетке жинап, тапсырысты WhatsApp арқылы жіберіңіз.',
+    lead: 'Тырнақ пен табан терісін кәсіби күтуге арналған косметика. Өнімді себетке жинаңыз, тапсырысты WhatsApp арқылы жібересіз, маман бағасы мен болуын растайды.',
+    search: 'Өнімді іздеу', ph: 'Атауы, мәселе немесе артикул', aud: 'Кімге арналған', all: 'Барлығы', cats: 'Санаттар', found: '{n} өнім',
+    noneT: 'Ештеңе табылмады', noneD: 'Басқа сөзбен іздеп көріңіз немесе маманнан сұраңыз.', ask: 'Маманнан сұрау',
+    how: [['1. Себетке жинаңыз', 'Өнім мен көлемін таңдаңыз. Себет осы құрылғыда сақталады.'], ['2. WhatsApp-қа жіберіңіз', 'Тапсырыс мәтіні дайын болады, оны орталыққа жібересіз.'], ['3. Маман растайды', 'Бағасын, бар-жоғын және алу тәсілін хабарлайды.']],
+    brandH: 'Бренд туралы', brand: 'PodiaFarm брендін кәсіби косметика өндірісінде 25 жылдан астам тәжірибесі бар ресейлік өндіруші жасаған. Құралдар табан мен тырнақ күтіміне арналған, оның ішінде қант диабеті бар адамдарға жарамды өнімдер бар.',
+    notice: 'Өнімдер косметикалық күтім құралдары, дәрі емес. Ауру белгілері болса, алдымен маманның қабылдауына жазылыңыз.',
+  },
+  ru: {
+    title: 'Продукция PodiaFarm', eyebrow: 'Интернет-магазин', crumb: 'Продукция',
+    desc: 'Каталог средств PodiaFarm для ухода за стопами и ногтями, Кызылорда. Соберите корзину и отправьте заказ в WhatsApp.',
+    lead: 'Косметика для профессионального ухода за ногтями и кожей стоп. Соберите продукты в корзину и отправьте заказ в WhatsApp, а специалист подтвердит цену и наличие.',
+    search: 'Поиск продукта', ph: 'Название, проблема или артикул', aud: 'Для кого', all: 'Все', cats: 'Категории', found: 'Найдено: {n}',
+    noneT: 'Ничего не найдено', noneD: 'Попробуйте другие слова или спросите специалиста.', ask: 'Спросить специалиста',
+    how: [['1. Соберите корзину', 'Выберите продукт и объём. Корзина сохраняется на этом устройстве.'], ['2. Отправьте в WhatsApp', 'Текст заказа будет готов, вы отправите его в центр.'], ['3. Специалист подтвердит', 'Сообщит цену, наличие и способ получения.']],
+    brandH: 'О бренде', brand: 'Бренд PodiaFarm создан российским производителем с более чем 25-летним опытом в производстве профессиональной косметики. Средства предназначены для ухода за стопами и ногтями, среди них есть продукты, подходящие людям с сахарным диабетом.',
+    notice: 'Продукция — косметические средства ухода, а не лекарства. При симптомах заболевания сначала запишитесь на приём к специалисту.',
+  },
+  en: {
+    title: 'PodiaFarm products', eyebrow: 'Online shop', crumb: 'Products',
+    desc: 'Catalog of PodiaFarm foot and nail care products, Kyzylorda. Fill your cart and send your order via WhatsApp.',
+    lead: 'Cosmetics for professional care of nails and foot skin. Add products to your cart and send the order via WhatsApp, and a specialist will confirm the price and availability.',
+    search: 'Search products', ph: 'Name, concern or item number', aud: 'Who it is for', all: 'All', cats: 'Categories', found: '{n} products',
+    noneT: 'Nothing found', noneD: 'Try different words or ask a specialist.', ask: 'Ask a specialist',
+    how: [['1. Fill your cart', 'Choose a product and size. The cart is saved on this device.'], ['2. Send via WhatsApp', 'Your order text is prepared for you to send to the center.'], ['3. A specialist confirms', 'They will tell you the price, availability and how to receive it.']],
+    brandH: 'About the brand', brand: 'PodiaFarm was created by a Russian manufacturer with more than 25 years of experience in professional cosmetics. The products are designed for foot and nail care, and some are suitable for people with diabetes.',
+    notice: 'These products are cosmetic care products, not medicines. If you have symptoms of a condition, book an appointment with a specialist first.',
+  },
+})[lang];
+const icons = ['cart', 'whatsapp', 'check'] as const;
+// Каталогтағы фотолар (PodiaFarm, наурыз 2026), сапасы AI-мен жақсартылған
+const strip = ['pf-07', 'pf-12', 'pf-11', 'pf-03', 'pf-15', 'pf-10', 'pf-02', 'pf-08', 'pf-13', 'pf-06'];
+---
+<Base title={T.title} path="/shop" description={T.desc}>
+  <PageHero eyebrow={T.eyebrow} title={T.title} lead={T.lead} crumbs={[{ href: '/shop', label: T.crumb }]} />
+  <div class="wrap"><div class="pf-strip">{strip.map((n, i) => <img src={`/media/podiafarm/${n}-sm.webp`} alt={T.title} loading={i < 3 ? 'eager' : 'lazy'} decoding="async" />)}</div></div>
+
+  <section class="section" style="padding-top: 24px;">
+    <div class="wrap">
+      <div class="shop-bar">
+        <label class="shop-search">
+          <Icon name="search" />
+          <span class="sr">{T.search}</span>
+          <input type="search" id="q" placeholder={T.ph} autocomplete="off" />
+        </label>
+        <div class="shop-aud" role="group" aria-label={T.aud}>
+          <button type="button" data-aud="all" aria-pressed="true">{T.all}</button>
+          <button type="button" data-aud="home" aria-pressed="false">{audienceLabel.home}</button>
+          <button type="button" data-aud="pro" aria-pressed="false">{audienceLabel.pro}</button>
+        </div>
+      </div>
+      <div class="filters" role="group" aria-label={T.cats} id="cats">
+        <button type="button" data-cat="all" aria-pressed="true">{T.all} · {visibleProducts.length}</button>
+        {cats.map((c) => <button type="button" data-cat={c.id} aria-pressed="false">{c.title} · {countBy(c.id)}</button>)}
+      </div>
+      <p class="muted small" id="found" aria-live="polite" data-tpl={T.found}>{T.found.replace('{n}', String(visibleProducts.length))}</p>
+      <div class="pgrid" id="pgrid">
+        {visibleProducts.map((p) => <ProductCard p={p} />)}
+      </div>
+      <div class="empty" id="none" hidden>
+        <Icon name="search" />
+        <strong>{T.noneT}</strong>
+        <span>{T.noneD}</span>
+        <WaButton topic="products" label={T.ask} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mint">
+    <div class="wrap grid grid--3">
+      {T.how.map(([h, d], i) => <div class="card"><div class="icon-badge"><Icon name={icons[i]} /></div><h3>{h}</h3><p class="muted small">{d}</p></div>)}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack">
+      <h2>{T.brandH}</h2>
+      <p class="muted" style="max-width: 70ch;">{T.brand}</p>
+      <p class="notice" style="max-width: 70ch;"><Icon name="info" /><span>{T.notice}</span></p>
+    </div>
+  </section>
+</Base>
+
+<script is:inline>
+  (() => {
+    const q = document.getElementById('q');
+    const cards = [...document.querySelectorAll('#pgrid .pc')];
+    const found = document.getElementById('found');
+    const none = document.getElementById('none');
+    let cat = 'all', aud = 'all';
+    const plural = (n) => found.dataset.tpl.replace('{n}', n);
+    const apply = () => {
+      const words = q.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      let n = 0;
+      cards.forEach((c) => {
+        const ok = (cat === 'all' || c.dataset.cat === cat)
+          && (aud === 'all' || c.dataset.aud === aud || c.dataset.aud === 'both')
+          && words.every((w) => c.dataset.search.includes(w));
+        c.hidden = !ok; if (ok) n++;
+      });
+      found.textContent = plural(n);
+      none.hidden = n > 0;
+    };
+    const group = (sel, set) => document.querySelectorAll(sel).forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll(sel).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      set(b); apply();
+    }));
+    group('#cats button', (b) => { cat = b.dataset.cat; });
+    group('.shop-aud button', (b) => { aud = b.dataset.aud; });
+    q.addEventListener('input', apply);
+  })();
+</script>
+
+<style>
+  .pf-strip { display: grid; grid-auto-flow: column; grid-auto-columns: min(72%, 280px); gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-block: 8px 4px; scrollbar-width: none; }
+  .pf-strip::-webkit-scrollbar { display: none; }
+  .pf-strip img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--r-lg); scroll-snap-align: start; }
+  .shop-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px; }
+  .shop-search {
+    flex: 1 1 320px; display: flex; align-items: center; gap: 10px; padding: 0 16px; min-height: 50px;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px; color: var(--muted);
+  }
+  .shop-search:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 25%, transparent); }
+  .shop-search :global(svg) { width: 20px; height: 20px; flex: none; }
+  .shop-search input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; color: var(--text); outline: none; padding: 12px 0; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .shop-aud { display: flex; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; overflow-x: auto; max-width: 100%; }
+  .shop-aud button {
+    flex: none; font: 600 var(--fs-xs)/1 var(--font); padding: 10px 14px; border-radius: 999px; border: 0; cursor: pointer;
+    background: none; color: var(--muted);
+  }
+  .shop-aud button[aria-pressed="true"] { background: var(--mint); color: var(--green); }
+  #found { margin: 0 0 16px; }
+  .pgrid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); }
+  @media (max-width: 520px) {
+    .pgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  }
+</style>

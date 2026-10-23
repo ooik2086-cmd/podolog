@@ -1,0 +1,72 @@
+---
+import { pageText } from '../../../data/cms';
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import ServiceCard from '../../../components/ServiceCard.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import { servicesFor } from '../../../data/services';
+import { siteFor } from '../../../data/site';
+import Icon from '../../../components/Icon.astro';
+import { getLang, localize, langPaths } from '../../../i18n';
+import { videosFor } from '../../../data/videos';
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const tips = videosFor('tips', lang);
+const site = siteFor(lang);
+const u = (p: string) => localize(lang, p);
+const services = servicesFor(lang);
+const T = pageText('services', {
+  kk: {
+    title: 'Қызметтер', h1: 'Подология және ортопедия қызметтері', desc: `${site.city} қаласындағы подолог қызметтері: кеңес, ішке өскен тырнақ, мозоль, медициналық педикюр, ортопедиялық ұлтарақ.`,
+    lead: 'Қызметті таңдап, толық сипаттамасын, кезеңдерін және бағасын қараңыз.', prices: 'Барлық бағалар', howH: 'Қабылдауға қалай жазылуға болады?',
+    steps: [['Қызметті таңдаңыз', 'Білмесеңіз, «Кеңес» таңдаңыз'], ['Күн мен уақыт', 'Өзіңізге ыңғайлы уақытты көрсетіңіз'], ['Байланыс', 'Атыңыз бен телефоныңыз'], ['Растау', 'Әкімші жазылуыңызды растайды']],
+    tipH: 'Подолог түсіндіреді', tipText: 'Жиі кездесетін қорқыныштар және табан мәселелері неге өздігінен кетпейтіні туралы қысқа видеолар (орыс тілінде).',
+  },
+  ru: {
+    title: 'Услуги', h1: 'Услуги подологии и ортопедии', desc: `Услуги подолога в городе ${site.city}: консультация, вросший ноготь, мозоли, медицинский педикюр, ортопедические стельки.`,
+    lead: 'Выберите услугу, чтобы посмотреть подробное описание, этапы и цену.', prices: 'Все цены', howH: 'Как записаться на приём?',
+    steps: [['Выберите услугу', 'Если не знаете, выберите «Консультация»'], ['День и время', 'Укажите удобное для вас время'], ['Контакты', 'Ваше имя и телефон'], ['Подтверждение', 'Администратор подтвердит запись']],
+    tipH: 'Подолог объясняет', tipText: 'Короткие видео о частых страхах и о том, почему проблемы стоп не проходят сами.',
+  },
+  en: {
+    title: 'Services', h1: 'Podiatry and orthopedic services', desc: `Podiatrist services in ${site.city}: consultations, ingrown toenails, calluses, medical pedicure, orthopedic insoles.`,
+    lead: 'Choose a service to see its full description, steps and price.', prices: 'All prices', howH: 'How to book an appointment',
+    steps: [['Choose a service', 'Not sure? Choose “Consultation”'], ['Day and time', 'Pick a time that suits you'], ['Contact details', 'Your name and phone'], ['Confirmation', 'The administrator confirms your booking']],
+    tipH: 'A podiatrist explains', tipText: 'Short videos about common fears and why foot problems do not go away on their own (in Russian).',
+  },
+})[lang];
+---
+<Base title={T.title} path="/services" description={T.desc}>
+  <PageHero eyebrow={T.title} title={T.h1} lead={T.lead}>
+    <div><a class="btn btn--ghost" href={u('/prices')}><Icon name="grid" />{T.prices}</a></div>
+  </PageHero>
+  <section class="section" style="padding-top: 32px;">
+    <div class="wrap stack-lg">
+      <div class="grid grid--3">{services.map((s) => <ServiceCard service={s} />)}</div>
+      <div class="howto card">
+        <h2>{T.howH}</h2>
+        <ol class="steps steps--row">
+          {T.steps.map(([a, b]) => <li><div><strong>{a}</strong><span class="muted small">{b}</span></div></li>)}
+        </ol>
+      </div>
+    </div>
+  </section>
+  {tips.length > 0 && <section class="section">
+    <div class="wrap stack-lg">
+      <div class="sec-head"><h2>{T.tipH}</h2><p class="muted">{T.tipText}</p></div>
+      <div class="tips">
+        {tips.map((v) => <figure class="tip"><video src={v.src} poster={v.poster || undefined} controls playsinline preload="none"></video>{v.caption && <figcaption>{v.caption}</figcaption>}</figure>)}
+      </div>
+    </div>
+  </section>}
+  <CtaBand />
+</Base>
+<style>
+  .tips { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 900px; }
+  @media (max-width: 559px) { .tips { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .tip { margin: 0; display: grid; gap: 8px; }
+  .tip video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: var(--r-lg); background: #000; }
+  .tip figcaption { font-weight: 700; color: var(--navy); }
+</style>

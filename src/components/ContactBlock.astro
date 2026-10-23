@@ -1,0 +1,98 @@
+---
+import Icon from './Icon.astro';
+import WaButton from './WaButton.astro';
+import { siteFor, fullAddressFor, routeUrl } from '../data/site';
+import { getLang } from '../i18n';
+import { ui, fmt } from '../i18n/ui';
+const lang = getLang(Astro);
+const t = ui[lang];
+const site = siteFor(lang);
+const fullAddress = fullAddressFor(lang);
+const g = site.twoGis;
+const ig = site.social.instagram?.match(/instagram\.com\/([^/?#]+)/)?.[1] ?? 'Instagram';
+// 2GIS кілтсіз карта ендіруге рұқсат бермейді, сондықтан фонда Google картасы тұрады (кілтсіз embed),
+// ал басқанда 2GIS маршруты ашылады. 2GIS карточкасы табылса, embedUrl толтырылады.
+const { lon, lat } = g.point;
+// ll ортасын сәл төмен жылжытады: белгі карточканың үстінде көрінеді
+const gmap = `https://maps.google.com/maps?q=${lat},${lon}&ll=${(lat - 0.0011).toFixed(6)},${lon}&z=16&hl=${lang}&output=embed`;
+---
+<div class="cb">
+  <div class="cb__info card">
+    <h3>{site.fullName}</h3>
+    <ul class="cb__list">
+      <li><Icon name="pin" /><div><b>{t.address}</b><span>{fullAddress}</span>{site.addressNote && <span class="small">{site.addressNote}</span>}</div></li>
+      <li><Icon name="clock" /><div><b>{t.hours}</b>{site.workingHours.map((h) => <span>{h.days}: <b class="t">{h.time}</b></span>)}</div></li>
+      <li><Icon name="phone" /><div><b>{t.phone}</b>
+        {site.phones.map((p) => <span><a href={`tel:${p.number}`} class="tel">{p.display}</a></span>)}
+      </div></li>
+    </ul>
+    <div class="btn-row">
+      <WaButton />
+      <a class="btn btn--ghost" href={routeUrl} target="_blank" rel="noopener"><span class="dgis" aria-hidden="true">2GIS</span>{t.route}</a>
+    </div>
+    {(site.social.instagram || site.social.tiktok || site.social.youtube) && (
+      <div class="cb__social">
+        {site.social.instagram && <a href={site.social.instagram} target="_blank" rel="noopener" aria-label={`Instagram: ${ig}`}><Icon name="instagram" /><span>{ig}</span></a>}
+        {site.social.tiktok && <a href={site.social.tiktok} target="_blank" rel="noopener" aria-label="TikTok" style="color:#000"><Icon name="tiktok" /></a>}
+        {site.social.youtube && <a href={site.social.youtube} target="_blank" rel="noopener" aria-label="YouTube"><Icon name="youtube" /></a>}
+      </div>
+    )}
+  </div>
+  <div class="cb__map">
+    {g.embedUrl ? (
+      <iframe src={g.embedUrl} title={fmt(t.mapTitle, { a: fullAddress })} loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    ) : (
+      <div class="cb__mapwrap">
+        <iframe class="cb__gmap" src={gmap} title={fmt(t.mapTitle, { a: fullAddress })} loading="lazy" tabindex="-1" aria-hidden="true"></iframe>
+        <a class="cb__maplink" href={routeUrl} target="_blank" rel="noopener" aria-label={fmt(t.mapRoute, { a: site.address ?? fullAddress })}>
+          <span class="cb__mapcard">
+            <span class="dgis dgis--lg" aria-hidden="true">2GIS</span>
+            <span class="cb__mapaddr"><strong>{site.address}</strong><span class="small">{site.addressNote}</span></span>
+            <span class="cb__mapgo"><Icon name="route" /><span>{t.route}</span></span>
+          </span>
+        </a>
+      </div>
+    )}
+  </div>
+</div>
+<style>
+  .cb { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); }
+  .cb__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+  .cb__list li { display: grid; grid-template-columns: 24px 1fr; gap: 14px; }
+  .cb__list li > :global(svg) { width: 22px; height: 22px; color: var(--green); margin-top: 2px; }
+  .cb__list div { display: grid; gap: 2px; min-width: 0; }
+  .cb__list b { color: var(--navy); font-size: var(--fs-sm); font-weight: 800; }
+  .cb__list span { color: var(--text); font-weight: 600; }
+  .cb__social { display: flex; gap: 10px; }
+  .cb__social a { min-width: 44px; height: 44px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); display: inline-flex; gap: 8px; align-items: center; justify-content: center; color: var(--navy); text-decoration: none; font-weight: 600; font-size: var(--fs-sm); }
+  .tel { font-weight: 700; color: var(--navy); text-decoration: none; font-variant-numeric: tabular-nums; }
+  .t { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .cb__social :global(svg) { width: 22px; height: 22px; }
+  .cb__map { border-radius: var(--r-lg); overflow: hidden; min-height: 340px; border: 1px solid var(--line); background: var(--surface); }
+  .cb__map iframe { width: 100%; height: 100%; min-height: 340px; border: 0; display: block; }
+  .cb__mapwrap { position: relative; height: 100%; min-height: 340px; background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 40px 40px,
+      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 40px 40px,
+      var(--mint); }
+  .cb__gmap { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; }
+  .cb__maplink { position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 14px; text-decoration: none; color: inherit; }
+  .cb__mapcard {
+    width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center;
+    background: var(--surface); border-radius: var(--r-md); padding: 12px 14px; box-shadow: var(--shadow); border: 1px solid var(--line);
+  }
+  .cb__maplink:hover .cb__mapcard { border-color: var(--green); }
+  .cb__mapaddr { display: grid; gap: 2px; min-width: 0; }
+  .cb__mapaddr strong { color: var(--navy); }
+  .cb__mapaddr .small { color: var(--muted); line-height: 1.35; font-size: var(--fs-xs); }
+  .cb__mapgo {
+    grid-column: 1 / -1; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 999px;
+    background: #1BA136; color: #fff; font-weight: 700; font-size: var(--fs-sm); white-space: nowrap;
+  }
+  .cb__mapgo :global(svg) { width: 18px; height: 18px; }
+  /* 2GIS белгісі */
+  .dgis {
+    flex: none; display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 7px;
+    background: #1BA136; color: #fff; font: 800 8.5px/1 var(--font); letter-spacing: -.02em;
+  }
+  .dgis--lg { width: 44px; height: 44px; border-radius: 12px; font-size: 13px; }
+</style>

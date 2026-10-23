@@ -1,0 +1,268 @@
+---
+import { pageText } from '../data/cms';
+// Клиенттер пікірі: тізім мен форма серверден (/api/reviews) жүктеледі.
+// Пікір бірден шығады, әкімші /admin бетінен жасыра не өше алады.
+// Сервер жоқ болса (GitHub Pages), пікір дайын мәтінмен WhatsApp арқылы орталыққа жіберіледі.
+import Icon from './Icon.astro';
+import { getLang, localize } from '../i18n';
+import { site, feedbackWhatsapp } from '../data/site';
+
+interface Props { mode?: 'home' | 'page' }
+const { mode = 'page' } = Astro.props;
+const lang = getLang(Astro);
+const u = (p: string) => localize(lang, p);
+
+const T = pageText('c-Reviews', {
+  kk: {
+    eyebrow: 'Пікірлер', h: 'Клиенттер пікірі', text: 'Қабылдауда болған клиенттеріміздің пікірлері. Пікір бірден жарияланады.',
+    replyBy: 'Орталықтың жауабы', all: 'Барлық пікірлер', idea: 'Ұсыныс қалдыру', leave: 'Пікір қалдыру', loading: 'Пікірлер жүктелуде…',
+    empty: 'Әзірге пікір жоқ. Бірінші болып пікір қалдырыңыз!', fail: 'Пікірлерді жүктеу мүмкін болмады. Кейінірек қайталап көріңіз.',
+    formH: 'Пікір қалдыру', name: 'Атыңыз', rating: 'Баға', textL: 'Пікіріңіз',
+    textHint: 'Сілтеме мен телефон нөмірін жазбаңыз, ондай пікір жарияланбайды.',
+    consent: 'Атым мен пікірімнің сайтта жариялануына келісемін', privacy: 'Құпиялылық саясаты',
+    send: 'Жіберу', sending: 'Жіберілуде…', ok: 'Рақмет! Пікіріңіз жарияланды.',
+    giftH: '2GIS-те пікір қалдырып, сыйлық алыңыз', giftBtn: '2GIS-те пікір жазу',
+    gift: ['2GIS-те орталығымыз туралы пікір жазыңыз', 'Келгенде пікірді әкімшіге көрсетіңіз', 'Сыйлығыңызды алыңыз'],
+    stars: '{n} жұлдыз', of5: '5-тен {n}',
+    err: {
+      name: 'Атыңызды жазыңыз (2–40 әріп).', rating: 'Бағаны таңдаңыз.', text: 'Пікір 10–1000 таңба болуы керек.',
+      consent: 'Жариялауға келісім керек.', link: 'Пікірде сілтеме, email не телефон болмауы керек.',
+      rate: 'Пікір тым жиі жіберілді. Кейінірек қайталап көріңіз.', fast: 'Тым тез жіберілді. Бірнеше секундтан соң қайталаңыз.',
+      server: 'Жіберу мүмкін болмады. Кейінірек қайталап көріңіз.',
+    },
+  },
+  ru: {
+    eyebrow: 'Отзывы', h: 'Отзывы клиентов', text: 'Отзывы клиентов, которые были у нас на приёме. Отзыв публикуется сразу.',
+    replyBy: 'Ответ центра', all: 'Все отзывы', idea: 'Оставить предложение', leave: 'Оставить отзыв', loading: 'Загружаем отзывы…',
+    empty: 'Пока отзывов нет. Оставьте отзыв первым!', fail: 'Не удалось загрузить отзывы. Попробуйте позже.',
+    formH: 'Оставить отзыв', name: 'Ваше имя', rating: 'Оценка', textL: 'Ваш отзыв',
+    textHint: 'Не указывайте ссылки и номера телефонов, такой отзыв не будет опубликован.',
+    consent: 'Согласен(на) на публикацию имени и отзыва на сайте', privacy: 'Политика конфиденциальности',
+    send: 'Отправить', sending: 'Отправляем…', ok: 'Спасибо! Ваш отзыв опубликован.',
+    giftH: 'Оставьте отзыв в 2GIS и получите подарок', giftBtn: 'Написать отзыв в 2GIS',
+    gift: ['Напишите отзыв о нашем центре в 2GIS', 'Покажите отзыв администратору при визите', 'Получите подарок'],
+    stars: '{n} звёзд', of5: '{n} из 5',
+    err: {
+      name: 'Укажите имя (2–40 букв).', rating: 'Выберите оценку.', text: 'Отзыв должен быть от 10 до 1000 символов.',
+      consent: 'Нужно согласие на публикацию.', link: 'В отзыве не должно быть ссылок, email или телефона.',
+      rate: 'Слишком много отзывов подряд. Попробуйте позже.', fast: 'Отправлено слишком быстро. Повторите через несколько секунд.',
+      server: 'Не удалось отправить. Попробуйте позже.',
+    },
+  },
+  en: {
+    eyebrow: 'Reviews', h: 'Client reviews', text: 'Reviews from clients who have visited us. Reviews are published right away.',
+    replyBy: 'Reply from the center', all: 'All reviews', idea: 'Leave a suggestion', leave: 'Leave a review', loading: 'Loading reviews…',
+    empty: 'No reviews yet. Be the first to leave one!', fail: 'Could not load reviews. Please try again later.',
+    formH: 'Leave a review', name: 'Your name', rating: 'Rating', textL: 'Your review',
+    textHint: 'Please do not include links or phone numbers, such reviews are not published.',
+    consent: 'I agree to my name and review being published on the website', privacy: 'Privacy policy',
+    send: 'Send', sending: 'Sending…', ok: 'Thank you! Your review has been published.',
+    giftH: 'Leave a review on 2GIS and get a gift', giftBtn: 'Write a review on 2GIS',
+    gift: ['Write a review of our center on 2GIS', 'Show it to the administrator at your visit', 'Get your gift'],
+    stars: '{n} stars', of5: '{n} out of 5',
+    err: {
+      name: 'Please enter your name (2–40 letters).', rating: 'Please choose a rating.', text: 'The review must be 10–1000 characters.',
+      consent: 'Consent to publication is required.', link: 'The review must not contain links, emails or phone numbers.',
+      rate: 'Too many reviews in a row. Please try again later.', fast: 'Sent too quickly. Please try again in a few seconds.',
+      server: 'Could not send. Please try again later.',
+    },
+  },
+})[lang];
+const limit = mode === 'home' ? 3 : 100;
+const months = {
+  kk: ['қаңтар', 'ақпан', 'наурыз', 'сәуір', 'мамыр', 'маусым', 'шілде', 'тамыз', 'қыркүйек', 'қазан', 'қараша', 'желтоқсан'],
+  ru: ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'],
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+}[lang];
+// Браузерлердің бәрі қазақша күнді дұрыс жазбайды, сондықтан айды өзіміз қоямыз
+const dateTpl = { kk: '{y} ж. {d} {m}', ru: '{d} {m} {y}', en: '{d} {m} {y}' }[lang];
+const waHead = { kk: 'Сәлеметсіз бе! «Подолог» орталығына пікір:', ru: 'Здравствуйте! Отзыв для центра «Подолог»:', en: 'Hello! A review for the Podolog center:' }[lang];
+const CT = { replyBy: T.replyBy, wa: feedbackWhatsapp, waHead, stars: T.stars, of5: T.of5, empty: T.empty, fail: T.fail, err: T.err, ok: T.ok, send: T.send, sending: T.sending, months, dateTpl, limit };
+---
+<div class="rv" data-rv>
+  <div class="rv__list" data-rv-list aria-live="polite">
+    <p class="muted rv__state" data-rv-state>{T.loading}</p>
+  </div>
+
+  {mode === 'home' && (
+    <div class="btn-row rv__ctas">
+      <a class="btn btn--ghost" href={u('/reviews')}>{T.all}</a>
+      <a class="btn btn--ghost" href={u('/feedback')}><Icon name="star" />{T.idea}</a>
+    </div>
+  )}
+
+  {site.twoGis.reviewsUrl && (
+    <div class="rv__gift">
+      <span class="rv__gift-ic" aria-hidden="true"><Icon name="gift" /></span>
+      <div class="rv__gift-body">
+        <h3>{T.giftH}</h3>
+        <ol>{T.gift.map((g) => <li>{g}</li>)}</ol>
+      </div>
+      <a class="btn btn--primary" href={site.twoGis.reviewsUrl} target="_blank" rel="noopener"><span class="dgis-mini" aria-hidden="true">2GIS</span>{T.giftBtn}</a>
+    </div>
+  )}
+
+  {(
+    <form class="card form rv__form" id="rv-form" data-rv-form novalidate>
+      <h2>{T.formH}</h2>
+      <div class="field">
+        <label for="rv-name">{T.name}</label>
+        <input id="rv-name" name="name" autocomplete="given-name" maxlength="40" required />
+        <span class="err" data-err="name" hidden></span>
+      </div>
+      <fieldset class="field rv__rate">
+        <legend>{T.rating}</legend>
+        <div class="rv__stars">
+          {[5, 4, 3, 2, 1].map((n) => (
+            <>
+              <input type="radio" name="rating" id={`rv-r${n}`} value={n} />
+              <label for={`rv-r${n}`} title={T.of5.replace('{n}', String(n))}><Icon name="star" /><span class="sr">{T.of5.replace('{n}', String(n))}</span></label>
+            </>
+          ))}
+        </div>
+        <span class="err" data-err="rating" hidden></span>
+      </fieldset>
+      <div class="field">
+        <label for="rv-text">{T.textL}</label>
+        <textarea id="rv-text" name="text" rows="5" minlength="10" maxlength="1000" required></textarea>
+        <span class="muted small">{T.textHint}</span>
+        <span class="err" data-err="text" hidden></span>
+      </div>
+      <!-- Боттарға арналған тұзақ: адам бұл өрісті көрмейді -->
+      <div class="rv__hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
+      <label class="rv__consent">
+        <input type="checkbox" name="consent" required />
+        <span>{T.consent}. <a href={u('/privacy')}>{T.privacy}</a></span>
+      </label>
+      <span class="err" data-err="consent" hidden></span>
+      <button class="btn btn--primary" type="submit" data-rv-send>{T.send}</button>
+      <p class="rv__msg" data-rv-msg role="status" hidden></p>
+    </form>
+  )}
+</div>
+
+<script define:vars={{ CT }}>
+  (() => {
+    const root = document.currentScript?.previousElementSibling?.closest?.('[data-rv]') || document.querySelector('[data-rv]');
+    if (!root) return;
+    const list = root.querySelector('[data-rv-list]');
+    const state = root.querySelector('[data-rv-state]');
+    const form = root.querySelector('[data-rv-form]');
+    const openedAt = Date.now();
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const star = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9L12 3.5Z"/></svg>';
+    const date = (t) => { const d = new Date(t); return isNaN(d) ? '' : CT.dateTpl.replace('{d}', d.getDate()).replace('{m}', CT.months[d.getMonth()]).replace('{y}', d.getFullYear()); };
+    const card = (r) => `<article class="card rv__item">
+      <div class="rv__top"><span class="rv__ava" aria-hidden="true">${esc(r.name.trim()[0] || '?').toUpperCase()}</span>
+      <div><b class="rv__name">${esc(r.name)}</b><span class="muted small">${date(r.createdAt)}</span></div></div>
+      <div class="rv__score" role="img" aria-label="${esc(CT.of5.replace('{n}', r.rating))}">${Array.from({ length: 5 }, (_, i) => `<span class="${i < r.rating ? 'on' : ''}">${star}</span>`).join('')}</div>
+      <p class="rv__text">${esc(r.text).replace(/\n/g, '<br>')}</p>
+      ${r.reply ? `<div class="rv__reply"><b>${esc(CT.replyBy)}</b><p>${esc(r.reply).replace(/\n/g, '<br>')}</p></div>` : ''}</article>`;
+    const render = (items) => {
+      if (!items.length) { list.innerHTML = `<p class="muted rv__state">${esc(CT.empty)}</p>`; return; }
+      list.innerHTML = `<div class="rv__grid">${items.map(card).join('')}</div>`;
+    };
+    let items = [];
+    fetch(`/api/reviews?limit=${CT.limit}`, { headers: { accept: 'application/json' } })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((d) => { items = d.reviews || []; render(items); })
+      .catch(() => render([]));
+
+    if (!form) return;
+    const msg = form.querySelector('[data-rv-msg]');
+    const btn = form.querySelector('[data-rv-send]');
+    const showErr = (k) => {
+      form.querySelectorAll('[data-err]').forEach((e) => { e.hidden = true; });
+      form.querySelectorAll('[aria-invalid]').forEach((e) => e.removeAttribute('aria-invalid'));
+      if (!k) return;
+      const box = form.querySelector(`[data-err="${k}"]`);
+      const el = form.elements[k];
+      if (box) { box.textContent = CT.err[k] || CT.err.server; box.hidden = false; }
+      if (el && el.setAttribute) { el.setAttribute('aria-invalid', 'true'); el.focus?.(); }
+      return true;
+    };
+    const bad = /(https?:|www\.|[a-z0-9-]+\.(kz|ru|com|net|org|me|io|info|site|online|shop|pro|xyz)\b|@|t\.me)/i;
+    const phone = /(\d[\s()+.-]*){7,}/;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.hidden = true;
+      const f = form.elements;
+      const data = { name: f.name.value.trim(), rating: Number(f.rating.value || 0), text: f.text.value.trim(), website: f.website.value, consent: f.consent.checked, elapsed: Date.now() - openedAt };
+      let k = null;
+      if (data.name.length < 2 || data.name.length > 40 || /\d/.test(data.name)) k = 'name';
+      else if (!(data.rating >= 1 && data.rating <= 5)) k = 'rating';
+      else if (data.text.length < 10 || data.text.length > 1000) k = 'text';
+      else if (bad.test(data.text) || phone.test(data.text) || bad.test(data.name)) k = 'link';
+      else if (!data.consent) k = 'consent';
+      if (k === 'link') { showErr(null); const box = form.querySelector('[data-err="text"]'); box.textContent = CT.err.link; box.hidden = false; f.text.setAttribute('aria-invalid', 'true'); f.text.focus(); return; }
+      if (showErr(k)) return;
+      btn.disabled = true; btn.textContent = CT.sending;
+      try {
+        let r;
+        try { r = await fetch('/api/reviews', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) }); } catch { r = null; }
+        if (!r || r.status === 404 || r.status === 405 || r.status >= 500) {
+          const txt = [CT.waHead, '', `${data.name}, ${'★'.repeat(data.rating)}${'☆'.repeat(5 - data.rating)}`, '', data.text].join('\n');
+          location.href = `https://wa.me/${CT.wa}?text=${encodeURIComponent(txt)}`;
+          return;
+        }
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw d.error || 'server';
+        items = [d.review, ...items]; render(items);
+        form.reset();
+        msg.textContent = CT.ok; msg.className = 'rv__msg ok'; msg.hidden = false;
+      } catch (err) {
+        msg.textContent = CT.err[typeof err === 'string' ? err : 'server'] || CT.err.server; msg.className = 'rv__msg bad'; msg.hidden = false;
+      } finally { btn.disabled = false; btn.textContent = CT.send; }
+    });
+  })();
+</script>
+
+<style is:global>
+  .rv__gift {
+    display: grid; gap: 16px 20px; align-items: center; padding: clamp(18px, 3vw, 28px); border-radius: var(--r-lg);
+    background: var(--surface); border: 1.5px solid color-mix(in srgb, var(--lime) 70%, var(--line));
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+  .rv__gift-ic { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: var(--lime); color: #12340A; }
+  .rv__gift-ic svg { width: 28px; height: 28px; }
+  .rv__gift h3 { font-size: var(--fs-lg); margin: 0 0 8px; }
+  .rv__gift ol { margin: 0; padding: 0; list-style: none; counter-reset: g; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .rv__gift li { counter-increment: g; display: flex; gap: 8px; align-items: baseline; font-size: var(--fs-sm); color: var(--muted); }
+  .rv__gift li::before { content: counter(g); flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--mint); color: var(--green); font-weight: 700; font-size: .75rem; }
+  .rv__gift .btn { grid-column: 1 / -1; width: fit-content; }
+  .dgis-mini { font-weight: 800; font-size: .72rem; letter-spacing: .02em; padding: 2px 6px; border-radius: 6px; background: #fff; color: #19AA1E; }
+  @media (min-width: 900px) { .rv__gift { grid-template-columns: 56px minmax(0, 1fr) auto; } .rv__gift .btn { grid-column: auto; } }
+  .rv { display: grid; gap: 28px; }
+  .rv__grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+  .rv__item { gap: 12px; }
+  .rv__top { display: flex; gap: 12px; align-items: center; }
+  .rv__top > div { display: grid; }
+  .rv__ava { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--mint); color: var(--green); font-weight: 700; font-size: 1.1rem; }
+  .rv__name { color: var(--navy); }
+  .rv__score { display: flex; gap: 2px; }
+  .rv__score svg { width: 18px; height: 18px; fill: var(--line); stroke: none; }
+  .rv__score .on svg { fill: #F5B301; }
+  .rv__text { white-space: normal; overflow-wrap: anywhere; }
+  .rv__reply { border-left: 3px solid var(--green); background: var(--mint); border-radius: 0 var(--r-sm) var(--r-sm) 0; padding: 10px 14px; display: grid; gap: 4px; font-size: var(--fs-sm); }
+  .rv__reply b { color: var(--green); }
+  .rv__reply p { margin: 0; overflow-wrap: anywhere; }
+  .rv__state { padding: 8px 0; }
+  .rv__form { max-width: 640px; scroll-margin-top: 96px; }
+  .rv__rate { border: 0; padding: 0; margin: 0; }
+  .rv__rate legend { font-weight: 600; font-size: var(--fs-sm); color: var(--navy); margin-bottom: 6px; }
+  .rv__stars { display: inline-flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+  .rv__stars input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .rv__stars label { cursor: pointer; padding: 4px; border-radius: 8px; color: var(--line); }
+  .rv__stars label svg { width: 34px; height: 34px; fill: currentColor; stroke: none; transition: transform .1s ease; }
+  .rv__stars label:hover svg { transform: scale(1.1); }
+  .rv__stars input:checked ~ label, .rv__stars label:hover, .rv__stars label:hover ~ label { color: #F5B301; }
+  .rv__stars input:focus-visible + label { outline: 2px solid var(--green); }
+  .rv__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .rv__consent { display: flex; gap: 10px; align-items: flex-start; font-size: var(--fs-sm); }
+  .rv__consent input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--green); }
+  .rv__form > .err { color: #B42318; font-size: var(--fs-xs); font-weight: 600; margin-top: -10px; }
+  .rv__msg { padding: 12px 16px; border-radius: var(--r-md); font-weight: 600; font-size: var(--fs-sm); }
+  .rv__msg.ok { background: var(--mint); color: var(--green); }
+  .rv__msg.bad { background: #FEF3F2; color: #B42318; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>

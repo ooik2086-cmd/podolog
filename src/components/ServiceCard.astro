@@ -1,0 +1,32 @@
+---
+import type { Service } from '../data/services';
+import Icon from './Icon.astro';
+import { getLang, localize } from '../i18n';
+import { ui } from '../i18n/ui';
+import { fmtFrom } from '../data/prices';
+
+interface Props { service: Service }
+const { service: s } = Astro.props;
+const lang = getLang(Astro);
+const t = ui[lang];
+---
+<a class="card card--link svc photo-card" href={localize(lang, `/services/${s.slug}`)}>
+  <img class="photo-card__bg" src={s.image} alt="" loading="lazy" decoding="async" style={`object-position: ${s.imagePos ?? 'center'}`} />
+  <div class="photo-card__body">
+    {!s.confirmed && <span class="chip chip--warn">{t.tbd}</span>}
+    <h3>{s.title}</h3>
+    <p class="small">{s.short}</p>
+    <div class="meta">
+      <span>{t.price}: <b>{s.price ? fmtFrom(lang, s.price) : t.priceTbd}</b></span>
+      {s.duration && <span>{t.duration}: <b>{s.duration}</b></span>}
+    </div>
+    <span class="card__more">{t.more} <Icon name="arrow" class="i16" /></span>
+  </div>
+</a>
+<style>
+  .svc { min-height: 380px; background: #14324D; }
+  /* Сурет картаның жоғарғы бөлігінде, процедура сәті мәтінмен жабылмайды */
+  .svc .photo-card__bg { height: 58%; }
+  .svc::after { background: linear-gradient(180deg, rgba(20,50,77,0) 30%, rgba(20,50,77,.85) 52%, #14324D 60%); }
+  .svc :global(.i16) { width: 16px; height: 16px; }
+</style>

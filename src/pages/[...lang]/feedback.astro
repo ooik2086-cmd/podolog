@@ -1,0 +1,177 @@
+---
+import { pageText } from '../../data/cms';
+// Ұсыныстар: форма серверге (/api/suggestions) жібереді, әкімшіге хабарлама барады.
+// Сервер жоқ болса (мысалы GitHub Pages), толтырылған мәтінмен WhatsApp ашылады.
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import { feedbackWhatsapp } from '../../data/site';
+import { getLang, localize, langPaths } from '../../i18n';
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const u = (p: string) => localize(lang, p);
+
+const T = pageText('feedback', {
+  kk: {
+    title: 'Ұсыныстар', desc: '«Подолог» орталығына ұсынысыңызды қалдырыңыз: әр пікір қызмет сапасын жақсартуға көмектеседі.',
+    h1: 'Ұсыныстарыңызды күтеміз',
+    lead: 'Сізге бұдан да сапалы қызмет көрсетіп, жұмысымызды үнемі жетілдіріп отыру үшін әр ұсынысыңызды қуана қабылдаймыз. Біз үшін сіздің әрбір пікіріңіз маңызды.',
+    whyH: 'Неге жазу керек',
+    why: [
+      ['star', 'Сапаны арттырамыз', 'Әр ұсынысты мұқият оқып, қызметімізді жақсартуға пайдаланамыз.'],
+      ['user', 'Сізді естиміз', 'Қабылдау, мамандар, кезек, бағалар, сайт: кез келген тақырыпта жаза аласыз.'],
+      ['shield', 'Құпиялылық сақталады', 'Ұсыныс жарияланбайды, оны тек орталық басшылығы оқиды. Атыңызды жазбауға да болады.'],
+    ],
+    formH: 'Ұсыныс жазу',
+    topic: 'Тақырып', topics: ['Қызмет сапасы', 'Мамандар', 'Жазылу және кезек', 'Бағалар', 'Сайт', 'Басқа'],
+    name: 'Атыңыз (міндетті емес)', text: 'Ұсынысыңыз', textPh: 'Не ұнады, нені жақсартуға болады?',
+    contact: 'Сізбен хабарласайық па?', contactYes: 'Иә, жауап күтемін',
+    phone: 'Телефон нөміріңіз', phonePh: '+7 7__ ___ __ __',
+    send: 'Жіберу', sending: 'Жіберілуде…', note: 'Ұсынысыңыз орталық басшылығына бірден жетеді.',
+    err: 'Ұсынысыңызды жазыңыз (кемінде 5 таңба).', errPhone: 'Телефон нөмірін толық жазыңыз.', errRate: 'Тым жиі жіберілді. Кейінірек қайталап көріңіз.', errFast: 'Тым тез жіберілді. Бірнеше секундтан соң қайталаңыз.', errServer: 'Жіберу мүмкін болмады. Кейінірек қайталап көріңіз.',
+    msgHead: 'Сәлеметсіз бе! «Подолог» орталығына ұсыныс:', msgTopic: 'Тақырып', msgName: 'Аты', msgReply: 'Жауап күтемін',
+    thanks: 'Рақмет! Сіздің ұсыныстарыңыз бізді жақсартады.',
+  },
+  ru: {
+    title: 'Предложения', desc: 'Оставьте предложение центру «Подолог»: каждое мнение помогает нам улучшать качество услуг.',
+    h1: 'Будем рады вашим предложениям',
+    lead: 'Чтобы обслуживать вас ещё лучше и постоянно повышать качество нашей работы, мы с радостью принимаем ваши предложения. Каждое из них по-настоящему важно для нас.',
+    whyH: 'Зачем писать',
+    why: [
+      ['star', 'Повышаем качество', 'Внимательно читаем каждое предложение и используем его, чтобы стать лучше.'],
+      ['user', 'Слышим вас', 'Приём, специалисты, очередь, цены, сайт: пишите на любую тему.'],
+      ['shield', 'Конфиденциально', 'Предложения не публикуются, их читает только руководство центра. Имя указывать необязательно.'],
+    ],
+    formH: 'Написать предложение',
+    topic: 'Тема', topics: ['Качество услуг', 'Специалисты', 'Запись и очередь', 'Цены', 'Сайт', 'Другое'],
+    name: 'Ваше имя (необязательно)', text: 'Ваше предложение', textPh: 'Что понравилось, что можно улучшить?',
+    contact: 'Связаться с вами?', contactYes: 'Да, жду ответа',
+    phone: 'Ваш номер телефона', phonePh: '+7 7__ ___ __ __',
+    send: 'Отправить', sending: 'Отправляем…', note: 'Ваше предложение сразу получит руководство центра.',
+    err: 'Напишите ваше предложение (не менее 5 символов).', errPhone: 'Укажите номер телефона полностью.', errRate: 'Слишком часто. Попробуйте позже.', errFast: 'Отправлено слишком быстро. Попробуйте через несколько секунд.', errServer: 'Не удалось отправить. Попробуйте позже.',
+    msgHead: 'Здравствуйте! Предложение для центра «Подолог»:', msgTopic: 'Тема', msgName: 'Имя', msgReply: 'Жду ответа',
+    thanks: 'Спасибо! Ваши предложения помогают нам становиться лучше.',
+  },
+  en: {
+    title: 'Suggestions', desc: 'Leave a suggestion for the Podolog center: every opinion helps us improve the quality of our services.',
+    h1: 'We welcome your suggestions',
+    lead: 'To serve you even better and keep raising the quality of our work, we gladly welcome your suggestions. Every one of them truly matters to us.',
+    whyH: 'Why write to us',
+    why: [
+      ['star', 'We raise quality', 'We read every suggestion carefully and use it to get better.'],
+      ['user', 'We listen', 'Appointments, specialists, waiting, prices, the website: write about anything.'],
+      ['shield', 'Confidential', 'Suggestions are not published, only the center’s management reads them. Your name is optional.'],
+    ],
+    formH: 'Write a suggestion',
+    topic: 'Topic', topics: ['Service quality', 'Specialists', 'Booking and waiting', 'Prices', 'Website', 'Other'],
+    name: 'Your name (optional)', text: 'Your suggestion', textPh: 'What did you like, what could be improved?',
+    contact: 'Should we contact you?', contactYes: 'Yes, I would like a reply',
+    phone: 'Your phone number', phonePh: '+7 7__ ___ __ __',
+    send: 'Send', sending: 'Sending…', note: 'Your suggestion goes straight to the center’s management.',
+    err: 'Please write your suggestion (at least 5 characters).', errPhone: 'Please enter your full phone number.', errRate: 'Too many messages. Please try again later.', errFast: 'Sent too quickly. Please try again in a few seconds.', errServer: 'Could not send. Please try again later.',
+    msgHead: 'Hello! A suggestion for the Podolog center:', msgTopic: 'Topic', msgName: 'Name', msgReply: 'I would like a reply',
+    thanks: 'Thank you! Your suggestions help us get better.',
+  },
+})[lang];
+const CT = { phone: feedbackWhatsapp, head: T.msgHead, topicL: T.msgTopic, nameL: T.msgName, phoneL: T.phone, reply: T.msgReply, err: T.err, errPhone: T.errPhone, errs: { rate: T.errRate, fast: T.errFast, phone: T.errPhone, text: T.err, server: T.errServer }, thanks: T.thanks, send: T.send, sending: T.sending };
+---
+<Base title={T.title} path="/feedback" description={T.desc}>
+  <PageHero title={T.h1} lead={T.lead} crumbs={[{ href: '/feedback', label: T.title }]} />
+
+  <section class="section" style="padding-top: 32px;">
+    <div class="wrap fb">
+      <form class="card form fb__form" data-fb novalidate>
+        <h2>{T.formH}</h2>
+        <div class="field">
+          <label for="fb-topic">{T.topic}</label>
+          <select id="fb-topic" name="topic">{T.topics.map((t) => <option>{t}</option>)}</select>
+        </div>
+        <div class="field">
+          <label for="fb-text">{T.text}</label>
+          <textarea id="fb-text" name="text" rows="6" maxlength="1500" placeholder={T.textPh} required></textarea>
+          <span class="err" data-err hidden></span>
+        </div>
+        <div class="field">
+          <label for="fb-name">{T.name}</label>
+          <input id="fb-name" name="name" autocomplete="given-name" maxlength="60" />
+        </div>
+        <label class="fb__check"><input type="checkbox" name="reply" data-reply /><span>{T.contact} {T.contactYes}</span></label>
+        <div class="field" data-phone hidden>
+          <label for="fb-phone">{T.phone}</label>
+          <input id="fb-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder={T.phonePh} />
+          <span class="err" data-err-phone hidden></span>
+        </div>
+        <!-- Боттарға арналған тұзақ: адам бұл өрісті көрмейді -->
+        <div class="fb__hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
+        <button class="btn btn--primary" type="submit" data-send>{T.send}</button>
+        <p class="muted small">{T.note}</p>
+        <p class="fb__ok" data-ok role="status" hidden></p>
+      </form>
+
+      <div class="stack-lg fb__why">
+        <h2>{T.whyH}</h2>
+        {T.why.map(([ic, h, d]) => (
+          <div class="fb__item">
+            <div class="icon-badge"><Icon name={ic as any} /></div>
+            <div><h3>{h}</h3><p class="muted small">{d}</p></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script define:vars={{ CT }}>
+  const f = document.querySelector('[data-fb]');
+  const openedAt = Date.now();
+  const phoneBox = f?.querySelector('[data-phone]');
+  f?.querySelector('[data-reply]')?.addEventListener('change', (e) => { phoneBox.hidden = !e.target.checked; });
+  const say = (box, text) => { box.textContent = text; box.hidden = !text; };
+  // Сервер жоқ кезде: дайын мәтінмен WhatsApp
+  const viaWhatsApp = (d) => {
+    const lines = [CT.head, '', `${CT.topicL}: ${d.topic}`, '', d.text];
+    if (d.name) lines.push('', `${CT.nameL}: ${d.name}`);
+    if (d.phone) lines.push(`${CT.phoneL}: ${d.phone}`);
+    if (d.reply) lines.push(CT.reply);
+    location.href = `https://wa.me/${CT.phone}?text=${encodeURIComponent(lines.join('\n'))}`;
+  };
+  f?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const el = f.elements;
+    const err = f.querySelector('[data-err]');
+    const errP = f.querySelector('[data-err-phone]');
+    const ok = f.querySelector('[data-ok]');
+    say(ok, ''); say(err, ''); say(errP, '');
+    el.text.removeAttribute('aria-invalid'); el.phone.removeAttribute('aria-invalid');
+    const d = { topic: el.topic.value, text: el.text.value.trim(), name: el.name.value.trim(), reply: el.reply.checked, phone: el.reply.checked ? el.phone.value.trim() : '', website: el.website.value, elapsed: Date.now() - openedAt };
+    if (d.text.length < 5) { say(err, CT.err); el.text.setAttribute('aria-invalid', 'true'); el.text.focus(); return; }
+    const digits = d.phone.replace(/\D/g, '');
+    if (d.phone && (digits.length < 10 || digits.length > 15)) { say(errP, CT.errPhone); el.phone.setAttribute('aria-invalid', 'true'); el.phone.focus(); return; }
+    const btn = f.querySelector('[data-send]');
+    btn.disabled = true; btn.textContent = CT.sending;
+    try {
+      const r = await fetch('/api/suggestions', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(d) });
+      if (r.status === 404 || r.status === 405 || r.status >= 500) return viaWhatsApp(d);
+      const res = await r.json().catch(() => ({}));
+      if (!r.ok) { say(err, CT.errs[res.error] || CT.errs.server); return; }
+      f.reset(); phoneBox.hidden = true;
+      say(ok, CT.thanks);
+    } catch { viaWhatsApp(d); }
+    finally { btn.disabled = false; btn.textContent = CT.send; }
+  });
+</script>
+
+<style>
+  .fb { display: grid; gap: 32px; align-items: start; }
+  @media (min-width: 900px) { .fb { grid-template-columns: 1.2fr .8fr; gap: 48px; } }
+  .fb__form { max-width: 640px; }
+  .fb__item { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 16px; align-items: start; }
+  .fb__item h3 { font-size: var(--fs-md); margin-bottom: 4px; }
+  .fb__item p { margin: 0; }
+  .fb__check { display: flex; gap: 10px; align-items: flex-start; font-size: var(--fs-sm); }
+  .fb__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .fb__check input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--green); }
+  .fb__ok { margin: 0; padding: 12px 16px; border-radius: var(--r-md); background: var(--mint); color: var(--green); font-weight: 600; font-size: var(--fs-sm); }
+</style>

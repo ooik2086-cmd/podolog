@@ -1,0 +1,46 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Reviews from '../../components/Reviews.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { getLang, langPaths } from '../../i18n';
+import { videosFor } from '../../data/videos';
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const revs = videosFor('reviews', lang);
+const procs = videosFor('procedures', lang);
+const T = pageText('reviews', {
+  kk: { title: 'Клиенттер пікірі', desc: '«Подолог» орталығының клиенттері қалдырған пікірлер. Өз пікіріңізді қалдырыңыз.', lead: 'Қабылдауда болдыңыз ба? Тәжірибеңізбен бөлісіңіз, бұл басқаларға маман таңдауға көмектеседі.', vidH: 'Видео-пікірлер', procH: 'Процедурадан көріністер', procText: 'Қабылдауда не болатынын және нәтижені өз көзіңізбен көріңіз.' },
+  ru: { title: 'Отзывы клиентов', desc: 'Отзывы клиентов центра «Подолог». Оставьте свой отзыв.', lead: 'Были у нас на приёме? Поделитесь впечатлениями, это поможет другим выбрать специалиста.', vidH: 'Видео-отзывы', procH: 'Кадры с процедур', procText: 'Посмотрите, как проходит приём и какой получается результат.' },
+  en: { title: 'Client reviews', desc: 'Reviews from clients of the Podolog center. Leave your own review.', lead: 'Have you visited us? Share your experience, it helps others choose a specialist.', vidH: 'Video reviews', procH: 'From our procedures', procText: 'See what happens at an appointment and what the result looks like.' },
+})[lang];
+---
+<Base title={T.title} path="/reviews" description={T.desc}>
+  <PageHero title={T.title} lead={T.lead} crumbs={[{ href: '/reviews', label: T.title }]} />
+  <section class="section">
+    <div class="wrap stack-lg">
+      {revs.length > 0 && <h2>{T.vidH}</h2>}
+      {revs.length > 0 && <div class="vids">
+        {revs.map((v) => <video src={v.src} poster={v.poster || undefined} controls playsinline preload="none" title={v.caption || undefined}></video>)}
+      </div>}
+      {procs.length > 0 && <div class="stack"><h2>{T.procH}</h2><p class="muted">{T.procText}</p></div>}
+      {procs.length > 0 && <div class="vids">
+        {procs.map((v) => <video src={v.src} poster={v.poster || undefined} controls playsinline preload="none" title={v.caption || undefined}></video>)}
+      </div>}
+    </div>
+  </section>
+  <section class="section section--mint">
+    <div class="wrap">
+      <Reviews mode="page" />
+    </div>
+  </section>
+  <CtaBand />
+</Base>
+<style>
+  .vids { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 760px) { .vids { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .vids video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: var(--r-lg); background: #000; }
+</style>

@@ -1,0 +1,13 @@
+---
+import Icon from './Icon.astro';
+import { waLink, type WaTopic } from '../data/site';
+import { getLang, localize } from '../i18n';
+import { ui } from '../i18n/ui';
+interface Props { topic?: WaTopic; label?: string; class?: string; extra?: string }
+const lang = getLang(Astro);
+const { topic = 'general', label = ui[lang].waWrite, class: cls = '', extra = '' } = Astro.props;
+const href = waLink(topic, extra, lang);
+---
+<a class={`btn btn--wa ${cls}`} href={href ?? localize(lang, '/contacts')} target={href ? '_blank' : undefined} rel={href ? 'noopener' : undefined} data-track={`wa:${topic}`}>
+  <Icon name="whatsapp" />{label}
+</a>

@@ -1,0 +1,281 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Photo from '../../components/Photo.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { siteFor } from '../../data/site';
+import { videosFor } from '../../data/videos';
+import { getLang, localize, langPaths } from '../../i18n';
+
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const conV = videosFor('congress', lang)[0];
+const u = (p: string) => localize(lang, p);
+const site = siteFor(lang);
+const y = site.experienceYears;
+// Орталықтың баннеріндегі төрт қағида
+const T = pageText('about', {
+  kk: {
+    missionLink: 'Миссия және стандарттар',
+    eqH: 'Жабдық және стерильділік', eqText: 'Кабинет подологиялық жұмысқа арнайы жабдықталған. Әр клиентке стерильді құрал қолданылады.',
+    eqPh: ['Подологиялық кресло', 'Аппараттық өңдеу', 'Құралдарды стерильдеу'],
+    eq: [
+      ['Шаң сорғышы бар подологиялық аппарат', 'Тырнақ пен қатайған теріні өңдейді, шаңды бірден сорып алады.'],
+      ['Подологиялық кресло', 'Клиентке ыңғайлы, маманға аяқты дұрыс бұрышта өңдеуге мүмкіндік береді.'],
+      ['Үлкейткіш шам', 'Тырнақ пен терідегі ұсақ өзгерістерді анық көруге көмектеседі.'],
+      ['Автоклав', 'Қайта қолданылатын құралдарды жоғары температурада стерильдейді.'],
+      ['Ультрадыбыстық жуғыш', 'Стерильдеу алдында құралдарды терең тазартады.'],
+      ['Плантоскоп және табан қысымын өлшеу', 'Табанға түсетін жүктемені көрсетеді, жеке ұлтарақ таңдауға көмектеседі.'],
+      ['Монофиламент', 'Табанның сезімталдығын тексереді, әсіресе қант диабеті кезінде.'],
+      ['Тырнақты түзету жүйелері', 'Титан жібі, серіппе және пластиналар ішке өскен тырнақты түзетеді.'],
+      ['Кәсіби құралдар мен фрезалар', 'Қысқыштар, зондтар, кюреткалар, бір реттік жүздер.'],
+    ],
+    eqSteril: 'Тазарту, дезинфекция және стерильдеу бір-бірін алмастырмайтын бөлек кезеңдер. Біз үшеуін де орындаймыз.',
+    learnH: 'Біз үнемі оқимыз', learnText: 'Қазақстан подологтарының V конгресі, Алматы, 2025. Мамандарымыз конгрестер мен семинарларға қатысып, жаңа әдістерді үйренеді.',
+    centerH: 'Орталық туралы',
+    centerIntro: ['«Подолог» орталығы — әр детальға мән берілетін табанға кәсіби күтім.', 'Біздің орталықты таңдай отырып, сіз табаныңызды өз жұмысына білімін, тәжірибесін және заманауи технологияларды салатын командаға сеніп тапсырасыз.'],
+    centerPts: [
+      ['Біз сіздің күтіміңіздің сапасына инвестиция саламыз', 'Қымбат еуропалық жабдықта жұмыс істейміз, еуропалық, ресейлік және қазақстандық мамандардан оқыдық. Әр процедураның артында кәсіби дайындық, мұқияттылық және жұмыс әдістерін саналы таңдау тұр.'],
+      ['Орталықта ортопедия бойынша екі маман қабылдайды', 'Бұл тек тері мен тырнаққа ғана емес, табанның өз ерекшеліктеріне де назар аударуға мүмкіндік береді. Кеңес, тексеру және плантоскоппен диагностика табанның тірегін бағалауға және әрі қарайғы әрекеттерді, жеке ұлтарақтың қажеттілігін және лайықты күтімді талқылауға көмектеседі.'],
+      ['Мұнда сіз назар мен түсінікті ұсыныстар аласыз', 'Мамандарымыз табан күтімі мен аяқ киім таңдау бойынша тегін ұсыныстар да береді. Неге назар аудару керек екенін және қандай жағдайда қосымша тексеру қажет екенін түсіндіреді. Кеңес пен диагностиканың шарттары мен бағасын жазылу кезінде нақтылауға болады.'],
+      ['Подология мен ортопедия бір орталықта', 'Кешенді көмек алу сізге ыңғайлы болуы және жұмыстың әр кезеңін түсінуіңіз үшін подологиялық күтім мен ортопедиялық тәсілді бір орталықта біріктіреміз.'],
+    ],
+    centerValue: 'Орталығымыздың құндылығы — мамандардың біліктілігі, жабдықталуы және сіздің жағдайыңызға деген назар.',
+    ctaTitle: 'Табаныңыздың күтімін кәсіпқойларға сеніп тапсырыңыз', ctaText: 'Жазылыңыз — сіздің мәселеңізден бастаймыз.',
+    title: 'Біз туралы', desc: `«Подолог» подология және ортопедия орталығы, ${site.city}. Жетекшісі ${site.head}.`,
+    lead: `${site.city} қаласындағы табан мен тырнақ күтімі, ортопедиялық ұлтарақтар және подологияға оқыту орталығы.`,
+    headAlt: `${site.head}, орталық жетекшісі, подолог-ортопед`, headNeed: `${site.head} портреті`, headChip: 'Орталық жетекшісі',
+    fullHead: 'Ким Жанна Амантурлиевна',
+    headText: `Орталықтың жетекшісі және жетекші маманы, подолог-ортопед. Медициналық білімі бар, подологиядағы тәжірибесі ${y} жыл. Подологтарға арналған курстар өткізеді.`,
+    headNote: 'Толық өмірбаяны мен жетістіктері сертификаттар бойынша толтырылады.', certs: 'Сертификаттарды қарау',
+    values: [
+      ['Медициналық тәсіл', 'Құралдар стерильді шкафтан, процедура медициналық стандартпен'],
+      ['Тәжірибелі мамандар', `Жетекшінің тәжірибесі ${y} жыл, медициналық білімі бар`],
+      ['Премиум материалдар', 'Ұлтарақтар мен күтім құралдары кәсіби брендтерден'],
+      ['Жеке тәсіл', 'Әр адамның табаны мен қажеттілігі жеке бағаланады'],
+    ],
+    teamH: 'Біздің команда', teamText: 'Подологтар мен подолог-ортопедтер бір командада жұмыс істейді.',
+    teamAlt: '«Подолог» орталығының командасы', teamNeed: 'команда', portrait: 'портрет',
+    zChip: 'Жетекші маман', zText: `Подолог-ортопед, тәжірибесі ${y} жыл.`,
+    sName: 'Сергей Анатольевич', sChip: 'Подолог-ортопед', sText: 'Ортопедиялық ұлтарақтар мен табан диагностикасы (FootMaster).',
+    aName: 'Искендирова Айгерим Куандыковна', aChip: 'Подолог', aText: 'Табан мен тырнақ күтімі.',
+    lName: 'Лим Светлана Викторовна', lChip: 'Жетекші маман', lText: 'Подолог. Табан мен тырнақ күтімі.',
+  },
+  ru: {
+    missionLink: 'Наша миссия и стандарты',
+    eqH: 'Оборудование и стерильность', eqText: 'Кабинет специально оснащён для подологической работы. Для каждого клиента используются стерильные инструменты.',
+    eqPh: ['Подологическое кресло', 'Аппаратная обработка', 'Стерилизация инструментов'],
+    eq: [
+      ['Подологический аппарат с пылесосом', 'Обрабатывает ногти и огрубевшую кожу, сразу собирает пыль.'],
+      ['Подологическое кресло', 'Удобно клиенту и позволяет специалисту работать под правильным углом.'],
+      ['Лампа-лупа', 'Помогает чётко видеть мелкие изменения ногтей и кожи.'],
+      ['Автоклав', 'Стерилизует многоразовые инструменты при высокой температуре.'],
+      ['Ультразвуковая мойка', 'Глубоко очищает инструменты перед стерилизацией.'],
+      ['Плантоскоп и измерение давления стопы', 'Показывает нагрузку на стопу и помогает подобрать индивидуальные стельки.'],
+      ['Монофиламент', 'Проверяет чувствительность стопы, особенно при сахарном диабете.'],
+      ['Системы коррекции ногтей', 'Титановая нить, скобы и пластины исправляют вросший ноготь.'],
+      ['Профессиональные инструменты и фрезы', 'Кусачки, зонды, кюретки, одноразовые лезвия.'],
+    ],
+    eqSteril: 'Очистка, дезинфекция и стерилизация — отдельные этапы, которые не заменяют друг друга. Мы выполняем все три.',
+    learnH: 'Мы постоянно учимся', learnText: 'V Конгресс подологов Казахстана, Алматы, 2025. Наши специалисты участвуют в конгрессах и семинарах и изучают новые методы.',
+    centerH: 'О центре',
+    centerIntro: ['Центр «Подолог» — профессиональная забота о стопах, в которой важна каждая деталь.', 'Выбирая наш центр, вы доверяете свои стопы команде, которая вкладывает в свою работу знания, опыт и современные технологии.'],
+    centerPts: [
+      ['Мы инвестируем в качество вашего ухода', 'Работаем на дорогостоящем европейском оборудовании и обучались у европейских, российских и казахстанских специалистов. За каждой процедурой стоят профессиональная подготовка, внимательность и осознанный выбор методов работы.'],
+      ['В нашем центре принимают два специалиста по ортопедии', 'Это возможность уделить внимание не только коже и ногтям, но и особенностям самой стопы. Консультации, осмотр и диагностика на плантоскопе помогают оценить её опору и обсудить дальнейшие действия, необходимость индивидуальных стелек и подходящий уход.'],
+      ['Здесь вы получаете внимание и понятные рекомендации', 'Наши специалисты также дают бесплатные рекомендации по уходу за стопами и выбору обуви. Объясняют, на что обратить внимание и в каких случаях необходимо дополнительное обследование. Условия и стоимость консультаций и диагностики можно уточнить при записи.'],
+      ['Подология и ортопедия в одном центре', 'Мы объединяем подологический уход и ортопедический подход в одном центре, чтобы вам было удобно получать комплексную помощь и понимать каждый этап работы.'],
+    ],
+    centerValue: 'Ценность нашего центра — в квалификации специалистов, оснащении и внимании к вашей ситуации.',
+    ctaTitle: 'Доверьте заботу о своих стопах профессионалам', ctaText: 'Запишитесь — начнём с вашей задачи.',
+    title: 'О нас', desc: `Центр подологии и ортопедии «Подолог», ${site.city}. Руководитель ${site.head}.`,
+    lead: `Центр ухода за стопами и ногтями, ортопедических стелек и обучения подологии в городе ${site.city}.`,
+    headAlt: `${site.head}, руководитель центра, подолог-ортопед`, headNeed: `портрет: ${site.head}`, headChip: 'Руководитель центра',
+    fullHead: 'Ким Жанна Амантурлиевна',
+    headText: `Руководитель и ведущий специалист центра, подолог-ортопед. Медицинское образование, опыт в подологии ${y} лет. Проводит курсы для подологов.`,
+    headNote: 'Подробная биография и достижения будут дополнены по сертификатам.', certs: 'Смотреть сертификаты',
+    values: [
+      ['Медицинский подход', 'Инструменты из стерильного шкафа, процедуры по медицинским стандартам'],
+      ['Опытные специалисты', `Опыт руководителя ${y} лет, медицинское образование`],
+      ['Премиальные материалы', 'Стельки и средства ухода от профессиональных брендов'],
+      ['Индивидуальный подход', 'Стопы и потребности каждого оцениваются индивидуально'],
+    ],
+    teamH: 'Наша команда', teamText: 'Подологи и подологи-ортопеды работают одной командой.',
+    teamAlt: 'Команда центра «Подолог»', teamNeed: 'команда', portrait: 'портрет',
+    zChip: 'Ведущий специалист', zText: `Подолог-ортопед, опыт ${y} лет.`,
+    sName: 'Сергей Анатольевич', sChip: 'Подолог-ортопед', sText: 'Ортопедические стельки и диагностика стопы (FootMaster).',
+    aName: 'Искендирова Айгерим Куандыковна', aChip: 'Подолог', aText: 'Уход за стопами и ногтями.',
+    lName: 'Лим Светлана Викторовна', lChip: 'Ведущий специалист', lText: 'Подолог. Уход за стопами и ногтями.',
+  },
+  en: {
+    missionLink: 'Our mission and standards',
+    eqH: 'Equipment and sterility', eqText: 'The room is specially equipped for podiatry. Sterile instruments are used for every client.',
+    eqPh: ['Podiatry chair', 'Hardware treatment', 'Instrument sterilisation'],
+    eq: [
+      ['Podiatry unit with dust extraction', 'Treats nails and hard skin and removes the dust right away.'],
+      ['Podiatry chair', 'Comfortable for the client and lets the specialist work at the right angle.'],
+      ['Magnifying lamp', 'Helps to see small changes in nails and skin clearly.'],
+      ['Autoclave', 'Sterilises reusable instruments at high temperature.'],
+      ['Ultrasonic cleaner', 'Deep-cleans instruments before sterilisation.'],
+      ['Podoscope and foot pressure measurement', 'Shows the load on the foot and helps to choose custom insoles.'],
+      ['Monofilament', 'Tests foot sensitivity, especially in diabetes.'],
+      ['Nail correction systems', 'Titanium wire, braces and plates correct ingrown nails.'],
+      ['Professional instruments and burs', 'Nippers, probes, curettes, single-use blades.'],
+    ],
+    eqSteril: 'Cleaning, disinfection and sterilisation are separate stages that do not replace each other. We carry out all three.',
+    learnH: 'We keep learning', learnText: 'The 5th Congress of Podiatrists of Kazakhstan, Almaty, 2025. Our specialists take part in congresses and seminars to learn new methods.',
+    centerH: 'About the center',
+    centerIntro: ['The Podolog center offers professional foot care where every detail matters.', 'When you choose our center, you entrust your feet to a team that puts knowledge, experience and modern technology into its work.'],
+    centerPts: [
+      ['We invest in the quality of your care', 'We work on high-end European equipment and trained with specialists from Europe, Russia and Kazakhstan. Every procedure is backed by professional training, attention to detail and a deliberate choice of methods.'],
+      ['Two orthopedic specialists see patients here', 'This lets us look not only at skin and nails but at the foot itself. Consultations, examination and plantoscope diagnostics help assess how your foot bears weight and discuss next steps, whether you need custom insoles and what care suits you.'],
+      ['Attention and clear advice', 'Our specialists also give free advice on foot care and choosing shoes. They explain what to watch for and when further examination is needed. Terms and prices of consultations and diagnostics can be confirmed when you book.'],
+      ['Podiatry and orthopedics in one center', 'We combine podiatric care and an orthopedic approach in one center, so it is easy for you to get comprehensive help and understand every stage of the work.'],
+    ],
+    centerValue: 'What makes our center valuable is the skill of our specialists, our equipment and our attention to your situation.',
+    ctaTitle: 'Trust the care of your feet to professionals', ctaText: 'Book an appointment and we will start with your concern.',
+    title: 'About us', desc: `Podolog Podiatry and Orthopedics Center, ${site.city}. Head: ${site.head}.`,
+    lead: `A center for foot and nail care, orthopedic insoles and podiatry training in ${site.city}.`,
+    headAlt: `${site.head}, head of the center, podiatrist and orthopedist`, headNeed: `portrait of ${site.head}`, headChip: 'Head of the center',
+    fullHead: 'Zhanna Kim',
+    headText: `Head and lead specialist of the center, podiatrist and orthopedist. Medical education and ${y} years of experience in podiatry. Teaches courses for podiatrists.`,
+    headNote: 'A full biography and achievements will be added based on her certificates.', certs: 'View certificates',
+    values: [
+      ['Medical approach', 'Instruments from a sterile cabinet, procedures to medical standards'],
+      ['Experienced specialists', `The head has ${y} years of experience and a medical education`],
+      ['Premium materials', 'Insoles and care products from professional brands'],
+      ['Individual approach', 'Every person’s feet and needs are assessed individually'],
+    ],
+    teamH: 'Our team', teamText: 'Podiatrists and podiatric orthopedists work together as one team.',
+    teamAlt: 'The Podolog center team', teamNeed: 'team', portrait: 'portrait',
+    zChip: 'Lead specialist', zText: `Podiatrist and orthopedist, ${y} years of experience.`,
+    sName: 'Sergei Anatolyevich', sChip: 'Podiatrist and orthopedist', sText: 'Orthopedic insoles and foot diagnostics (FootMaster).',
+    aName: 'Aigerim Iskendirova', aChip: 'Podiatrist', aText: 'Foot and nail care.',
+    lName: 'Svetlana Lim', lChip: 'Lead specialist', lText: 'Podiatrist. Foot and nail care.',
+  },
+})[lang];
+const icons = ['shield', 'award', 'insole', 'user'] as const;
+const values = T.values.map(([t, d], i) => ({ icon: icons[i], t, d }));
+const eqImg = [['unit-ai', '50% 35%'], ['chair-ai', '50% 60%'], ['lamp-ai', '75% 0%'], ['autoclave', '50% 50%'], ['ultrasonic', '50% 50%'], ['podoscope-ai', '50% 40%'], ['monofilament', '50% 50%'], ['correction-ai', '50% 45%'], ['tools', '50% 60%']];
+---
+<Base title={T.title} path="/about" description={T.desc}>
+  <PageHero eyebrow={T.title} title={site.fullName} lead={T.lead} crumbs={[{ href: '/about', label: T.title }]} />
+  <section class="section wave" style="padding-top: 40px;">
+    <img class="wave__bg" src="/media/about-bg.webp" alt="" aria-hidden="true" loading="lazy" />
+    <div class="wrap stack-lg">
+      <div class="sec-head"><h2>{T.centerH}</h2>{T.centerIntro.map((t) => <p class="lead-p">{t}</p>)}</div>
+      <div class="pts">
+        {T.centerPts.map(([h, t]) => <div class="card pt"><h3>{h}</h3><p class="muted">{t}</p></div>)}
+      </div>
+      <p class="center-val">{T.centerValue}</p>
+      <a class="btn btn--ghost" href={u('/mission')} style="width: fit-content;">{T.missionLink}<Icon name="arrow" /></a>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap stack-lg">
+      <div class="sec-head"><h2>{T.eqH}</h2><p class="muted">{T.eqText}</p></div>
+      <div class="eq-ph">{['cabinet-white', 'nail-drill', 'steril'].map((f, i) => <figure><img src={`/media/gallery/${f}-sm.webp`} alt={T.eqPh[i]} loading="lazy" decoding="async" /><figcaption>{T.eqPh[i]}</figcaption></figure>)}</div>
+      <ul class="eq">{T.eq.map(([h, t], i) => <li><img src={`/media/equip/eq-${eqImg[i][0]}-sm.webp`} alt={h} loading="lazy" decoding="async" style={`object-position:${eqImg[i][1]}`} /><div><strong>{h}</strong><span class="muted small">{t}</span></div></li>)}</ul>
+      <p class="how-result eq-note"><Icon name="shield" />{T.eqSteril}</p>
+    </div>
+  </section>
+  <section class="section section--mint">
+    <div class="wrap grid grid--2" style="align-items: start;">
+      <Photo src="/media/team/zhanna-kim.webp" alt={T.headAlt} need={T.headNeed} shape="tall" pos="50% 25%" />
+      <div class="stack-lg">
+        <div class="stack">
+          <span class="chip">{T.headChip}</span>
+          <h2>{T.fullHead}</h2>
+          <p class="muted">{T.headText}</p>
+          <p class="small muted">{T.headNote}</p>
+          <a class="btn btn--ghost" href={u('/certificates')} style="width: fit-content;"><Icon name="award" />{T.certs}</a>
+        </div>
+        <div class="grid">
+          {values.map((v) => (
+            <div class="val"><div class="icon-badge"><Icon name={v.icon} /></div><div><strong>{v.t}</strong><p class="muted small">{v.d}</p></div></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head"><h2>{T.teamH}</h2><p class="muted">{T.teamText}</p></div>
+      <div class="team">
+        <Photo src="/media/real/team4-logo.webp" alt={T.teamAlt} need={T.teamNeed} pos="50% 62%" class="team__photo" />
+        <div class="specs">
+          <article class="spec card">
+            <Photo src="/media/team/zhanna-kim-face.webp" alt={site.head} need={T.portrait} shape="tall" />
+            <div class="stack"><span class="chip">{T.zChip}</span><h3>{T.fullHead}</h3><p class="muted small">{T.zText}</p></div>
+          </article>
+          <article class="spec card">
+            <Photo src="/media/team/svetlana-lim-face.webp" alt={T.lName} need={T.portrait} shape="tall" />
+            <div class="stack"><span class="chip">{T.lChip}</span><h3>{T.lName}</h3><p class="muted small">{T.lText}</p></div>
+          </article>
+          <article class="spec card">
+            <Photo src="/media/team/sergei-kim-face.webp" alt={T.sName} need={T.portrait} shape="tall" />
+            <div class="stack"><span class="chip">{T.sChip}</span><h3>{T.sName}</h3><p class="muted small">{T.sText}</p></div>
+          </article>
+          <article class="spec card">
+            <Photo src="/media/team/aigerim-iskendirova-face.webp" alt={T.aName} need={T.portrait} shape="tall" />
+            <div class="stack"><span class="chip">{T.aChip}</span><h3>{T.aName}</h3><p class="muted small">{T.aText}</p></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section section--mint">
+    <div class="wrap learn">
+      <div class="stack"><h2>{T.learnH}</h2><p class="muted">{T.learnText}</p></div>
+      <div class="learn__vs">
+        {conV && <video class="learn__v" src={conV.src} poster={conV.poster || undefined} controls playsinline preload="none"></video>}
+      </div>
+    </div>
+  </section>
+  <CtaBand title={T.ctaTitle} text={T.ctaText} />
+</Base>
+<style>
+  .eq-ph { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .eq-ph figure { margin: 0; display: grid; gap: 6px; }
+  .eq-ph img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--r-lg); }
+  .eq-ph figcaption { font-size: .85rem; font-weight: 700; color: var(--navy); }
+  .eq { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .eq li { display: grid; gap: 6px; align-content: start; }
+  .eq li img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; border-radius: var(--r-lg); background: #fff; }
+  .eq li div { display: grid; gap: 2px; }
+  .eq li strong { font-size: .85rem; line-height: 1.25; color: var(--navy); }
+  .eq li span { font-size: .75rem; line-height: 1.35; }
+  .eq-note { display: flex; gap: 10px; align-items: flex-start; margin: 0; padding: 14px 18px; border-radius: var(--r-md); background: var(--surface); color: var(--navy); font-weight: 700; }
+  .eq-note :global(svg) { flex: none; width: 22px; height: 22px; margin-top: 3px; }
+  .wave { position: relative; isolation: isolate; overflow: hidden; background: #3F5BD0; color: #fff; }
+  .wave__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+  .wave::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgba(20, 35, 110, .25); }
+  .wave h2, .wave .lead-p { color: #fff !important; }
+  .wave .pt { background: rgba(255, 255, 255, .9); backdrop-filter: blur(6px); border-color: rgba(255,255,255,.6); color: #28343D; }
+  .wave .pt p { color: #3B4954 !important; }
+  .wave .center-val { color: #fff; border-color: #9BE3C6; }
+  .wave .btn--ghost { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.8); }
+  .lead-p { margin: 0; font-size: var(--fs-lg); color: var(--text); }
+  .pts { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+  .pt { gap: 10px; }
+  .pt h3 { color: var(--navy); font-size: var(--fs-lg); margin: 0; }
+  .pt p { margin: 0; }
+  .center-val { margin: 0; padding: 4px 0 4px 18px; border-left: 3px solid var(--lime); color: var(--navy); font-weight: 700; font-size: var(--fs-lg); }
+  .learn { display: grid; gap: 20px; align-items: center; }
+  @media (min-width: 760px) { .learn { grid-template-columns: 1fr 360px; } }
+  .learn__vs { display: grid; }
+  .learn__v { width: 100%; max-width: 360px; aspect-ratio: 9 / 16; border-radius: var(--r-lg); background: #000; justify-self: center; object-fit: cover; }
+  .val { display: grid; grid-template-columns: 48px 1fr; gap: 16px; align-items: start; }
+  .val strong { color: var(--navy); }
+  .team { display: grid; gap: 20px; }
+  .specs { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+  .team :global(.team__photo) { aspect-ratio: 4 / 3; }
+  @media (min-width: 760px) { .team :global(.team__photo) { aspect-ratio: 16 / 9; } }
+  .spec { grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 18px; padding: 16px; }
+  .spec :global(img) { border-radius: var(--r-md) !important; }
+  .spec h3 { font-size: var(--fs-lg); }
+</style>

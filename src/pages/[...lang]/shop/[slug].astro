@@ -1,0 +1,148 @@
+---
+import { pageText } from '../../../data/cms';
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/Icon.astro';
+import WaButton from '../../../components/WaButton.astro';
+import ProductCard from '../../../components/ProductCard.astro';
+import { visibleProducts, visibleProductsFor, categoriesFor, productImage, audienceFor, sizeFor } from '../../../data/products';
+import { siteFor } from '../../../data/site';
+import { getLang, localize, langPaths } from '../../../i18n';
+import { ui } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return langPaths(() => visibleProducts.map((p) => ({ params: { slug: p.slug } })));
+}
+const lang = getLang(Astro);
+const u = (x: string) => localize(lang, x);
+const all = visibleProductsFor(lang);
+const p = all.find((x) => x.slug === Astro.params.slug)!;
+const cat = categoriesFor(lang).find((c) => c.id === p.category)!;
+const related = all.filter((x) => x.category === p.category && x.slug !== p.slug).slice(0, 4);
+const t = ui[lang];
+const T = pageText('shop-item', {
+  kk: { crumbs: 'Нан үгінділері', products: 'Өнімдер', size: 'Көлемі', art: 'арт.', priceNote: 'Маман тапсырысты растағанда хабарлайды', dec: 'Азайту', inc: 'Көбейту', qty: 'Саны', add: 'Себетке қосу', toCart: 'Себетке өту', about: 'Сипаттамасы', use: 'Қолдану тәсілі', ingr: 'Құрамы', notice: 'Косметикалық құрал, дәрі емес. Ауру белгілері болса, маманның кеңесін алыңыз. Сипаттама өндірушінің каталогынан алынды.', ask: 'Маманнан сұрау', same: 'Осы санаттан', allP: 'Барлық өнім' },
+  ru: { crumbs: 'Навигация', products: 'Продукция', size: 'Объём', art: 'арт.', priceNote: 'Специалист сообщит при подтверждении заказа', dec: 'Уменьшить', inc: 'Увеличить', qty: 'Количество', add: 'В корзину', toCart: 'Перейти в корзину', about: 'Описание', use: 'Способ применения', ingr: 'Состав', notice: 'Косметическое средство, не лекарство. При симптомах заболевания проконсультируйтесь со специалистом. Описание взято из каталога производителя.', ask: 'Спросить специалиста', same: 'Из этой категории', allP: 'Вся продукция' },
+  en: { crumbs: 'Breadcrumbs', products: 'Products', size: 'Size', art: 'item', priceNote: 'A specialist will tell you when confirming the order', dec: 'Decrease', inc: 'Increase', qty: 'Quantity', add: 'Add to cart', toCart: 'Go to cart', about: 'Description', use: 'How to use', ingr: 'Ingredients', notice: 'A cosmetic product, not a medicine. If you have symptoms of a condition, consult a specialist. Description taken from the manufacturer’s catalog.', ask: 'Ask a specialist', same: 'From this category', allP: 'All products' },
+})[lang];
+const site = siteFor(lang);
+const ld = {
+  '@context': 'https://schema.org', '@type': 'Product', name: p.name, description: p.short,
+  brand: { '@type': 'Brand', name: 'PodiaFarm' }, image: new URL(productImage(p), Astro.site).href,
+  sku: p.variants[0].art, category: cat.title,
+};
+---
+<Base title={p.name} path={`/shop/${p.slug}`} description={`${p.name}: ${p.short} PodiaFarm, ${site.city}.`}>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+  <section class="section pd">
+    <div class="wrap">
+      <nav class="crumbs" aria-label={T.crumbs}><a href={u('/')}>{t.nav.home}</a><span>/</span><a href={u('/shop')}>{T.products}</a><span>/</span><span>{cat.title}</span></nav>
+      <div class="pd__grid">
+        <div class="pd__img"><span class="p3d p3d--big"><span class="p3d__in"><img src={productImage(p)} alt={p.name} width="900" height="900" decoding="async" /><i class="p3d__glare"></i></span></span></div>
+        <div class="pd__info">
+          <div class="stack">
+            <div class="pd__chips"><span class="chip">{cat.title}</span>{p.isNew && <span class="chip pd__new">{t.isNew}</span>}<span class="chip pd__aud">{audienceFor(lang)[p.audience]}</span></div>
+            <h1 class="pd__title">{p.name}</h1>
+            <p class="pd__lead">{p.short}</p>
+          </div>
+
+          <fieldset class="pd__sizes">
+            <legend>{T.size}</legend>
+            {p.variants.map((v, i) => (
+              <label class="pd__size">
+                <input type="radio" name="size" value={v.size} checked={i === 0} />
+                <span><b>{sizeFor(lang, v.size)}</b><small>{T.art} {v.art}</small></span>
+              </label>
+            ))}
+          </fieldset>
+
+          <div class="pd__buy">
+            <div class="pd__price"><b data-pd-price={p.slug}>{t.priceLater}</b><span class="muted small">{T.priceNote}</span></div>
+            <div class="pd__row">
+              <div class="qty">
+                <button type="button" data-step="-1" aria-label={T.dec}><Icon name="minus" /></button>
+                <input id="qty" type="number" inputmode="numeric" min="1" max="99" value="1" aria-label={T.qty} />
+                <button type="button" data-step="1" aria-label={T.inc}><Icon name="plus" /></button>
+              </div>
+              <button class="btn btn--primary pd__add" type="button" data-add={p.slug} data-size-from='input[name="size"]' data-qty-from="#qty"><Icon name="cart" />{T.add}</button>
+            </div>
+            <a class="pd__tocart" href={u('/cart')} data-cart-link hidden>{T.toCart}<Icon name="arrow" /></a>
+          </div>
+
+          <div class="pd__text stack">
+            <h2>{T.about}</h2>
+            <p>{p.about}</p>
+            <h2>{T.use}</h2>
+            <p>{p.use}</p>
+            <h2>{p.slug === 'zhurnal-podologa' ? T.size : T.ingr}</h2>
+            <p class="muted">{p.ingredients}</p>
+          </div>
+          <p class="notice"><Icon name="info" /><span>{T.notice}</span></p>
+          <div class="btn-row"><WaButton topic="products" label={T.ask} /></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section section--mint">
+      <div class="wrap">
+        <div class="sec-head sec-head--row"><h2>{T.same}</h2><a class="card__more" href={u('/shop')}>{T.allP}<Icon name="arrow" /></a></div>
+        <div class="rel">{related.map((r) => <ProductCard p={r} />)}</div>
+      </div>
+    </section>
+  )}
+</Base>
+
+<script is:inline>
+  (() => {
+    const qty = document.getElementById('qty');
+    document.querySelectorAll('.qty [data-step]').forEach((b) => b.addEventListener('click', () => {
+      qty.value = String(Math.min(99, Math.max(1, (parseInt(qty.value, 10) || 1) + Number(b.dataset.step))));
+    }));
+    const link = document.querySelector('[data-cart-link]');
+    const sync = () => { link.hidden = !window.podoCart || window.podoCart.count() === 0; };
+    document.addEventListener('cart:change', sync);
+    sync();
+  })();
+</script>
+
+<style>
+  .pd { padding-top: 28px; }
+  .pd__grid { display: grid; gap: 32px; margin-top: 18px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); align-items: start; }
+  .pd__img { background: #EAF5F1; border: 1px solid var(--line); border-radius: var(--r-lg); aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; }
+  .pd__img .p3d { position: absolute; inset: 9%; }
+  .pd__img { position: relative; }
+  @media (min-width: 900px) { .pd__img { position: sticky; top: calc(var(--header-h) + 20px); } }
+  .pd__info { display: grid; gap: 24px; min-width: 0; }
+  .pd__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pd__new { background: var(--lime); color: #12340A; }
+  .pd__aud { background: var(--surface); color: var(--navy); border: 1px solid var(--line); }
+  .pd__title { font-size: var(--fs-xl); }
+  .pd__lead { margin: 0; font-size: var(--fs-md); color: var(--muted); }
+  .pd__sizes { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .pd__sizes legend { font-weight: 600; font-size: var(--fs-sm); color: var(--navy); margin-bottom: 8px; padding: 0; }
+  .pd__size input { position: absolute; opacity: 0; pointer-events: none; }
+  .pd__size span {
+    display: grid; gap: 2px; padding: 10px 16px; border-radius: var(--r-sm); cursor: pointer;
+    border: 1.5px solid var(--line); background: var(--surface); min-width: 96px;
+  }
+  .pd__size small { color: var(--muted); font-size: 11px; }
+  .pd__size input:checked + span { border-color: var(--green); background: var(--mint); color: var(--green); }
+  .pd__size input:focus-visible + span { outline: 3px solid color-mix(in srgb, var(--green) 40%, transparent); outline-offset: 2px; }
+  .pd__buy { display: grid; gap: 14px; padding: 20px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); }
+  .pd__price { display: grid; gap: 2px; }
+  .pd__price b { color: var(--navy); font-size: var(--fs-lg); }
+  .pd__row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .pd__add { flex: 1 1 200px; }
+  .pd__tocart { font-weight: 600; font-size: var(--fs-sm); display: inline-flex; gap: 6px; align-items: center; }
+  .pd__tocart :global(svg) { width: 16px; height: 16px; }
+  .pd__text h2 { font-size: var(--fs-lg); margin-top: 8px; }
+  .pd__text p { margin: 0; }
+  .rel { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); }
+  @media (max-width: 520px) { .rel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
+  .qty { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 999px; background: var(--bg); }
+  .qty button { width: 44px; height: 46px; border: 0; background: none; color: var(--navy); cursor: pointer; display: grid; place-items: center; border-radius: 999px; }
+  .qty button :global(svg) { width: 18px; height: 18px; }
+  .qty input { width: 44px; text-align: center; border: 0; background: none; font: 600 var(--fs-md) var(--font); color: var(--text); -moz-appearance: textfield; appearance: textfield; }
+  .qty input::-webkit-inner-spin-button, .qty input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+</style>

@@ -1,0 +1,21 @@
+---
+import { getLang, localize } from '../i18n';
+import { ui } from '../i18n/ui';
+interface Props { title: string; lead?: string; eyebrow?: string; crumbs?: { href: string; label: string }[] }
+const { title, lead, eyebrow, crumbs = [] } = Astro.props;
+const lang = getLang(Astro);
+const t = ui[lang];
+---
+<section class="page-hero">
+  <img class="page-hero__bg" src="/media/page-bg.webp" alt="" aria-hidden="true" />
+  <div class="wrap">
+    <nav class="crumbs" aria-label={t.crumbs}>
+      <a href={localize(lang, '/')}>{t.nav.home}</a>
+      {crumbs.map((c) => <><span aria-hidden="true">/</span><a href={localize(lang, c.href)}>{c.label}</a></>)}
+    </nav>
+    {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+    <h1>{title}</h1>
+    {lead && <p class="lead">{lead}</p>}
+    <slot />
+  </div>
+</section>

@@ -1,0 +1,167 @@
+---
+import { pageText } from '../../data/cms';
+// Клиникаларға арналған қызмет: подологиялық кабинетті іске қосу және 12 ай сүйемелдеу (B2B).
+// Мақсат: кез келген адам бір қарағанда түсінетін, артық ақпаратсыз бет.
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import WaButton from '../../components/WaButton.astro';
+import { getLang, langPaths } from '../../i18n';
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+
+const T = pageText('clinics', {
+  kk: {
+    title: 'Клиникаға подологиялық кабинет', crumb: 'Оқу', crumb2: 'Клиникаларға',
+    desc: 'Клиникада подологиялық кабинет ашу: жабдық таңдау, екі қызметкерді оқыту және 12 ай сүйемелдеу. «Подолог» орталығы, Қызылорда.',
+    eyebrow: 'Клиникаларға', h1: 'Клиникаңызда подологиялық кабинет ашып береміз', big: '12 ай сүйемелдеу',
+    lead: 'Жабдықты таңдаймыз, екі қызметкерді оқытамыз, жұмыс тәртібін енгіземіз және командаңызды бір жыл бойы қолдаймыз.',
+    cta: 'Іске қосуды талқылау',
+    getH: 'Не аласыз',
+    get: [['home', 'Дайын кабинет', 'Жабдық пен материалдар келісілген тізіммен'], ['user', 'Оқыған екі маман', 'Әр дағды тексеріледі'], ['check', 'Жұмыс тәртібі', 'Карталар, чек-листтер, дәрігерге жолдау'], ['calendar', 'Бір жыл қолдау', 'Талдау, қайта сабақ, тексеру']],
+    stepsH: 'Қалай өтеді',
+    steps: [['Бағалау', 'Бөлмені көріп, жоспар мен смета жасаймыз'], ['Жабдықтау', 'Жабдық пен материалдар тізімін келісеміз'], ['Оқыту', '5 күндік интенсив, содан кейін бақылаумен практика'], ['Іске қосу', 'Кабинет жұмысын тәртіппен бастайды'], ['12 ай сүйемелдеу', 'Командаңызбен бір жыл бірге боламыз']],
+    dayH: 'Күнделікті тәртіп', dayText: 'Әр ауысым бір чек-листпен басталады. Біз оны командаңызға беріп, үйретеміз. Төменде оның қысқаша мазмұны.',
+    day: [['clock', 'Ауысымды ашу', ['Желдету, жарық пен жабдықты тексеру', 'Стерилизаторды қосу', 'Температура 21–23 °C']], ['home', 'Кабинетті дайындау', ['Ылғалды жинау', 'Кресло, үстел, шамдарды антисептикпен өңдеу', 'Бір реттік материалдарды тексеру']], ['grid', 'Құралдар мен дәрілер', ['Стерильді құралдар мен фрезалар', 'Таңғыш пен тейп', 'Жарамдылық мерзімін тексеру']], ['shield', 'Стерильділік', ['Крафт-пакеттер мен индикаторлар', 'Стерилизация журналы', 'Қалдыққа арналған контейнер']], ['user', 'Қорғаныс құралдары', ['Қалпақ пен маска', 'Қолғап', 'Сүлгі']], ['calendar', 'Клиент келгенге дейін', ['Жазылуды тексеру', 'Келісім парағы мен пациент картасы', 'Кресло мен құралдар дайын']]],
+    supH: 'Бір жыл бойы',
+    sup: ['Алғашқы ай: аптасына бір талдау', 'Одан әрі: айына бір талдау', 'Жұмыс чатында сұрақтарға жауап', 'Тоқсан сайын дағдыларды тексеру'],
+    priceH: 'Бағасы',
+    price: 'Әр клиникаға жеке есептеледі: іске қосу мен оқыту, жабдық және жылдық сүйемелдеу. Алдымен кабинеттің дайындығын бағалаймыз.',
+    endH: 'Кабинет ашқыңыз келе ме?', endText: 'Жазыңыз, кездесу уақытын келісеміз.',
+  },
+  ru: {
+    title: 'Подологический кабинет для клиник', crumb: 'Обучение', crumb2: 'Для клиник',
+    desc: 'Открытие подологического кабинета в клинике: подбор оснащения, обучение двух сотрудников и 12 месяцев сопровождения. Центр «Подолог», Кызылорда.',
+    eyebrow: 'Для клиник', h1: 'Откроем подологический кабинет в вашей клинике', big: '12 месяцев сопровождения',
+    lead: 'Подберём оснащение, обучим двух сотрудников, наладим порядок работы и будем поддерживать вашу команду целый год.',
+    cta: 'Обсудить запуск',
+    getH: 'Что вы получаете',
+    get: [['home', 'Готовый кабинет', 'Оснащение и материалы по согласованному списку'], ['user', 'Двух обученных специалистов', 'Каждый навык проверен'], ['check', 'Порядок работы', 'Карты, чек-листы, направление к врачу'], ['calendar', 'Год поддержки', 'Разборы, повторные занятия, проверки']],
+    stepsH: 'Как это проходит',
+    steps: [['Оценка', 'Смотрим помещение, готовим план и смету'], ['Оснащение', 'Согласуем список оборудования и материалов'], ['Обучение', '5-дневный интенсив, затем практика под наблюдением'], ['Запуск', 'Кабинет начинает работать по порядку'], ['12 месяцев сопровождения', 'Год рядом с вашей командой']],
+    dayH: 'Порядок на каждый день', dayText: 'Каждая смена начинается с одного чек-листа. Мы передаём его вашей команде и учим работать по нему. Ниже его краткое содержание.',
+    day: [['clock', 'Открытие смены', ['Проветривание, проверка света и оборудования', 'Включение стерилизации', 'Температура 21–23 °C']], ['home', 'Подготовка кабинета', ['Влажная уборка', 'Антисептическая обработка кресла, стола, ламп', 'Проверка одноразовых материалов']], ['grid', 'Инструменты и препараты', ['Стерильные инструменты и фрезы', 'Бинты и тейпы', 'Проверка сроков годности']], ['shield', 'Стерильность', ['Крафт-пакеты и индикаторы', 'Журнал стерилизации', 'Контейнер для отходов']], ['user', 'Средства защиты', ['Шапочки и маски', 'Перчатки', 'Салфетки']], ['calendar', 'Перед первым клиентом', ['Проверка записи', 'Информированное согласие и карта пациента', 'Кресло и инструменты готовы']]],
+    supH: 'В течение года',
+    sup: ['Первый месяц: разбор раз в неделю', 'Далее: разбор раз в месяц', 'Ответы на вопросы в рабочем чате', 'Проверка навыков раз в квартал'],
+    priceH: 'Стоимость',
+    price: 'Рассчитывается для каждой клиники: запуск и обучение, оборудование и годовое сопровождение. Сначала оценим готовность кабинета.',
+    endH: 'Хотите открыть кабинет?', endText: 'Напишите нам, договоримся о встрече.',
+  },
+  en: {
+    title: 'Podiatry room for clinics', crumb: 'Courses', crumb2: 'For clinics',
+    desc: 'Opening a podiatry room at your clinic: equipment selection, training two staff members and 12 months of support. Podolog center, Kyzylorda.',
+    eyebrow: 'For clinics', h1: 'We open a podiatry room in your clinic', big: '12 months of support',
+    lead: 'We select the equipment, train two staff members, set up the workflow and support your team for a full year.',
+    cta: 'Discuss a launch',
+    getH: 'What you get',
+    get: [['home', 'A ready room', 'Equipment and supplies from an agreed list'], ['user', 'Two trained specialists', 'Every skill is checked'], ['check', 'A clear workflow', 'Forms, checklists, doctor referrals'], ['calendar', 'A year of support', 'Reviews, refreshers, checks']],
+    stepsH: 'How it works',
+    steps: [['Assessment', 'We see the room and prepare a plan and estimate'], ['Equipment', 'We agree on the list of equipment and supplies'], ['Training', 'A 5-day intensive, then supervised practice'], ['Launch', 'The room starts working with a clear routine'], ['12 months of support', 'A year alongside your team']],
+    dayH: 'A daily routine', dayText: 'Every shift starts with one checklist. We hand it to your team and train them to use it. Here is a short summary.',
+    day: [['clock', 'Opening the shift', ['Airing, checking light and equipment', 'Switching on sterilization', 'Temperature 21–23 °C']], ['home', 'Preparing the room', ['Wet cleaning', 'Disinfecting the chair, table and lamps', 'Checking disposable supplies']], ['grid', 'Instruments and supplies', ['Sterile instruments and burs', 'Bandages and tapes', 'Checking expiry dates']], ['shield', 'Sterility', ['Kraft pouches and indicators', 'Sterilization log', 'Waste container']], ['user', 'Protective equipment', ['Caps and masks', 'Gloves', 'Wipes']], ['calendar', 'Before the first client', ['Checking bookings', 'Informed consent and client card', 'Chair and instruments ready']]],
+    supH: 'Throughout the year',
+    sup: ['First month: a review every week', 'After that: a review every month', 'Answers in a work chat', 'Skill checks every quarter'],
+    priceH: 'Price',
+    price: 'Calculated for each clinic: launch and training, equipment and a year of support. First, we assess how ready the room is.',
+    endH: 'Want to open a podiatry room?', endText: 'Message us and we will arrange a meeting.',
+  },
+})[lang];
+---
+<Base title={T.title} path="/clinics" description={T.desc}>
+  <PageHero eyebrow={T.eyebrow} title={T.h1} crumbs={[{ href: '/courses', label: T.crumb }, { href: '/clinics', label: T.crumb2 }]}>
+    <span class="big"><Icon name="calendar" />{T.big}</span>
+    <p class="lead">{T.lead}</p>
+    <div><WaButton topic="clinics" label={T.cta} /></div>
+  </PageHero>
+
+  <section class="section" style="padding-top: 32px;">
+    <div class="wrap stack-lg">
+      <h2>{T.getH}</h2>
+      <div class="get">
+        {T.get.map(([ic, h, d]) => (
+          <div class="card get__item">
+            <div class="icon-badge"><Icon name={ic as any} /></div>
+            <div><h3>{h}</h3><p class="muted small">{d}</p></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mint">
+    <div class="wrap stack-lg">
+      <h2>{T.stepsH}</h2>
+      <ol class="steps steps--row">
+        {T.steps.map(([a, b]) => <li><div><strong>{a}</strong><span class="muted small">{b}</span></div></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack-lg">
+      <div class="sec-head"><h2>{T.dayH}</h2><p class="muted">{T.dayText}</p></div>
+      <div class="day">
+        {T.day.map(([ic, h, items]) => (
+          <div class="day__item">
+            <div class="day__top"><span class="icon-badge"><Icon name={ic as any} /></span><h3>{h}</h3></div>
+            <ul class="ticks">{(items as string[]).map((x) => <li><Icon name="check" /><span>{x}</span></li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mint">
+    <div class="wrap grid grid--2">
+      <div class="card">
+        <h2>{T.supH}</h2>
+        <ul class="ticks">{T.sup.map((x) => <li><Icon name="check" /><span>{x}</span></li>)}</ul>
+      </div>
+      <div class="card">
+        <h2>{T.priceH}</h2>
+        <p>{T.price}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="band">
+        <div class="stack">
+          <h2>{T.endH}</h2>
+          <p>{T.endText}</p>
+        </div>
+        <WaButton topic="clinics" label={T.cta} />
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .big {
+    display: inline-flex; align-items: center; gap: 10px; width: fit-content; padding: 8px 18px; border-radius: 999px;
+    background: var(--lime); color: #12340A; font-weight: 700; font-size: var(--fs-lg);
+  }
+  .big :global(svg) { width: 22px; height: 22px; }
+  .get { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); }
+  .get__item { grid-template-columns: 48px minmax(0, 1fr); align-items: center; gap: 14px; padding: 20px; }
+  .get__item h3 { font-size: var(--fs-md); }
+  .get__item p { margin: 2px 0 0; }
+  .steps strong + span { display: block; }
+  .ticks { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .ticks li { display: flex; gap: 10px; align-items: flex-start; }
+  .ticks :global(svg) { width: 20px; height: 20px; flex: none; margin-top: 3px; color: var(--green); }
+  .day { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+  .day__item { border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px; background: var(--surface); display: grid; gap: 12px; align-content: start; }
+  .day__top { display: flex; gap: 12px; align-items: center; }
+  .day__top h3 { font-size: var(--fs-md); margin: 0; }
+  .day .ticks { gap: 6px; font-size: var(--fs-sm); }
+  .day .ticks :global(svg) { width: 16px; height: 16px; margin-top: 4px; }
+  .band {
+    background: var(--navy); color: var(--bg); border-radius: var(--r-lg); padding: clamp(28px, 5vw, 56px);
+    display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center;
+  }
+  .band h2 { color: var(--bg); }
+  .band p { opacity: .8; max-width: 52ch; }
+</style>

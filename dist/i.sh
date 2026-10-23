@@ -27,7 +27,12 @@ echo "==> 2/6 Сайт файлдары"
 id podolog >/dev/null 2>&1 || useradd --system --home "$APP" --shell /usr/sbin/nologin podolog
 if [ -d "$APP/.git" ]; then git -C "$APP" fetch -q origin server && git -C "$APP" reset -q --hard origin/server
 else rm -rf "$APP"; git clone -q --depth 1 -b server "$REPO" "$APP"; fi
-mkdir -p "$DATA"; chown -R podolog:podolog "$DATA"
+mkdir -p "$DATA"; chown -R podolog:podolog "$DATA" "$APP"
+git config --global --add safe.directory "$APP" 2>/dev/null || true
+# Әкімші бөлімінен өзгерткенде сайт серверде қайта жиналады, оған Astro керек
+echo "   (сайт жинағышын орнатып жатыр, 1–3 минут)"
+runuser -u podolog -- env npm_config_cache="$DATA/npm-cache" npm ci --omit=dev --no-audit --no-fund --loglevel=error --prefix "$APP" >/dev/null
+sha1sum "$APP/package-lock.json" | cut -d' ' -f1 > "$DATA/lock.sha"
 
 echo "==> 3/6 Әкімші құпия сөзі"
 if [ ! -f /etc/podolog.env ]; then
@@ -64,7 +69,7 @@ User=podolog
 Restart=always
 NoNewPrivileges=true
 ProtectSystem=strict
-ReadWritePaths=$DATA
+ReadWritePaths=$DATA $APP
 [Install]
 WantedBy=multi-user.target
 UNIT
@@ -74,7 +79,13 @@ cat > /usr/local/bin/podolog-update <<UPD
 cd $APP || exit 1
 git fetch -q origin server || exit 0
 [ "\$(git rev-parse HEAD)" = "\$(git rev-parse origin/server)" ] && exit 0
-git reset -q --hard origin/server && systemctl restart podolog
+git reset -q --hard origin/server
+chown -R podolog:podolog $APP
+L=\$(sha1sum package-lock.json | cut -d' ' -f1)
+if [ "\$L" != "\$(cat $DATA/lock.sha 2>/dev/null)" ]; then
+  runuser -u podolog -- env npm_config_cache=$DATA/npm-cache npm ci --omit=dev --no-audit --no-fund --loglevel=error && echo "\$L" > $DATA/lock.sha
+fi
+systemctl restart podolog
 UPD
 chmod 755 /usr/local/bin/podolog-update
 cat > /etc/systemd/system/podolog-update.service <<UNIT
@@ -104,6 +115,17 @@ server {
   listen [::]:80;
   server_name $DOMAIN www.$DOMAIN _;
   client_max_body_size 1m;
+  # Әкімші бөлімінен фото мен видео жүктеу (видео 400 МБ-қа дейін)
+  location /api/admin/upload {
+    client_max_body_size 400m;
+    proxy_request_buffering off;
+    proxy_read_timeout 600s;
+    proxy_send_timeout 600s;
+    proxy_pass http://127.0.0.1:8080;
+    proxy_set_header Host \$host;
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto \$scheme;
+  }
   location / {
     proxy_pass http://127.0.0.1:8080;
     proxy_set_header Host \$host;
@@ -120,8 +142,8 @@ ufw allow OpenSSH >/dev/null; ufw allow 'Nginx Full' >/dev/null; ufw --force ena
 echo "==> 6/6 HTTPS"
 IP=$(curl -fsS -4 https://api.ipify.org || true)
 # Серверде DNS ескі жазбаны кэште ұстауы мүмкін, сондықтан certbot-ты әрқашан байқап көреміз
-certbot --nginx -n --agree-tos --register-unsafely-without-email --redirect -d $DOMAIN -d www.$DOMAIN || \
-certbot --nginx -n --agree-tos --register-unsafely-without-email --redirect -d $DOMAIN || {
+certbot --nginx -n --keep-until-expiring --agree-tos --register-unsafely-without-email --redirect -d $DOMAIN -d www.$DOMAIN || \
+certbot --nginx -n --keep-until-expiring --agree-tos --register-unsafely-without-email --redirect -d $DOMAIN || {
   echo "HTTPS әзірге қосылмады: домен бұл серверге (${IP:-?}) әлі бағытталмаған болуы мүмкін."
   echo "DNS-ті ауыстырғаннан кейін 30 минут күтіп, осы команданы қайта іске қосыңыз."
 }

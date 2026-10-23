@@ -1,0 +1,27 @@
+---
+// Ұлтарақ плакаты: логотип суретте қалды, тақырып пен мәтін сайт тілінде үстіне қойылады
+import { getLang } from '../i18n';
+interface Props { alt: string }
+const { alt } = Astro.props;
+const T = {
+  ru: { h: 'Специализированные ортопедические стельки', p: 'Персональная поддержка, направленная на сохранение баланса и лёгкости при ходьбе' },
+  kk: { h: 'Мамандандырылған ортопедиялық ұлтарақтар', p: 'Жүргенде тепе-теңдік пен жеңілдікті сақтауға бағытталған жеке қолдау' },
+  en: { h: 'Specialized orthopedic insoles', p: 'Personal support for balance and ease when walking' },
+}[getLang(Astro)];
+---
+<figure class="poster">
+  <img src="/media/insoles-poster.webp" alt={alt} width="1600" height="1892" loading="lazy" decoding="async" />
+  <figcaption class="poster__txt">
+    <strong class="poster__h">{T.h}</strong>
+    <span class="poster__p">{T.p}</span>
+  </figcaption>
+</figure>
+<style>
+  .poster { position: relative; margin: 0; border-radius: var(--r-lg); overflow: hidden; container-type: inline-size; background: #E9EEF4; }
+  .poster img { display: block; width: 100%; height: auto; }
+  .poster__txt { position: absolute; left: 6%; top: 23%; width: 54%; display: grid; gap: 1.8cqw; }
+  .poster__h, .poster__p { text-shadow: 0 0 1.2cqw rgb(255 255 255 / .95), 0 0 .4cqw rgb(255 255 255 / .9); }
+  .poster__h { overflow-wrap: anywhere; font-size: 4cqw; line-height: 1.2; font-weight: 700; color: #173372; letter-spacing: -.01em; }
+  .poster__h::after { content: ""; display: block; width: 9cqw; height: .7cqw; border-radius: 1cqw; background: #7ED43D; margin-top: 1.6cqw; }
+  .poster__p { font-size: 2.7cqw; line-height: 1.45; color: #3E5266; }
+</style>

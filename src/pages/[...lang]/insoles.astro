@@ -1,0 +1,284 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Photo from '../../components/Photo.astro';
+import InsolePoster from '../../components/InsolePoster.astro';
+import Icon from '../../components/Icon.astro';
+import WaButton from '../../components/WaButton.astro';
+import InsoleScan from '../../components/InsoleScan.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { services } from '../../data/services';
+import { siteFor } from '../../data/site';
+import { videosFor } from '../../data/videos';
+import { getLang, localize, langPaths } from '../../i18n';
+
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const exV = videosFor('insoles-explain', lang)[0];
+const scanV = videosFor('plantoscope', lang)[0];
+const u = (p: string) => localize(lang, p);
+const site = siteFor(lang);
+// Мазмұн орталықтың баннері мен ақпараттық плакатынан алынды.
+const svc = services.find((s) => s.slug === 'ortoped-ultaraq')!;
+const T = pageText('insoles', {
+  kk: {
+    title: 'Ортопедиялық ұлтарақтар', crumb: 'Ұлтарақтар',
+    desc: `${site.city} қаласында жеке түзететін ортопедиялық ұлтарақтар: 2–4 мм, кез келген аяқ киімге, бір келуде дайын.`,
+    eyebrow: 'Ортопедия', h1: 'Жеке түзететін ұлтарақтар',
+    lead: 'Жаңа буын ұлтарақтары табаныңызды тексеру нәтижесі бойынша жеке жасалады. Бір келуде дайын болады.',
+    order: 'Ұлтараққа тапсырыс беру', ask: 'WhatsApp арқылы сұрау',
+    alt: 'Ортопедиялық ұлтарақ: табан доғасын қолдап, жүктемені біркелкі таратады', need: 'ұлтарақ',
+    gives: 'Ұлтарақ не береді',
+    features: [
+      ['Табан күмбезін қолдайды', 'Бойлық және көлденең күмбезге тірек болады'],
+      ['Табан мен дене қалпын түзейді', 'Жүктемені табанға дұрыс таратады'],
+      ['Жұқа және жайлы', 'Қалыңдығы 2–4 мм, кез келген аяқ киімге сыяды'],
+      ['Үнемі киюге болады', 'Күнделікті аяқ киімде, спортта, жұмыста'],
+    ],
+    quote: 'Біз емдемейміз. Біз денеңіздің дұрыс жұмыс істеуіне жағдай жасаймыз.',
+    exH: 'Жеке ұлтарақ неге керек', exText: 'Табанның дұрыс емес қойылуы буындарға қалай әсер ететінін және жеке ұлтарақ оны қалай түзететінін қысқаша түсіндіретін видео (орыс тілінде).',
+    scanCap: 'Табанды плантоскопта тексеру: жүктеме қай жерге түсетіні көрінеді.',
+    howH: 'Жеке ұлтарақ қалай жасалады', howText: 'Табанды тексеруден, диагностикадан және аяқ киіміңізді бағалаудан бастаймыз. Алдын ала тексерусіз ұлтарақ жасалмайды.',
+    steps: [
+      ['Қабылдауға жазылу', 'Онлайн, WhatsApp немесе телефон арқылы жазылыңыз. Ұлтарақты салып киетін аяқ киіміңізді ала келіңіз.'],
+      ['Табанды тексеру және диагностика', 'Шағымдарыңыз бен күнделікті жүктемеңізді сұраймыз. Маман табан мен жүрісті тексеріп, плантоскопта табан күмбездерін бағалайды.'],
+      ['Табанды өлшеу және аяқ киімді тексеру', 'Әр табанды өлшейміз. Аяқ киіміңіздің өлшемін, табанының тозуын және ұлтарақ сыятынын тексереміз.'],
+      ['Ұлтарақты сол келуде жасау', 'Тексеру нәтижесі мен аяқ киіміңізге қарап, ұлтарақты өз жабдығымызда жасаймыз.'],
+      ['Киіп көру және кеңес', 'Ұлтарақты аяқ киіммен киіп көреміз, қажет болса түзетеміз. Оған қалай үйренуді, үй жаттығуларын және дұрыс аяқ киім таңдауды түсіндіреміз.'],
+    ],
+    howResult: 'Нәтижесінде жеке ұлтарақ пен табан күтімі бойынша нақты ұсыныстар аласыз.',
+    whoH: 'Кімге әсіресе керек',
+    who: [
+      '7–18 жастағы балалар: сүйек жүйесі қалыптасып жатқанда',
+      'Жүкті әйелдер: ауырлық орталығы ығысқанда',
+      'Артық салмағы барлар: буындарға түсетін жүктемені азайту үшін',
+      'Мүйізгек, натоптыш және «сүйек шығу» болғанда',
+      'Ішке өскен тырнақ болғанда және өкшелі аяқ киім кигенде',
+      'Спортшылар және көп жүретін жұмыстағылар',
+    ],
+    whoNote: 'Табан «түсіп» кетсе, тізе, жамбас, бел мен мойын ауыруы, мүйізгек, тез шаршау мен ісіну пайда болуы мүмкін. Нақты себебін маман тексеріп айтады.',
+    priceH: 'Баға және құрамы',
+    priceRows: ['Табанды тексеру', 'Өлшем алу', 'Жеке дайындау', 'Киіп көру'], included: 'кіреді', price: 'Бағасы', tbd: 'Нақтыланады',
+    priceChip: 'Баға мен құрамы орталықпен нақтыланады',
+    ltEyebrow: 'ЕДШ + ұлтарақ', ltH: 'Нәтиже ұзақ сақталуы үшін',
+    ltText: 'Емдік дене шынықтыру мамандары мен жеке ұлтарақ бірге жұмыс істегенде нәтиже жақсырақ және ұзақ сақталады.',
+    faqH: 'Жиі қойылатын сұрақтар',
+    faq: [
+      ['Маған ұлтарақ керек пе?', 'Оны тек табанды тексергеннен кейін айтуға болады. Әр адамның табаны мен жүрісі әртүрлі, сондықтан қажеттілік жеке бағаланады.'],
+      ['Қанша уақытта дайын болады?', 'Ұлтарақ бір келуде жасалады, нәтижесін сол күні сезесіз.'],
+      ['Қандай аяқ киімге болады?', 'Ұлтарақтың қалыңдығы 2–4 мм, сондықтан көптеген аяқ киімге сыяды. Қабылдауда жиі киетін аяқ киіміңізді көрсетсеңіз, маман соған сай жасайды.'],
+      ['Ұлтарақ емдей ме?', 'Ұлтарақ дәрі емес. Ол табан мен денеге дұрыс жұмыс істеуге жағдай жасайды. Жақсы нәтиже үшін орталық ұлтарақты емдік дене шынықтырумен (ЕДШ) бірге ұсынады.'],
+      ['Бағасы қанша?', 'Баға ұлтарақтың түріне байланысты. Нақты бағаны тексеруден кейін айтамыз.'],
+    ],
+    ctaTitle: 'Ұлтараққа тапсырыс беріңіз', ctaText: 'Алдымен табанды тексеруге жазылыңыз. Маман ұлтарақ керек пе, қандай болуы керек екенін айтады.',
+  },
+  ru: {
+    title: 'Ортопедические стельки', crumb: 'Стельки',
+    desc: `Индивидуальные корригирующие ортопедические стельки в городе ${site.city}: 2–4 мм, к любой обуви, готовы за один визит.`,
+    eyebrow: 'Ортопедия', h1: 'Индивидуальные корригирующие стельки',
+    lead: 'Стельки нового поколения изготавливаются индивидуально по результатам осмотра ваших стоп. Готовы за один визит.',
+    order: 'Заказать стельки', ask: 'Спросить в WhatsApp',
+    alt: 'Ортопедическая стелька: поддерживает свод стопы и равномерно распределяет нагрузку', need: 'стелька',
+    gives: 'Что дают стельки',
+    features: [
+      ['Поддерживают своды стопы', 'Опора для продольного и поперечного свода'],
+      ['Корректируют положение стопы и тела', 'Правильно распределяют нагрузку на стопу'],
+      ['Тонкие и удобные', 'Толщина 2–4 мм, подходят к любой обуви'],
+      ['Можно носить постоянно', 'В повседневной обуви, в спорте, на работе'],
+    ],
+    quote: 'Мы не лечим. Мы создаём условия, чтобы ваше тело работало правильно.',
+    exH: 'Зачем нужны индивидуальные стельки', exText: 'Короткое видео о том, как неправильная постановка стопы влияет на суставы и как индивидуальная стелька это исправляет.',
+    scanCap: 'Осмотр стоп на плантоскопе: видно, куда приходится нагрузка.',
+    howH: 'Как проходит изготовление индивидуальных стелек', howText: 'Начинаем с осмотра стоп, диагностики и оценки вашей обуви. Без предварительного осмотра стельки не изготавливаются.',
+    steps: [
+      ['Запись на приём', 'Запишитесь онлайн, через WhatsApp или по телефону. Возьмите обувь, в которой планируете носить стельки.'],
+      ['Осмотр и диагностика', 'Расспрашиваем о жалобах и привычных нагрузках. Специалист осматривает стопы и походку, оценивает своды стоп на плантоскопе.'],
+      ['Измерение стоп и проверка обуви', 'Измеряем каждую стопу. Проверяем размер вашей обуви, износ подошвы и поместится ли стелька.'],
+      ['Изготовление в тот же визит', 'Изготавливаем стельки на собственном оборудовании с учётом осмотра и вашей обуви.'],
+      ['Примерка и рекомендации', 'Примеряем стельки в обуви и при необходимости корректируем. Объясняем, как привыкать к стелькам, какие делать упражнения дома и как выбирать обувь.'],
+    ],
+    howResult: 'Вы получаете индивидуальные стельки и понятный план дальнейшей заботы о стопах.',
+    whoH: 'Кому особенно нужны',
+    who: [
+      'Детям 7–18 лет, пока формируется костная система',
+      'Беременным, когда смещается центр тяжести',
+      'Людям с лишним весом, чтобы снизить нагрузку на суставы',
+      'При мозолях, натоптышах и «косточке»',
+      'При вросшем ногте и при ношении обуви на каблуке',
+      'Спортсменам и тем, кто много ходит на работе',
+    ],
+    whoNote: 'Если стопа «проседает», могут появиться боли в коленях, тазу, пояснице и шее, мозоли, быстрая усталость и отёки. Точную причину назовёт специалист после осмотра.',
+    priceH: 'Цена и что входит',
+    priceRows: ['Осмотр стопы', 'Снятие мерок', 'Индивидуальное изготовление', 'Примерка'], included: 'входит', price: 'Цена', tbd: 'Уточняется',
+    priceChip: 'Цена и состав услуги уточняются в центре',
+    ltEyebrow: 'ЛФК + стельки', ltH: 'Чтобы результат сохранялся надолго',
+    ltText: 'Когда специалисты по лечебной физкультуре и индивидуальные стельки работают вместе, результат лучше и сохраняется дольше.',
+    faqH: 'Частые вопросы',
+    faq: [
+      ['Нужны ли мне стельки?', 'Это можно сказать только после осмотра стоп. У каждого человека разные стопы и походка, поэтому потребность оценивается индивидуально.'],
+      ['Сколько времени занимает изготовление?', 'Стельки изготавливаются за один визит, результат вы почувствуете в тот же день.'],
+      ['К какой обуви подходят?', 'Толщина стелек 2–4 мм, поэтому они подходят к большинству обуви. Покажите на приёме обувь, которую носите чаще всего, и специалист сделает стельки под неё.'],
+      ['Лечат ли стельки?', 'Стельки не лекарство. Они создают условия для правильной работы стоп и тела. Для лучшего результата центр рекомендует сочетать стельки с лечебной физкультурой (ЛФК).'],
+      ['Сколько стоят?', 'Цена зависит от вида стелек. Точную цену назовём после осмотра.'],
+    ],
+    ctaTitle: 'Закажите стельки', ctaText: 'Сначала запишитесь на осмотр стоп. Специалист скажет, нужны ли стельки и какими они должны быть.',
+  },
+  en: {
+    title: 'Orthopedic insoles', crumb: 'Insoles',
+    desc: `Custom corrective orthopedic insoles in ${site.city}: 2–4 mm thick, for any shoes, ready in one visit.`,
+    eyebrow: 'Orthopedics', h1: 'Custom corrective insoles',
+    lead: 'New-generation insoles are made individually based on an examination of your feet. Ready in one visit.',
+    order: 'Order insoles', ask: 'Ask on WhatsApp',
+    alt: 'Orthopedic insole: supports the arch and spreads the load evenly', need: 'insole',
+    gives: 'What insoles do',
+    features: [
+      ['Support the arches', 'Support for the longitudinal and transverse arches'],
+      ['Correct foot and body alignment', 'Distribute the load on the foot properly'],
+      ['Thin and comfortable', '2–4 mm thick, fit any shoes'],
+      ['Can be worn every day', 'In everyday shoes, for sports and at work'],
+    ],
+    quote: 'We do not treat. We create the conditions for your body to work properly.',
+    exH: 'Why custom insoles matter', exText: 'A short video on how incorrect foot position affects the joints and how a custom insole corrects it (in Russian).',
+    scanCap: 'Foot check on a podoscope shows where the load falls.',
+    howH: 'How custom insoles are made', howText: 'We start with a foot examination, diagnostics and an assessment of your shoes. Insoles are never made without a prior examination.',
+    steps: [
+      ['Book an appointment', 'Book online, on WhatsApp or by phone. Bring the shoes you plan to wear the insoles in.'],
+      ['Examination and diagnostics', 'We ask about your complaints and usual loads. The specialist examines your feet and gait and assesses your arches on a plantoscope.'],
+      ['Foot measurement and shoe check', 'We measure each foot and check your shoes: size, sole wear and room for the insoles.'],
+      ['Made in the same visit', 'We make the insoles on our own equipment, based on the examination and your shoes.'],
+      ['Fitting and advice', 'We try the insoles in your shoes and adjust them if needed. We explain how to get used to them, which exercises to do at home and how to choose shoes.'],
+    ],
+    howResult: 'You get custom insoles and a clear plan for caring for your feet going forward.',
+    whoH: 'Who needs them most',
+    who: [
+      'Children aged 7–18, while the skeleton is developing',
+      'Pregnant women, as the center of gravity shifts',
+      'People with excess weight, to reduce the load on joints',
+      'People with calluses, corns or bunions',
+      'People with ingrown toenails and those who wear heels',
+      'Athletes and people who walk a lot at work',
+    ],
+    whoNote: 'When the arch drops, pain in the knees, hips, lower back and neck, calluses, fatigue and swelling may appear. A specialist will name the exact cause after an examination.',
+    priceH: 'Price and what is included',
+    priceRows: ['Foot examination', 'Measurements', 'Custom making', 'Fitting'], included: 'included', price: 'Price', tbd: 'On request',
+    priceChip: 'Price and contents are confirmed by the center',
+    ltEyebrow: 'Exercise therapy + insoles', ltH: 'For results that last',
+    ltText: 'When exercise therapy specialists and custom insoles work together, results are better and last longer.',
+    faqH: 'Frequently asked questions',
+    faq: [
+      ['Do I need insoles?', 'That can only be said after a foot examination. Everyone’s feet and gait are different, so the need is assessed individually.'],
+      ['How long does it take?', 'Insoles are made in one visit, and you will feel the result the same day.'],
+      ['What shoes do they fit?', 'The insoles are 2–4 mm thick, so they fit most shoes. Bring the shoes you wear most often to your appointment and the specialist will make the insoles for them.'],
+      ['Do insoles cure anything?', 'Insoles are not medicine. They create the conditions for your feet and body to work properly. For best results, the center recommends combining insoles with exercise therapy.'],
+      ['How much do they cost?', 'The price depends on the type of insole. We will give you the exact price after the examination.'],
+    ],
+    ctaTitle: 'Order insoles', ctaText: 'Start by booking a foot examination. The specialist will tell you whether you need insoles and what kind.',
+  },
+})[lang];
+---
+<Base title={T.title} path="/insoles" description={T.desc}>
+  <PageHero eyebrow={T.eyebrow} title={T.h1} lead={T.lead} crumbs={[{ href: '/insoles', label: T.crumb }]}>
+    <div class="btn-row" style="margin-top: 8px;">
+      <a class="btn btn--primary" href={u('/booking')}><Icon name="insole" />{T.order}</a>
+      <WaButton topic="insoles" label={T.ask} />
+    </div>
+  </PageHero>
+
+  <section class="section">
+    <div class="wrap grid grid--2">
+      <InsolePoster alt={T.alt} />
+      <div class="stack-lg">
+        <h2>{T.gives}</h2>
+        <div class="feat">
+          {T.features.map(([t, d]) => <div class="feat__i"><span class="tick"><Icon name="check" /></span><div><strong>{t}</strong><p class="muted small">{d}</p></div></div>)}
+        </div>
+        <p class="quote">{T.quote}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap ex">
+      <div class="stack"><h2>{T.exH}</h2><p class="muted">{T.exText}</p></div>
+      {exV && <video class="ex__v" src={exV.src} poster={exV.poster || undefined} controls playsinline preload="none"></video>}
+    </div>
+  </section>
+
+  <section class="section section--mint">
+    <div class="wrap grid grid--2">
+      <div class="stack-lg">
+        <div class="stack">
+          <h2>{T.howH}</h2>
+          <p class="muted">{T.howText}</p>
+        </div>
+        <ol class="steps">
+          {T.steps.map(([a, b]) => <li><div><strong>{a}</strong><span class="muted small">{b}</span></div></li>)}
+        </ol>
+        <p class="how-result">{T.howResult}</p>
+        {scanV && <figure class="scanvid"><video src={scanV.src} poster={scanV.poster || undefined} autoplay muted loop playsinline preload="metadata"></video><figcaption class="muted small">{T.scanCap}</figcaption></figure>}
+      </div>
+      <div class="scanbox"><InsoleScan /></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid grid--2" style="align-items: start;">
+      <div class="stack">
+        <h2>{T.whoH}</h2>
+        <ul class="who">{T.who.map((w) => <li>{w}</li>)}</ul>
+        <p class="small muted">{T.whoNote}</p>
+        <Photo src="/media/real/sergei-foot-model.webp" alt={T.alt} need="" shape="tall" pos="50% 55%" />
+      </div>
+      <div class="card">
+        <h2>{T.priceH}</h2>
+        <dl class="price">
+          {T.priceRows.map((r) => <div><dt>{r}</dt><dd>{T.included}</dd></div>)}
+          <div class="total"><dt>{T.price}</dt><dd>{svc.price ?? T.tbd}</dd></div>
+        </dl>
+        <span class="chip chip--warn">{T.priceChip}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mint">
+    <div class="wrap grid grid--2" style="align-items: start;">
+      <div class="stack">
+        <span class="eyebrow">{T.ltEyebrow}</span>
+        <h2>{T.ltH}</h2>
+        <p class="muted">{T.ltText}</p>
+      </div>
+      <div class="stack">
+        <h2>{T.faqH}</h2>
+        <div class="faq">{T.faq.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}</div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title={T.ctaTitle} text={T.ctaText} topic="insoles" />
+</Base>
+<style>
+  .ex { display: grid; gap: 20px; align-items: center; }
+  @media (min-width: 760px) { .ex { grid-template-columns: 1fr 340px; } }
+  .ex__v { width: 100%; max-width: 340px; aspect-ratio: 9 / 16; object-fit: cover; border-radius: var(--r-lg); background: #000; justify-self: center; }
+  .scanvid { margin: 0; display: grid; gap: 8px; }
+  .scanvid video { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--r-lg); background: #000; }
+  .scanbox { background: var(--surface); border: 1px solid var(--line); border-radius: 32px; padding: 28px 20px; max-width: 440px; width: 100%; justify-self: center; }
+  .how-result { margin: 0; padding: 14px 18px; border-radius: var(--r-md); background: var(--surface); color: var(--navy); font-weight: 700; }
+  .feat { display: grid; gap: 18px; }
+  .feat__i { display: grid; grid-template-columns: 32px 1fr; gap: 14px; }
+  .feat strong { color: var(--navy); }
+  .tick { width: 32px; height: 32px; border-radius: 50%; background: var(--mint); color: var(--green); display: grid; place-items: center; }
+  .tick :global(svg) { width: 18px; height: 18px; }
+  .quote { border-left: 3px solid var(--lime); padding: 4px 0 4px 18px; font-size: var(--fs-lg); color: var(--navy); font-weight: 600; }
+  .who { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
+  .who li::marker { color: var(--green); }
+  .price { margin: 0; }
+  .price div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .price dt { color: var(--muted); }
+  .price dd { margin: 0; font-weight: 600; color: var(--green); }
+  .price .total dt, .price .total dd { color: var(--navy); font-weight: 700; font-size: var(--fs-lg); }
+  .price .total { border-bottom: 0; }
+</style>

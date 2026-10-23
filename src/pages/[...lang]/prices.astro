@@ -1,0 +1,61 @@
+---
+import { pageText } from '../../data/cms';
+// Бағалар: орталық прайсы бойынша қарапайым тізім (атауы және баға аралығы)
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { priceGroups, fmtRange, priceId } from '../../data/prices';
+import { getLang, localize, langPaths } from '../../i18n';
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const u = (p: string) => localize(lang, p);
+const T = pageText('prices', {
+  kk: {
+    title: 'Бағалар', desc: '«Подолог» орталығының бағалары: подолог кеңесі, ішке өскен тырнақ, саңырауқұлақ, мүйізгек, ұлтарақтар. Қызылорда.',
+    lead: 'Баға маманға және жұмыс көлеміне байланысты. Нақты бағаны маман тексергеннен кейін айтады.',
+    note: 'Қайта келгенде баға кейде төмен болады. Бағалар 2026 жылғы қазандағы прайс бойынша.', services: 'Қызметтер туралы',
+  },
+  ru: {
+    title: 'Цены', desc: 'Цены центра «Подолог»: консультация подолога, вросший ноготь, грибок, мозоли, стельки. Кызылорда.',
+    lead: 'Цена зависит от специалиста и объёма работы. Точную стоимость специалист назовёт после осмотра.',
+    note: 'При повторном визите цена бывает ниже. Цены по прайсу на октябрь 2026 года.', services: 'Об услугах',
+  },
+  en: {
+    title: 'Prices', desc: 'Podolog center prices: podiatrist consultation, ingrown toenails, fungus, calluses, insoles. Kyzylorda.',
+    lead: 'The price depends on the specialist and the amount of work. The specialist will name the exact price after an examination.',
+    note: 'Follow-up visits are sometimes cheaper. Prices as of October 2026.', services: 'About the services',
+  },
+})[lang];
+---
+<Base title={T.title} path="/prices" description={T.desc}>
+  <PageHero eyebrow={T.title} title={T.title} lead={T.lead} crumbs={[{ href: '/services', label: lang === 'kk' ? 'Қызметтер' : lang === 'ru' ? 'Услуги' : 'Services' }, { href: '/prices', label: T.title }]} />
+  <section class="section" style="padding-top: 32px;">
+    <div class="wrap stack-lg prices">
+      {priceGroups.map((g) => (
+        <div class="card pg">
+          <h2>{g.title[lang]}</h2>
+          <ul>
+            {g.rows.map((r) => <li><span>{r.name[lang]}</span><b data-pr={priceId(g, r)}>{fmtRange(r.min, r.max)}</b></li>)}
+          </ul>
+        </div>
+      ))}
+      <p class="muted small">{T.note}</p>
+      <div><a class="btn btn--ghost" href={u('/services')}>{T.services}<Icon name="arrow" /></a></div>
+    </div>
+  </section>
+  <CtaBand />
+</Base>
+<style>
+  .prices { max-width: 820px; }
+  .pg { gap: 8px; }
+  .pg h2 { font-size: var(--fs-xl, 1.4rem); margin-bottom: 4px; }
+  .pg ul { list-style: none; margin: 0; padding: 0; }
+  .pg li { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .pg li:first-child { border-top: 0; }
+  .pg li span { min-width: 0; }
+  .pg li b { flex: none; color: var(--navy); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  @media (max-width: 420px) { .pg li { flex-direction: column; gap: 2px; } }
+</style>

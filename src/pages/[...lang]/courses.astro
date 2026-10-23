@@ -1,0 +1,136 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import WaButton from '../../components/WaButton.astro';
+import { waLink } from '../../data/site';
+import { getLang, localize, langPaths } from '../../i18n';
+// 4-кезеңде: курс каталогы, тіркелу, төлем, студент кабинеті, видеосабақтар, прогресс.
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const u = (p: string) => localize(lang, p);
+// Бет қарапайым: жоғарыда клиникаларға ұсыныс, астында курстар тізімі, бір ғана WhatsApp батырмасы
+const T = pageText('courses', {
+  kk: {
+    title: 'Онлайн оқу', crumb: 'Оқу', h1: 'Подологияға оқыту',
+    desc: 'Подологтарға арналған курстар және клиникаларға подологиялық кабинетті іске қосу мен 12 ай сүйемелдеу. Подолог орталығы, Қызылорда.',
+    lead: 'Подологтарға курстар және клиникаларға кабинет ашуға көмек.',
+    b2bChip: 'Клиникаларға', b2bH: 'Клиникаңызда подологиялық кабинет ашып береміз', b2bBig: '12 ай сүйемелдеу',
+    b2bText: 'Жабдықты таңдаймыз, екі қызметкерді оқытамыз және бір жыл бойы қолдаймыз.', b2bMore: 'Толығырақ',
+    coursesH: 'Подологтарға курстар', soon: 'Кесте мен баға жақында жарияланады. Бағдарламаны басып, WhatsApp арқылы сұраңыз.',
+    kinds: [['Онлайн курс', 'Видеосабақтар мен материалдар'], ['Офлайн курс', 'Орталықта топпен оқу'], ['Практикалық оқыту', 'Маманның қасында жұмыс'], ['Тәлімгерлік', 'Жеке жоспармен ұзақ сүйемелдеу'], ['PodiaFarm семинарлары', 'Өнімдермен жұмыс'], ['Ұзақ мерзімді бағдарлама', 'Негізден кәсіби деңгейге дейін']],
+    askText: 'Бағдарлама:', wa: 'Оқу бойынша сұрақ қою',
+    lesH: 'Орталықтағы сабақтар', lesText: 'Теория мен тәжірибе бір кабинетте, шағын топпен өтеді.', lesAlt: 'Подолог орталығындағы сабақ',
+    gradH: 'Біздің түлектер', gradText: 'Курсты аяқтаған мамандар сертификаттарын орталықта алады.', gradAlt: 'Подолог орталығы курсының түлектері',
+  },
+  ru: {
+    title: 'Онлайн-обучение', crumb: 'Обучение', h1: 'Обучение подологии',
+    desc: 'Курсы для подологов и запуск подологического кабинета в клинике с сопровождением 12 месяцев. Центр «Подолог», Кызылорда.',
+    lead: 'Курсы для подологов и помощь клиникам в открытии кабинета.',
+    b2bChip: 'Для клиник', b2bH: 'Откроем подологический кабинет в вашей клинике', b2bBig: '12 месяцев сопровождения',
+    b2bText: 'Подберём оснащение, обучим двух сотрудников и будем поддерживать команду целый год.', b2bMore: 'Подробнее',
+    coursesH: 'Курсы для подологов', soon: 'Расписание и цены скоро. Нажмите на программу, чтобы спросить в WhatsApp.',
+    kinds: [['Онлайн-курс', 'Видеоуроки и материалы'], ['Офлайн-курс', 'Групповое обучение в центре'], ['Практическое обучение', 'Работа рядом со специалистом'], ['Наставничество', 'Долгое сопровождение по плану'], ['Семинары PodiaFarm', 'Работа с продукцией'], ['Долгосрочная программа', 'От основ до профессионального уровня']],
+    askText: 'Программа:', wa: 'Задать вопрос об обучении',
+    lesH: 'Занятия в центре', lesText: 'Теория и практика проходят в одном кабинете, небольшими группами.', lesAlt: 'Занятие в центре «Подолог»',
+    gradH: 'Наши выпускники', gradText: 'Специалисты, окончившие курс, получают сертификаты в центре.', gradAlt: 'Выпускники курсов центра «Подолог»',
+  },
+  en: {
+    title: 'Online learning', crumb: 'Courses', h1: 'Podiatry training',
+    desc: 'Courses for podiatrists and launching a podiatry room in your clinic with 12 months of support. Podolog center, Kyzylorda.',
+    lead: 'Courses for podiatrists and help for clinics opening a podiatry room.',
+    b2bChip: 'For clinics', b2bH: 'We open a podiatry room in your clinic', b2bBig: '12 months of support',
+    b2bText: 'We select the equipment, train two staff members and support your team for a full year.', b2bMore: 'Learn more',
+    coursesH: 'Courses for podiatrists', soon: 'Schedule and prices coming soon. Tap a program to ask on WhatsApp.',
+    kinds: [['Online course', 'Video lessons and materials'], ['In-person course', 'Group learning at the center'], ['Hands-on training', 'Working alongside a specialist'], ['Mentoring', 'Long-term support with a plan'], ['PodiaFarm seminars', 'Working with the products'], ['Long-term program', 'From the basics to a professional level']],
+    askText: 'Program:', wa: 'Ask about training',
+    lesH: 'Classes at the center', lesText: 'Theory and practice take place in one room, in small groups.', lesAlt: 'A class at the Podolog center',
+    gradH: 'Our graduates', gradText: 'Specialists who complete a course receive their certificates at the center.', gradAlt: 'Graduates of Podolog center courses',
+  },
+})[lang];
+const lessons = ['lesson-hallux', 'lesson-board', 'lesson-stop'];
+const grads = ['grad-group', 'grad-roman-zhanna', 'svetlana-zhanna-cert', 'grad-zhanna-inkar', 'grad-inkar'];
+const ask = (t: string) => waLink('courses', `${T.askText} ${t}`, lang) ?? u('/contacts');
+---
+<Base title={T.title} path="/courses" description={T.desc}>
+  <PageHero title={T.h1} lead={T.lead} crumbs={[{ href: '/courses', label: T.crumb }]} />
+
+  <section class="section" style="padding-top: 24px;">
+    <div class="wrap stack-lg">
+      <a class="b2b" href={u('/clinics')}>
+        <span class="b2b__chip">{T.b2bChip}</span>
+        <span class="b2b__big"><Icon name="calendar" />{T.b2bBig}</span>
+        <h2>{T.b2bH}</h2>
+        <p>{T.b2bText}</p>
+        <span class="b2b__more">{T.b2bMore}<Icon name="arrow" /></span>
+      </a>
+
+      <div class="stack">
+        <h2>{T.coursesH}</h2>
+        <p class="muted">{T.soon}</p>
+      </div>
+      <ul class="kinds">
+        {T.kinds.map(([t, d], i) => (
+          <li id={`k${i}`} class="kind">
+            <a href={ask(t)} target="_blank" rel="noopener">
+              <span class="icon-badge"><Icon name="cap" /></span>
+              <span class="kind__txt"><b>{t}</b><span class="muted small">{d}</span></span>
+              <Icon name="whatsapp" class="kind__go" />
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div><WaButton topic="courses" label={T.wa} /></div>
+
+      <div class="stack">
+        <h2>{T.lesH}</h2>
+        <p class="muted">{T.lesText}</p>
+      </div>
+      <div class="grads grads--3">{lessons.map((g, i) => <img class={i === 0 ? 'grads__wide' : ''} src={`/media/real/${g}${i === 0 ? '' : '-sm'}.webp`} alt={T.lesAlt} loading="lazy" decoding="async" />)}</div>
+
+      <div class="stack">
+        <h2>{T.gradH}</h2>
+        <p class="muted">{T.gradText}</p>
+      </div>
+      <div class="grads">{grads.map((g, i) => <img class={i === 0 ? 'grads__wide' : ''} src={`/media/real/${g}${i === 0 ? '' : '-sm'}.webp`} alt={T.gradAlt} loading="lazy" decoding="async" />)}</div>
+    </div>
+  </section>
+</Base>
+<style>
+  .grads { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 900px) { .grads { grid-template-columns: repeat(4, minmax(0, 1fr)); } .grads__wide { grid-column: span 2; grid-row: span 2; } }
+  .grads img { width: 100%; height: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: var(--r-lg); }
+  .grads__wide { grid-column: 1 / -1; }
+  @media (min-width: 900px) { .grads--3 { grid-template-columns: 1.6fr 1fr 1fr; } .grads--3 .grads__wide { grid-column: auto; grid-row: auto; } }
+  @media (max-width: 899px) { .grads img.grads__wide { aspect-ratio: 4 / 3; } }
+  .b2b {
+    display: grid; gap: 12px; padding: clamp(24px, 4vw, 40px); border-radius: var(--r-lg); text-decoration: none;
+    background: var(--navy); color: var(--bg); transition: transform .15s ease;
+  }
+  .b2b:hover { transform: translateY(-2px); }
+  .b2b h2 { color: var(--bg); }
+  .b2b p { margin: 0; opacity: .85; max-width: 56ch; }
+  .b2b__chip { font-size: var(--fs-xs); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; opacity: .75; }
+  .b2b__big {
+    display: inline-flex; align-items: center; gap: 10px; width: fit-content; padding: 8px 16px; border-radius: 999px;
+    background: var(--lime); color: #12340A; font-weight: 700; font-size: var(--fs-lg);
+  }
+  .b2b__big :global(svg) { width: 22px; height: 22px; }
+  .b2b__more { display: inline-flex; gap: 8px; align-items: center; font-weight: 600; margin-top: 4px; }
+  .b2b__more :global(svg) { width: 18px; height: 18px; }
+  .kinds { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+  .kind { scroll-margin-top: calc(var(--header-h) + 24px); }
+  .kind a {
+    display: grid; grid-template-columns: 48px minmax(0, 1fr) 24px; gap: 14px; align-items: center; padding: 14px 16px;
+    border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); color: inherit; text-decoration: none;
+    transition: border-color .15s ease;
+  }
+  .kind a:hover, .kind:target a { border-color: var(--green); }
+  .kind:target a { box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 25%, transparent); }
+  .kind__txt { display: grid; gap: 2px; }
+  .kind__txt b { color: var(--navy); }
+  .kind :global(.kind__go) { width: 22px; height: 22px; color: var(--wa); }
+</style>

@@ -6,223 +6,805 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Әкімші бөлімі</title>
 <style>
-  :root { --bg: #F7FAFC; --navy: #173B57; --green: #258477; --mint: #EAF5F1; --text: #28343D; --muted: #5B6B77; --line: #DCE5EB; --red: #B42318; }
+  :root { --bg: #F4F7FA; --navy: #173B57; --navy2: #0F2C42; --green: #258477; --mint: #EAF5F1; --text: #28343D; --muted: #5F6F7B; --line: #DCE5EB; --red: #B42318; --amber: #B54708; --r: 14px; }
   * { box-sizing: border-box; }
-  body { margin: 0; font: 16px/1.5 "Noto Sans", system-ui, sans-serif; background: var(--bg); color: var(--text); }
-  .wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
-  header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-  h1 { margin: 0; font-size: 1.5rem; color: var(--navy); }
-  .tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  button, select { font: inherit; border-radius: 10px; border: 1.5px solid var(--line); background: #fff; color: var(--navy); padding: 8px 14px; cursor: pointer; min-height: 40px; }
-  button.primary { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
-  button.danger { color: var(--red); border-color: #F4C7C3; }
-  .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; display: grid; gap: 8px; }
-  .card.hidden { opacity: .6; background: #F2F4F6; }
-  .list { display: grid; gap: 14px; }
-  .top { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
-  .top b { color: var(--navy); }
+  html, body { margin: 0; }
+  body { font: 15px/1.5 "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+  a { color: var(--green); }
+  button, select, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 8px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: #fff; color: var(--navy); font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .btn:hover { border-color: var(--green); }
+  .btn.primary { background: var(--green); border-color: var(--green); color: #fff; }
+  .btn.danger { color: var(--red); border-color: #F4C7C3; }
+  .btn.sm { min-height: 34px; padding: 5px 10px; font-size: .875rem; border-radius: 8px; }
+  .btn.ghost { border-color: transparent; background: transparent; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  input, select, textarea { border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 12px; background: #fff; min-height: 42px; width: 100%; }
+  textarea { min-height: 70px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--green) 35%, transparent); border-color: var(--green); }
+  label.f { display: grid; gap: 4px; font-size: .875rem; color: var(--muted); font-weight: 600; }
+  .grid2 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .grid3 { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 700px) { .grid3 { grid-template-columns: 1fr; } }
+  .muted { color: var(--muted); }
+  .small { font-size: .85rem; }
+  .err { color: var(--red); font-weight: 600; font-size: .875rem; }
+
+  /* Каркас */
+  .app { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 100vh; }
+  .side { background: var(--navy); color: #fff; padding: 20px 14px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100vh; overflow: auto; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.05rem; padding: 4px 10px 18px; }
+  .brand i { width: 34px; height: 34px; border-radius: 10px; background: #7ED43D; color: var(--navy2); display: grid; place-items: center; font-style: normal; font-weight: 800; }
+  .brand small { display: block; font-weight: 500; opacity: .7; font-size: .75rem; }
+  .nav { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: #DCE7EF; text-decoration: none; border: 0; background: none; width: 100%; text-align: left; font-weight: 500; }
+  .nav:hover { background: rgb(255 255 255 / .07); color: #fff; }
+  .nav.on { background: #fff; color: var(--navy); font-weight: 700; }
+  .nav svg { width: 20px; height: 20px; flex: none; }
+  .nav .cnt { margin-left: auto; background: #D92D20; color: #fff; font-size: .72rem; font-weight: 700; padding: 1px 7px; border-radius: 99px; }
+  .side .sep { height: 1px; background: rgb(255 255 255 / .12); margin: 10px 4px; }
+  .side .foot { margin-top: auto; display: grid; gap: 8px; padding-top: 14px; }
+  .side select { background: transparent; color: #fff; border-color: rgb(255 255 255 / .25); }
+  .side select option { color: var(--text); }
+  .main { padding: 24px 28px 90px; min-width: 0; }
+  .top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+  .top h1 { margin: 0; font-size: 1.5rem; color: var(--navy); flex: 1; min-width: 0; }
+  .burger { display: none; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: var(--mint); color: var(--green); }
+  .pill.busy { background: #FEF0C7; color: var(--amber); }
+  .pill.bad { background: #FEE4E2; color: var(--red); }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .pill.busy .dot { animation: pulse 1s infinite alternate; }
+  @keyframes pulse { to { opacity: .3; } }
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .side { position: fixed; inset: 0 auto 0 0; width: 270px; z-index: 50; transform: translateX(-100%); transition: transform .2s ease; }
+    .app.menu .side { transform: none; box-shadow: 0 0 0 100vmax rgb(0 0 0 / .35); }
+    .burger { display: inline-flex; }
+    .main { padding: 16px 14px 90px; }
+    .top h1 { font-size: 1.25rem; }
+  }
+
+  /* Карточкалар */
+  .card { background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; }
+  .list { display: grid; gap: 12px; }
+  .tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); margin-bottom: 22px; }
+  .tile { background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 4px; text-decoration: none; color: inherit; text-align: left; }
+  .tile:hover { border-color: var(--green); }
+  .tile b { font-size: 1.7rem; color: var(--navy); line-height: 1.1; }
+  .tile span { color: var(--muted); font-size: .9rem; }
+  .tile.hot b { color: #D92D20; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .row.end { justify-content: flex-end; }
+  .sp { flex: 1; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .chip { border: 1.5px solid var(--line); background: #fff; border-radius: 99px; padding: 5px 12px; font-size: .85rem; font-weight: 600; color: var(--navy); }
+  .chip.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .tag { font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--mint); color: var(--green); }
+  .tag.warn { background: #FEF0C7; color: #93370D; }
+  .tag.red { background: #FEE4E2; color: var(--red); }
   .stars { color: #F5B301; letter-spacing: 1px; }
-  .muted { color: var(--muted); font-size: .875rem; }
-  .text { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
-  .acts { display: flex; gap: 8px; flex-wrap: wrap; }
-  .badge { font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: #FEF0C7; color: #93370D; }
-  form.login { max-width: 360px; margin: 12vh auto 0; display: grid; gap: 14px; }
-  input { font: inherit; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line); min-height: 48px; }
-  .err { color: var(--red); font-weight: 600; font-size: .875rem; min-height: 1.2em; }
-  .stat { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-  .tabs button.on { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 600; }
-  .new { font-size: .75rem; font-weight: 700; padding: 1px 8px; border-radius: 99px; background: #D92D20; color: #fff; margin-left: 6px; }
-  .card.unread { border-color: var(--green); box-shadow: 0 0 0 2px var(--mint); }
-  .topic { font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--mint); color: var(--green); }
-  .sec { margin: 28px 0 10px; color: var(--navy); font-size: 1.2rem; }
-  .grp { margin: 18px 0 6px; color: var(--green); font-size: 1rem; }
+  .txt { white-space: pre-wrap; overflow-wrap: anywhere; margin: 6px 0; }
+  .reply { border-left: 3px solid var(--green); background: var(--mint); padding: 8px 12px; border-radius: 0 10px 10px 0; margin: 8px 0; }
+  .card.dim { opacity: .6; background: #F2F4F6; }
+  .card.new { border-color: var(--green); box-shadow: 0 0 0 2px var(--mint); }
+  h2.sec { font-size: 1.1rem; color: var(--navy); margin: 26px 0 10px; }
+  h2.sec:first-child { margin-top: 0; }
+  .empty { text-align: center; padding: 40px 16px; color: var(--muted); }
+
+  /* Медиа торы */
+  .media { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  .mi { background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: grid; text-align: left; padding: 0; position: relative; }
+  .mi:hover { border-color: var(--green); }
+  .mi .ph { aspect-ratio: 4 / 3; background: var(--mint) center / cover no-repeat; position: relative; }
+  .mi .ph .play { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-size: 2rem; text-shadow: 0 1px 6px rgb(0 0 0 / .5); }
+  .mi .cap { padding: 8px 10px 10px; font-size: .85rem; line-height: 1.35; display: grid; gap: 4px; }
+  .mi .cap b { color: var(--navy); font-weight: 600; overflow-wrap: anywhere; }
+  .mi.dim .ph { filter: grayscale(1) opacity(.5); }
+  .mi .badge { position: absolute; top: 8px; left: 8px; }
+  .add { border: 2px dashed var(--line); border-radius: 12px; display: grid; place-items: center; min-height: 150px; color: var(--green); font-weight: 700; background: #fff; }
+  .add:hover { border-color: var(--green); }
+
+  /* Терезе */
+  .modal { position: fixed; inset: 0; z-index: 80; background: rgb(15 44 66 / .5); display: grid; place-items: center; padding: 16px; }
+  .dlg { background: #fff; border-radius: 18px; width: min(720px, 100%); max-height: calc(100vh - 32px); overflow: auto; padding: 20px; display: grid; gap: 14px; }
+  .dlg h3 { margin: 0; color: var(--navy); font-size: 1.15rem; }
+  .dlg .pv { border-radius: 12px; overflow: hidden; background: #000; max-height: 340px; display: grid; place-items: center; }
+  .dlg .pv img, .dlg .pv video { max-width: 100%; max-height: 340px; display: block; }
+  .bar { position: sticky; bottom: 0; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(6px); padding: 12px 0; margin-top: 18px; border-top: 1px solid var(--line); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; z-index: 5; }
+  .prog { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+  .prog i { display: block; height: 100%; background: var(--green); width: 0; transition: width .2s; }
+
+  /* Бағалар мен мәтіндер жолдары */
   .rows { display: grid; gap: 8px; }
-  .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
-  .row.off { opacity: .55; }
-  .row .ctl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-  .row input[type=number] { width: 110px; min-height: 40px; padding: 6px 10px; }
-  .row select { min-height: 40px; padding: 6px 10px; }
-  .row .nm { overflow-wrap: anywhere; }
-  .row .nm small { display: block; color: var(--muted); }
+  .pr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+  .pr.off { opacity: .55; }
+  .pr .ctl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .pr input[type=number] { width: 110px; min-height: 38px; padding: 6px 10px; }
+  .pr select { width: auto; min-height: 38px; padding: 6px 10px; }
+  .pr small { display: block; color: var(--muted); }
   .chk { display: inline-flex; gap: 6px; align-items: center; font-size: .875rem; color: var(--muted); }
   .chk input { width: 18px; height: 18px; min-height: 0; accent-color: var(--green); }
-  .bar { position: sticky; bottom: 0; background: var(--bg); padding: 12px 0; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; border-top: 1px solid var(--line); margin-top: 20px; }
-  .ok { color: var(--green); font-weight: 600; }
-  @media (max-width: 600px) { .row { grid-template-columns: 1fr; } .row .ctl { justify-content: flex-start; } .row input[type=number] { width: 96px; } }
+  @media (max-width: 600px) { .pr { grid-template-columns: 1fr; } .pr .ctl { justify-content: flex-start; } .pr input[type=number] { width: 96px; } }
+  .tx { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 8px; }
+  .tx.ch { border-color: var(--green); box-shadow: 0 0 0 2px var(--mint); }
+  .tx .k { font-size: .75rem; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  .tx textarea { min-height: 44px; }
+  .lg { font-size: .7rem; font-weight: 700; color: var(--green); }
+
+  .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--navy2); color: #fff; padding: 10px 16px; border-radius: 12px; z-index: 99; font-weight: 600; box-shadow: 0 6px 24px rgb(0 0 0 / .2); max-width: calc(100vw - 32px); }
+  .login { max-width: 380px; margin: 14vh auto 0; display: grid; gap: 14px; padding: 24px; }
+  .login h1 { margin: 0; color: var(--navy); }
 </style>
 </head>
 <body>
-<div class="wrap" id="app"></div>
+<div id="root"></div>
 <script>
+// ---------- Мәтіндер (әкімші бөлімі қазақша немесе орысша) ----------
 const L = {
-  kk: { title: 'Пікірлер', login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', hide: 'Жасыру', show: 'Көрсету', del: 'Өшіру', confirm: 'Бұл пікірді біржола өшіру керек пе?', hiddenB: 'Жасырылған', empty: 'Пікір жоқ', all: 'Барлығы', visible: 'Сайтта', hiddenN: 'Жасырылған', avg: 'Орташа баға', site: 'Сайтқа өту', filterAll: 'Барлығы', filterHidden: 'Тек жасырылған', err: 'Қате. Қайталап көріңіз.', tabR: 'Пікірлер', tabS: 'Ұсыныстар', emptyS: 'Ұсыныс жоқ', read: 'Оқылды', unread: 'Оқылмаған деп белгілеу', newB: 'Жаңа', confirmS: 'Бұл ұсынысты біржола өшіру керек пе?', phone: 'Телефон', reply: 'Жауап күтеді', anon: 'Аты жазылмаған', unreadN: 'Оқылмаған', tabP: 'Бағалар', priceList: 'Прайс-лист', shop: 'Дүкен', min: 'Бастап', max: 'Дейін', hideRow: 'Жасыру', save: 'Сақтау', saved: 'Сақталды. Сайтта бағалар ауысты.', unsaved: 'Сақталмаған өзгеріс бар', priceHint: 'Бір баға болса, екі жолға да сол санды жазыңыз. Бос қалса, «Бағасы нақтыланады» деп тұрады.', price: 'Бағасы, ₸', stock: 'Қоймада', stockU: 'Белгісіз', stockY: 'Бар', stockN: 'Жоқ', search: 'Өнімді іздеу', badNum: 'Бағаны тек санмен жазыңыз', leave: 'Сақталмаған өзгерістер жоғалады. Шыға берейік пе?' },
-  ru: { title: 'Отзывы', login: 'Войти', pass: 'Пароль', logout: 'Выйти', hide: 'Скрыть', show: 'Показать', del: 'Удалить', confirm: 'Удалить этот отзыв навсегда?', hiddenB: 'Скрыт', empty: 'Отзывов нет', all: 'Всего', visible: 'На сайте', hiddenN: 'Скрыто', avg: 'Средняя оценка', site: 'На сайт', filterAll: 'Все', filterHidden: 'Только скрытые', err: 'Ошибка. Попробуйте ещё раз.', tabR: 'Отзывы', tabS: 'Предложения', emptyS: 'Предложений нет', read: 'Прочитано', unread: 'Отметить непрочитанным', newB: 'Новое', confirmS: 'Удалить это предложение навсегда?', phone: 'Телефон', reply: 'Ждёт ответа', anon: 'Без имени', unreadN: 'Непрочитанных', tabP: 'Цены', priceList: 'Прайс-лист', shop: 'Магазин', min: 'От', max: 'До', hideRow: 'Скрыть', save: 'Сохранить', saved: 'Сохранено. Цены на сайте обновлены.', unsaved: 'Есть несохранённые изменения', priceHint: 'Если цена одна, впишите одно и то же число в оба поля. Пустое поле: на сайте будет «Цена уточняется».', price: 'Цена, ₸', stock: 'Наличие', stockU: 'Неизвестно', stockY: 'Есть', stockN: 'Нет', search: 'Поиск товара', badNum: 'Цену пишите только цифрами', leave: 'Несохранённые изменения пропадут. Выйти?' },
+  kk: {
+    admin: 'Әкімші бөлімі', login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', site: 'Сайтты ашу', err: 'Қате. Қайталап көріңіз.', saved: 'Сақталды', save: 'Сақтау', cancel: 'Болдырмау', close: 'Жабу', del: 'Өшіру', hide: 'Жасыру', show: 'Көрсету', up: 'Жоғары', down: 'Төмен', edit: 'Өзгерту', add: 'Қосу', all: 'Барлығы', search: 'Іздеу',
+    nHome: 'Басты', nReviews: 'Пікірлер', nSugs: 'Ұсыныстар', nOrders: 'Тапсырыстар', nPhotos: 'Фотолар', nCerts: 'Сертификаттар', nVideos: 'Видеолар', nPrices: 'Бағалар', nContacts: 'Байланыс', nTexts: 'Беттердегі мәтіндер', nSettings: 'Баптаулар',
+    bOk: 'Сайт жаңа', bBusy: 'Сайт жаңартылуда…', bErr: 'Жаңарту қатесі', bNo: 'Жинау қолжетімсіз', bHint: 'Өзгерістер 1–2 минутта сайтқа шығады',
+    hiNew: 'жаңа пікір (7 күн)', hiSugs: 'оқылмаған ұсыныс', hiOrders: 'жаңа тапсырыс', hiAvg: 'орташа баға', quick: 'Жылдам әрекеттер', qPhoto: 'Фото қосу', qPrice: 'Бағаны өзгерту', qContacts: 'Телефон мен әлеуметтік желі', qTexts: 'Мәтінді өзгерту',
+    rEmpty: 'Пікір жоқ', rReply: 'Жауап беру', rReplyEdit: 'Жауапты өзгерту', rReplyPh: 'Орталық атынан жауап жазыңыз', rReplyDel: 'Жауапты өшіру', rOur: 'Орталықтың жауабы', rConfirm: 'Бұл пікірді біржола өшіру керек пе?', fAll: 'Барлығы', fHidden: 'Жасырылған', fNoReply: 'Жауапсыз', hiddenB: 'Жасырылған',
+    sEmpty: 'Ұсыныс жоқ', sRead: 'Оқылды', sUnread: 'Оқылмаған деп белгілеу', sNew: 'Жаңа', sConfirm: 'Бұл ұсынысты біржола өшіру керек пе?', phone: 'Телефон', sWait: 'Жауап күтеді', anon: 'Аты жазылмаған',
+    oEmpty: 'Тапсырыс әлі жоқ. Сайт себетінен жіберілген тапсырыстар осында шығады.', oNew: 'Жаңа', oDone: 'Орындалды', oCancel: 'Бас тартылды', oTotal: 'Жиыны', oConfirm: 'Бұл тапсырысты өшіру керек пе?', oDel: { pickup: 'Орталықтан алып кету', city: 'Қызылорда бойынша жеткізу', other: 'Басқа қалаға' }, oAddr: 'Мекенжай', oNote: 'Ескерту',
+    mAdd: '+ Фото қосу', mAddV: '+ Видео қосу', mCap: 'Атауы', mSub: 'Қосымша сипаттама (міндетті емес)', mCat: 'Санат', mReplace: 'Суретті ауыстыру', mReplaceV: 'Видеоны ауыстыру', mPoster: 'Мұқаба суретін ауыстыру', mConfirm: 'Бұл фотоны сайттан біржола өшіру керек пе?', mConfirmV: 'Бұл видеоны сайттан біржола өшіру керек пе?', mUploading: 'Жүктелуде…', mHiddenB: 'Жасырылған', mNoCap: 'Атауы жоқ', mType: 'Тек сурет (JPG, PNG, WEBP) немесе видео (MP4) жүктеуге болады', mBig: 'Файл тым үлкен', mMov: 'Ескерту: iPhone-ның .mov видеосы кейбір браузерде ойнамауы мүмкін. Мүмкін болса, MP4 жіберіңіз.', mLangHint: 'Бос қалған тілде орысша мәтін көрсетіледі.', mReset: 'Бастапқы тізімге қайтару', mResetQ: 'Барлық өзгерісті болдырмай, бастапқы тізімге қайтару керек пе?',
+    cTitle: 'Сертификат атауы', cNote: 'Маман (аты-жөні)', cYear: 'Жылы', cConfirm: 'Бұл сертификатты сайттан өшіру керек пе?', cAdd: '+ Сертификат қосу',
+    vGroupSingle: 'Бұл жерде бір видео тұрады', vEmpty: 'Видео жоқ: бұл бөлім сайтта көрінбейді',
+    pHint: 'Бір баға болса, екі жолға да сол санды жазыңыз. Дүкенде баға бос болса, «Бағасы нақтыланады» деп тұрады.', pList: 'Прайс-лист', pShop: 'Дүкен', pMin: 'Бастап', pMax: 'Дейін', pPrice: 'Бағасы, ₸', pStock: 'Қоймада', pU: 'Белгісіз', pY: 'Бар', pN: 'Жоқ', pBad: 'Бағаны тек санмен жазыңыз', pSaved: 'Сақталды. Сайтта бағалар бірден ауысты.', unsaved: 'Сақталмаған өзгеріс бар', leave: 'Сақталмаған өзгерістер жоғалады. Шыға берейік пе?',
+    kPhones: 'Телефондар', kNum: 'Нөмір', kAddPhone: '+ Телефон қосу', kWa: 'Негізгі WhatsApp нөмірі', kWaHint: 'Тек сандар, мысалы 77001234567. Толтырсаңыз, сайттағы WhatsApp батырмалары дайын мәтінмен осы нөмірге жазады.', kWaLink: 'WhatsApp бизнес-сілтемесі (нөмір жоқ болса)', kOrders: 'Дүкен тапсырыстары келетін WhatsApp', kFeedback: 'Ұсыныстар келетін WhatsApp', kSocial: 'Әлеуметтік желілер мен сілтемелер', kBooking: 'Онлайн жазылу сілтемесі (Altegio)', k2gis: '2GIS карточкасы', kAddr: 'Мекенжай', kAddrNote: 'Қалай табуға болады', kHours: 'Жұмыс уақыты', kDays: 'Күндер', kTime: 'Уақыты', kAddHours: '+ Жол қосу', kBadUrl: 'Сілтеме https:// деп басталуы керек',
+    tPage: 'Бет', tHint: 'Мәтінді өзгертіп, «Сақтау» басыңыз. Бастапқы мәтінге қайту үшін ↺ басыңыз.', tNone: 'Мәтіндер тізімі сайт серверде алғаш жиналғаннан кейін пайда болады.', tReset: 'Бастапқы мәтінге қайтару', tChanged: 'өзгертілген',
+    stSeo: 'Google мен Яндекске ашу', stSeoHint: 'Қосылса, іздеу жүйелері сайтты көріп, нәтижелерде көрсете бастайды.', stRebuild: 'Сайтты қазір қайта жинау', stInfo: 'Соңғы жаңарту',
+    pages: { common: 'Жалпы: мәзір, батырмалар, төменгі бөлік', index: 'Басты бет', about: 'Біз туралы', services: 'Қызметтер', 'services-item': 'Қызмет беті (жалпы жазулар)', insoles: 'Ұлтарақтар', prices: 'Бағалар беті', shop: 'Дүкен', 'shop-item': 'Тауар беті', cart: 'Себет', courses: 'Оқу', clinics: 'Клиникаларға', certificates: 'Сертификаттар беті', gallery: 'Галерея беті', reviews: 'Пікірлер беті', 'c-Reviews': 'Пікірлер блогы', feedback: 'Ұсыныстар беті', contacts: 'Байланыс беті', booking: 'Жазылу беті', mission: 'Миссия', privacy: 'Құпиялық саясаты' },
+  },
+  ru: {
+    admin: 'Админ-панель', login: 'Войти', pass: 'Пароль', logout: 'Выйти', site: 'Открыть сайт', err: 'Ошибка. Попробуйте ещё раз.', saved: 'Сохранено', save: 'Сохранить', cancel: 'Отмена', close: 'Закрыть', del: 'Удалить', hide: 'Скрыть', show: 'Показать', up: 'Выше', down: 'Ниже', edit: 'Изменить', add: 'Добавить', all: 'Все', search: 'Поиск',
+    nHome: 'Главная', nReviews: 'Отзывы', nSugs: 'Предложения', nOrders: 'Заказы', nPhotos: 'Фото', nCerts: 'Сертификаты', nVideos: 'Видео', nPrices: 'Цены', nContacts: 'Контакты', nTexts: 'Тексты на страницах', nSettings: 'Настройки',
+    bOk: 'Сайт обновлён', bBusy: 'Сайт обновляется…', bErr: 'Ошибка обновления', bNo: 'Сборка недоступна', bHint: 'Изменения появятся на сайте через 1–2 минуты',
+    hiNew: 'новых отзывов (7 дней)', hiSugs: 'непрочитанных предложений', hiOrders: 'новых заказов', hiAvg: 'средняя оценка', quick: 'Быстрые действия', qPhoto: 'Добавить фото', qPrice: 'Изменить цены', qContacts: 'Телефоны и соцсети', qTexts: 'Изменить тексты',
+    rEmpty: 'Отзывов нет', rReply: 'Ответить', rReplyEdit: 'Изменить ответ', rReplyPh: 'Напишите ответ от имени центра', rReplyDel: 'Удалить ответ', rOur: 'Ответ центра', rConfirm: 'Удалить этот отзыв навсегда?', fAll: 'Все', fHidden: 'Скрытые', fNoReply: 'Без ответа', hiddenB: 'Скрыт',
+    sEmpty: 'Предложений нет', sRead: 'Прочитано', sUnread: 'Отметить непрочитанным', sNew: 'Новое', sConfirm: 'Удалить это предложение навсегда?', phone: 'Телефон', sWait: 'Ждёт ответа', anon: 'Без имени',
+    oEmpty: 'Заказов пока нет. Заказы из корзины сайта появятся здесь.', oNew: 'Новый', oDone: 'Выполнен', oCancel: 'Отменён', oTotal: 'Итого', oConfirm: 'Удалить этот заказ?', oDel: { pickup: 'Самовывоз из центра', city: 'Доставка по Кызылорде', other: 'В другой город' }, oAddr: 'Адрес', oNote: 'Комментарий',
+    mAdd: '+ Добавить фото', mAddV: '+ Добавить видео', mCap: 'Название', mSub: 'Доп. описание (необязательно)', mCat: 'Категория', mReplace: 'Заменить фото', mReplaceV: 'Заменить видео', mPoster: 'Заменить обложку', mConfirm: 'Удалить это фото с сайта навсегда?', mConfirmV: 'Удалить это видео с сайта навсегда?', mUploading: 'Загрузка…', mHiddenB: 'Скрыто', mNoCap: 'Без названия', mType: 'Можно загрузить только фото (JPG, PNG, WEBP) или видео (MP4)', mBig: 'Файл слишком большой', mMov: 'Внимание: видео .mov с iPhone может не воспроизводиться в некоторых браузерах. Лучше загрузить MP4.', mLangHint: 'Если поле на каком-то языке пустое, покажется русский текст.', mReset: 'Вернуть исходный список', mResetQ: 'Отменить все изменения и вернуть исходный список?',
+    cTitle: 'Название сертификата', cNote: 'Специалист (ФИО)', cYear: 'Год', cConfirm: 'Удалить этот сертификат с сайта?', cAdd: '+ Добавить сертификат',
+    vGroupSingle: 'Здесь одно видео', vEmpty: 'Видео нет: этот блок на сайте не показывается',
+    pHint: 'Если цена одна, впишите одно и то же число в оба поля. Пустая цена в магазине: на сайте будет «Цена уточняется».', pList: 'Прайс-лист', pShop: 'Магазин', pMin: 'От', pMax: 'До', pPrice: 'Цена, ₸', pStock: 'Наличие', pU: 'Неизвестно', pY: 'Есть', pN: 'Нет', pBad: 'Цену пишите только цифрами', pSaved: 'Сохранено. Цены на сайте обновились сразу.', unsaved: 'Есть несохранённые изменения', leave: 'Несохранённые изменения пропадут. Выйти?',
+    kPhones: 'Телефоны', kNum: 'Номер', kAddPhone: '+ Добавить телефон', kWa: 'Основной номер WhatsApp', kWaHint: 'Только цифры, например 77001234567. Если заполнить, кнопки WhatsApp на сайте будут писать на этот номер с готовым текстом.', kWaLink: 'Бизнес-ссылка WhatsApp (если нет номера)', kOrders: 'WhatsApp для заказов магазина', kFeedback: 'WhatsApp для предложений', kSocial: 'Соцсети и ссылки', kBooking: 'Ссылка онлайн-записи (Altegio)', k2gis: 'Карточка 2GIS', kAddr: 'Адрес', kAddrNote: 'Как найти', kHours: 'Режим работы', kDays: 'Дни', kTime: 'Время', kAddHours: '+ Добавить строку', kBadUrl: 'Ссылка должна начинаться с https://',
+    tPage: 'Страница', tHint: 'Измените текст и нажмите «Сохранить». Чтобы вернуть исходный текст, нажмите ↺.', tNone: 'Список текстов появится после первой сборки сайта на сервере.', tReset: 'Вернуть исходный текст', tChanged: 'изменено',
+    stSeo: 'Открыть для Google и Яндекса', stSeoHint: 'Если включить, поисковики начнут видеть сайт и показывать его в результатах.', stRebuild: 'Пересобрать сайт сейчас', stInfo: 'Последнее обновление',
+    pages: { common: 'Общее: меню, кнопки, подвал', index: 'Главная', about: 'О нас', services: 'Услуги', 'services-item': 'Страница услуги (общие надписи)', insoles: 'Стельки', prices: 'Страница цен', shop: 'Магазин', 'shop-item': 'Страница товара', cart: 'Корзина', courses: 'Обучение', clinics: 'Для клиник', certificates: 'Страница сертификатов', gallery: 'Страница галереи', reviews: 'Страница отзывов', 'c-Reviews': 'Блок отзывов', feedback: 'Страница предложений', contacts: 'Страница контактов', booking: 'Страница записи', mission: 'Миссия', privacy: 'Политика конфиденциальности' },
+  },
 };
-let lang = localStorage.getItem('pd_admin_lang') || 'kk';
+let lang = (() => { try { return localStorage.getItem('pd_admin_lang') || 'kk'; } catch { return 'kk'; } })();
+if (!L[lang]) lang = 'kk';
 let t = L[lang];
-let items = [], sugs = [], filter = 'all', tab = 'r';
-let cat = null, content = { prices: {}, products: {} }, dirty = false, q = '';
-const app = document.getElementById('app');
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const api = (p, o = {}) => fetch(p, { ...o, headers: { 'content-type': 'application/json' }, credentials: 'same-origin' });
-const fmt = (d) => new Date(d).toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU', { dateStyle: 'medium', timeStyle: 'short' });
-const langSel = () => `<select id="lang">${Object.keys(L).map((k) => `<option value="${k}" ${k === lang ? 'selected' : ''}>${k === 'kk' ? 'Қазақша' : 'Русский'}</option>`).join('')}</select>`;
-const bindLang = () => document.getElementById('lang').onchange = (e) => { lang = e.target.value; t = L[lang]; try { localStorage.setItem('pd_admin_lang', lang); } catch {} load(); };
 
-function loginView(msg = '') {
+// ---------- Көмекшілер ----------
+const root = document.getElementById('root');
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const clone = (v) => JSON.parse(JSON.stringify(v));
+const api = async (p, o = {}) => {
+  const r = await fetch(p, { ...o, headers: { 'content-type': 'application/json', ...(o.headers || {}) }, credentials: 'same-origin' });
+  if (r.status === 401) { showLogin(); throw new Error('login'); }
+  return r;
+};
+const jput = async (p, v, m = 'PUT') => { const r = await api(p, { method: m, body: JSON.stringify(v) }); if (!r.ok) throw new Error('save'); return r.json(); };
+const fmtD = (d) => new Date(d).toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU', { dateStyle: 'medium', timeStyle: 'short' });
+const money = (n) => `${Number(n).toLocaleString('ru-RU').replace(/\s/g, ' ')} ₸`;
+const L3 = (v) => ({ kk: v?.kk || '', ru: v?.ru || '', en: v?.en || '' });
+const pick = (v) => (v && (v[lang] || v.ru || v.kk)) || '';
+let tt;
+const toast = (m) => { let el = $('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; document.body.append(el); } el.textContent = m; el.hidden = false; clearTimeout(tt); tt = setTimeout(() => { el.hidden = true; }, 2600); };
+const I = {
+  home: '<path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+  star: '<path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>',
+  msg: '<path d="M4 5h16v11H8l-4 4z"/>',
+  bag: '<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
+  img: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 16 5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.5"/>',
+  cert: '<rect x="4" y="3" width="16" height="13" rx="2"/><path d="M8 7h8M8 10h5M10 16l-1 5 3-2 3 2-1-5"/>',
+  video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>',
+  tag: '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>',
+  phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+  text: '<path d="M4 6h16M4 12h16M4 18h10"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+};
+const ic = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+
+// ---------- Деректер ----------
+const D = { reviews: [], sugs: [], orders: [], cms: {}, texts: {}, defs: null, catalog: null, content: { prices: {}, products: {} }, build: {}, canBuild: false };
+let view = (location.hash || '#home').slice(1);
+let dirty = false;
+const VIEWS = ['home', 'reviews', 'sugs', 'orders', 'photos', 'certs', 'videos', 'prices', 'contacts', 'texts', 'settings'];
+if (!VIEWS.includes(view)) view = 'home';
+
+async function loadAll() {
+  const [r, s, o, c] = await Promise.all([api('/api/admin/reviews'), api('/api/admin/suggestions'), api('/api/admin/orders'), api('/api/admin/cms')]);
+  if (!r.ok) throw new Error('load');
+  D.reviews = (await r.json()).reviews;
+  D.sugs = s.ok ? (await s.json()).suggestions : [];
+  D.orders = o.ok ? (await o.json()).orders : [];
+  if (c.ok) { const j = await c.json(); D.cms = j.cms || {}; D.texts = j.texts || {}; D.build = j.build || {}; D.canBuild = j.canBuild; }
+  if (!D.defs) {
+    const [d, k, p] = await Promise.all([fetch('/cms-defaults.json'), fetch('/catalog.json'), fetch('/api/content')]);
+    D.defs = d.ok ? await d.json() : { gallery: [], galleryCategories: [], certificates: [], certCategories: [], videoGroups: [], contacts: {} };
+    D.catalog = k.ok ? await k.json() : { prices: [], products: [] };
+    D.content = p.ok ? await p.json() : { prices: {}, products: {} };
+  }
+}
+
+// ---------- Кіру ----------
+function showLogin(msg = '') {
   document.documentElement.lang = lang;
-  app.innerHTML = `<form class="login card"><h1>${t.title}</h1>${langSel()}<input type="password" name="p" placeholder="${t.pass}" autocomplete="current-password" required autofocus><button class="primary">${t.login}</button><div class="err">${esc(msg)}</div></form>`;
+  root.innerHTML = `<form class="login card"><h1>${t.admin}</h1>${langSel()}<input type="password" name="p" placeholder="${t.pass}" autocomplete="current-password" required autofocus><button class="btn primary">${t.login}</button><div class="err">${esc(msg)}</div></form>`;
   bindLang();
-  app.querySelector('form').onsubmit = async (e) => {
+  $('form').onsubmit = async (e) => {
     e.preventDefault();
-    const r = await api('/api/admin/login', { method: 'POST', body: JSON.stringify({ password: e.target.p.value }) });
-    if (r.ok) return load();
+    const r = await fetch('/api/admin/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password: e.target.p.value }) });
+    if (r.ok) return start();
     const d = await r.json().catch(() => ({}));
-    loginView(d.error || t.err);
+    showLogin(d.error || t.err);
   };
 }
+const langSel = () => `<select id="lang" aria-label="Тіл / Язык"><option value="kk" ${lang === 'kk' ? 'selected' : ''}>Қазақша</option><option value="ru" ${lang === 'ru' ? 'selected' : ''}>Русский</option></select>`;
+const bindLang = () => { const s = $('#lang'); if (s) s.onchange = (e) => { lang = e.target.value; t = L[lang]; try { localStorage.setItem('pd_admin_lang', lang); } catch {} if ($('.app')) shell(); else showLogin(); }; };
 
-function tabs() {
-  const n = sugs.filter((x) => !x.read).length;
-  document.title = (n ? `(${n}) ` : '') + `${t.tabR} / ${t.tabS}`;
-  return `<div class="tabs"><button data-tab="r" class="${tab === 'r' ? 'on' : ''}">${t.tabR} (${items.length})</button><button data-tab="s" class="${tab === 's' ? 'on' : ''}">${t.tabS} (${sugs.length})${n ? `<span class="new">${n}</span>` : ''}</button><button data-tab="p" class="${tab === 'p' ? 'on' : ''}">${t.tabP}</button></div>`;
+// ---------- Каркас ----------
+function counts() {
+  const week = Date.now() - 7 * 864e5;
+  return {
+    reviews: D.reviews.filter((r) => new Date(r.createdAt) > week).length,
+    sugs: D.sugs.filter((x) => !x.read).length,
+    orders: D.orders.filter((x) => x.status === 'new').length,
+  };
 }
-function bindTabs() { app.querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => { if (dirty && !confirm(t.leave)) return; dirty = false; tab = b.dataset.tab; view(); }); }
+function buildPill() {
+  const b = D.build || {};
+  if (!D.canBuild) return `<span class="pill" title="${t.bHint}"><span class="dot"></span>${t.bOk}</span>`;
+  if (b.state === 'building' || b.state === 'queued') return `<span class="pill busy" title="${t.bHint}"><span class="dot"></span>${t.bBusy}</span>`;
+  if (b.state === 'error') return `<span class="pill bad" title="${esc(b.error || '')}"><span class="dot"></span>${t.bErr}</span>`;
+  return `<span class="pill" title="${t.bHint}"><span class="dot"></span>${t.bOk}</span>`;
+}
+function shell() {
+  document.documentElement.lang = lang;
+  const c = counts();
+  const n = (id, icon, label, cnt) => `<button class="nav ${view === id ? 'on' : ''}" data-v="${id}">${ic(icon)}<span>${label}</span>${cnt ? `<span class="cnt">${cnt}</span>` : ''}</button>`;
+  document.title = (c.sugs + c.orders ? `(${c.sugs + c.orders}) ` : '') + t.admin;
+  root.innerHTML = `<div class="app">
+    <aside class="side">
+      <div class="brand"><i>П</i><div>Подолог<small>${t.admin}</small></div></div>
+      ${n('home', 'home', t.nHome)}
+      <div class="sep"></div>
+      ${n('reviews', 'star', t.nReviews)}${n('sugs', 'msg', t.nSugs, c.sugs)}${n('orders', 'bag', t.nOrders, c.orders)}
+      <div class="sep"></div>
+      ${n('photos', 'img', t.nPhotos)}${n('videos', 'video', t.nVideos)}${n('certs', 'cert', t.nCerts)}
+      <div class="sep"></div>
+      ${n('prices', 'tag', t.nPrices)}${n('contacts', 'phone', t.nContacts)}${n('texts', 'text', t.nTexts)}${n('settings', 'gear', t.nSettings)}
+      <div class="foot">${langSel()}<a class="btn sm" href="/" target="_blank" rel="noopener">${t.site} ↗</a><button class="btn sm ghost" id="out" style="color:#fff">${t.logout}</button></div>
+    </aside>
+    <main class="main"><div class="top"><button class="btn sm burger" id="burger" aria-label="Menu">${ic('menu')}</button><h1 id="h1"></h1><span id="bpill">${buildPill()}</span></div><div id="v"></div></main>
+  </div>`;
+  bindLang();
+  $$('.nav').forEach((b) => b.onclick = () => go(b.dataset.v));
+  $('#out').onclick = async () => { await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' }); showLogin(); };
+  $('#burger').onclick = () => $('.app').classList.toggle('menu');
+  $('.side').addEventListener('click', (e) => { if (e.target.closest('.nav')) $('.app').classList.remove('menu'); });
+  $('.app').addEventListener('click', (e) => { if (e.target === $('.app')) $('.app').classList.remove('menu'); });
+  render();
+}
+function go(v) {
+  if (dirty && !confirm(t.leave)) return;
+  dirty = false; view = v; history.replaceState(null, '', `#${v}`);
+  $$('.nav').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  render(); scrollTo(0, 0);
+}
+const V = {};
+function render() {
+  const titles = { home: t.nHome, reviews: t.nReviews, sugs: t.nSugs, orders: t.nOrders, photos: t.nPhotos, certs: t.nCerts, videos: t.nVideos, prices: t.nPrices, contacts: t.nContacts, texts: t.nTexts, settings: t.nSettings };
+  $('#h1').textContent = titles[view];
+  // Әр бөлім таза контейнерде ашылады: алдыңғы бөлімнің тыңдаушылары қалмайды
+  const old = $('#v'); const el = old.cloneNode(false); old.replaceWith(el);
+  V[view](el);
+}
+function refreshNav() { const c = counts(); $$('.nav').forEach((b) => { const k = b.dataset.v; const cnt = k === 'sugs' ? c.sugs : k === 'orders' ? c.orders : 0; let s = $('.cnt', b); if (cnt) { if (!s) { s = document.createElement('span'); s.className = 'cnt'; b.append(s); } s.textContent = cnt; } else s?.remove(); }); }
 
-function viewS() {
-  const n = sugs.filter((x) => !x.read).length;
-  app.innerHTML = `<header><h1>${t.tabS}</h1><div class="tools">${langSel()}<a href="/"><button type="button">${t.site}</button></a><button id="out">${t.logout}</button></div></header>${tabs()}
-    <div class="stat muted"><span>${t.all}: <b>${sugs.length}</b></span><span>${t.unreadN}: <b>${n}</b></span></div>
-    <div class="list">${sugs.length ? sugs.map((r) => `<article class="card ${r.read ? '' : 'unread'}" data-id="${r.id}">
-      <div class="top">${r.topic ? `<span class="topic">${esc(r.topic)}</span>` : ''}<b>${r.name ? esc(r.name) : `<span class="muted">${t.anon}</span>`}</b><span class="muted">${fmt(r.createdAt)}</span>${r.read ? '' : `<span class="badge">${t.newB}</span>`}</div>
-      <p class="text">${esc(r.text)}</p>
-      ${r.phone || r.reply ? `<div class="muted">${r.phone ? `${t.phone}: <a href="https://wa.me/${esc(r.phone.replace(/\D/g, ''))}" target="_blank" rel="noopener">${esc(r.phone)}</a>` : ''} ${r.reply ? `· ${t.reply}` : ''}</div>` : ''}
-      <div class="acts"><button data-act="read">${r.read ? t.unread : t.read}</button><button class="danger" data-act="del">${t.del}</button></div></article>`).join('') : `<p class="muted">${t.emptyS}</p>`}</div>`;
-  bindLang(); bindTabs();
-  document.getElementById('out').onclick = async () => { await api('/api/admin/logout', { method: 'POST' }); loginView(); };
-  app.querySelectorAll('[data-act]').forEach((b) => b.onclick = async () => {
-    const id = b.closest('[data-id]').dataset.id;
-    const r = sugs.find((x) => x.id === id);
-    let res;
-    if (b.dataset.act === 'del') { if (!confirm(t.confirmS)) return; res = await api(`/api/admin/suggestions/${id}`, { method: 'DELETE' }); }
-    else res = await api(`/api/admin/suggestions/${id}`, { method: 'PATCH', body: JSON.stringify({ read: !r.read }) });
-    if (res.status === 401) return loginView();
-    if (!res.ok) return alert(t.err);
-    load();
+// cms бөлімін сақтап, сайтты қайта жинауды бастау
+async function saveCms(key, value) {
+  try {
+    const j = await jput(`/api/admin/cms/${key}`, value, value === null ? 'DELETE' : 'PUT');
+    if (value === null) delete D.cms[key]; else D.cms[key] = value;
+    D.build = j.build || D.build; $('#bpill').innerHTML = buildPill(); pollBuild();
+    toast(`${t.saved}. ${t.bHint}`);
+    return true;
+  } catch (e) { if (e.message !== 'login') alert(t.err); return false; }
+}
+let bt;
+function pollBuild(ms = 3000) {
+  clearTimeout(bt);
+  bt = setTimeout(async () => {
+    try { const r = await api('/api/admin/build'); const j = await r.json(); D.build = j.build; D.canBuild = j.canBuild; const p = $('#bpill'); if (p) p.innerHTML = buildPill(); if (['building', 'queued'].includes(j.build.state)) pollBuild(); } catch {}
+  }, ms);
+}
+
+// ---------- Файл жүктеу ----------
+const upload = (blob, name, onProgress) => new Promise((ok, no) => {
+  const x = new XMLHttpRequest();
+  x.open('PUT', `/api/admin/upload?name=${encodeURIComponent(name)}`);
+  x.upload.onprogress = (e) => e.lengthComputable && onProgress?.(e.loaded / e.total);
+  x.onload = () => { if (x.status === 201) ok(JSON.parse(x.responseText).url); else if (x.status === 401) { showLogin(); no(new Error('login')); } else no(new Error(x.status === 413 ? t.mBig : t.err)); };
+  x.onerror = () => no(new Error(t.err));
+  x.send(blob);
+});
+// Суретті браузерде кішірейтіп, WEBP (болмаса JPG) етеміз: сайт жылдам ашылады
+async function shrink(file, max) {
+  const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }).catch(() => null);
+  if (!bmp) return { blob: file, ext: (file.name.split('.').pop() || 'jpg').toLowerCase(), w: 0, h: 0 };
+  const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  let blob = await new Promise((r) => c.toBlob(r, 'image/webp', 0.86));
+  let ext = 'webp';
+  if (!blob || blob.type !== 'image/webp') { blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.88)); ext = 'jpg'; }
+  return { blob, ext, w: bmp.width, h: bmp.height };
+}
+async function uploadImage(file, sizes = [2000], onProgress) {
+  if (!/^image\//.test(file.type)) throw new Error(t.mType);
+  const base = (file.name.replace(/\.[^.]+$/, '') || 'photo').slice(0, 30);
+  const out = [];
+  for (const [i, max] of sizes.entries()) { const s = await shrink(file, max); out.push({ url: await upload(s.blob, `${base}${i ? '-sm' : ''}.${s.ext}`, (p) => onProgress?.((i + p) / sizes.length)), w: s.w, h: s.h }); }
+  return out;
+}
+// Видеоның мұқабасы: 1-секундтағы кадр браузерде суретке айналады
+async function videoPoster(file) {
+  try {
+    const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = URL.createObjectURL(file);
+    await new Promise((ok, no) => { v.onloadeddata = ok; v.onerror = no; setTimeout(no, 15000); });
+    v.currentTime = Math.min(1, (v.duration || 2) / 3);
+    await new Promise((ok) => { v.onseeked = ok; setTimeout(ok, 4000); });
+    const k = Math.min(1, 1280 / Math.max(v.videoWidth, v.videoHeight));
+    const c = document.createElement('canvas'); c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k);
+    if (!c.width) return '';
+    c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+    let blob = await new Promise((r) => c.toBlob(r, 'image/webp', 0.84)); let ext = 'webp';
+    if (!blob || blob.type !== 'image/webp') { blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.86)); ext = 'jpg'; }
+    URL.revokeObjectURL(v.src);
+    return await upload(blob, `poster.${ext}`);
+  } catch { return ''; }
+}
+async function uploadVideo(file, onProgress) {
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  if (!['mp4', 'webm', 'mov'].includes(ext)) throw new Error(t.mType);
+  if (ext === 'mov') alert(t.mMov);
+  const poster = await videoPoster(file);
+  const src = await upload(file, `video.${ext}`, onProgress);
+  return { src, poster };
+}
+const pickFiles = (accept, multiple = false) => new Promise((ok) => { const i = document.createElement('input'); i.type = 'file'; i.accept = accept; i.multiple = multiple; i.onchange = () => ok([...i.files]); i.click(); });
+
+// ---------- Терезе (модаль) ----------
+function modal(html, bind) {
+  const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="dlg" role="dialog" aria-modal="true">${html}</div>`;
+  document.body.append(m); document.documentElement.style.overflow = 'hidden';
+  const close = () => { m.remove(); document.documentElement.style.overflow = ''; };
+  m.addEventListener('click', (e) => { if (e.target === m) close(); });
+  m.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  bind($('.dlg', m), close);
+  $('input, textarea, button', m)?.focus();
+  return close;
+}
+const l3Fields = (name, label, v, area = false, hint = true) => `<div class="f" style="display:grid;gap:6px"><span class="small muted" style="font-weight:600">${label}</span><div class="grid3">${['kk', 'ru', 'en'].map((l) => `<label class="f"><span class="lg">${l === 'kk' ? 'ҚАЗ' : l === 'ru' ? 'РУС' : 'ENG'}</span>${area ? `<textarea data-l3="${name}" data-l="${l}">${esc(v?.[l])}</textarea>` : `<input data-l3="${name}" data-l="${l}" value="${esc(v?.[l])}">`}</label>`).join('')}</div>${hint ? `<span class="small muted">${t.mLangHint}</span>` : ''}</div>`;
+const readL3 = (el, name) => { const o = {}; $$(`[data-l3="${name}"]`, el).forEach((i) => { o[i.dataset.l] = i.value.trim(); }); return o; };
+
+// ---------- Басты ----------
+V.home = (el) => {
+  const c = counts();
+  const vis = D.reviews.filter((r) => !r.hidden);
+  const avg = vis.length ? (vis.reduce((s, r) => s + r.rating, 0) / vis.length).toFixed(1) : '–';
+  el.innerHTML = `<div class="tiles">
+    <button class="tile ${c.reviews ? 'hot' : ''}" data-go="reviews"><b>${c.reviews}</b><span>${t.hiNew}</span></button>
+    <button class="tile ${c.sugs ? 'hot' : ''}" data-go="sugs"><b>${c.sugs}</b><span>${t.hiSugs}</span></button>
+    <button class="tile ${c.orders ? 'hot' : ''}" data-go="orders"><b>${c.orders}</b><span>${t.hiOrders}</span></button>
+    <button class="tile" data-go="reviews"><b>${avg}</b><span>${t.hiAvg} · ${vis.length}</span></button>
+  </div>
+  <h2 class="sec">${t.quick}</h2>
+  <div class="tiles">
+    <button class="tile" data-go="photos">${ic('img').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qPhoto}</b></span></button>
+    <button class="tile" data-go="prices">${ic('tag').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qPrice}</b></span></button>
+    <button class="tile" data-go="contacts">${ic('phone').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qContacts}</b></span></button>
+    <button class="tile" data-go="texts">${ic('text').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qTexts}</b></span></button>
+  </div>
+  <p class="muted small">${t.bHint}.</p>`;
+  $$('[data-go]', el).forEach((b) => b.onclick = () => go(b.dataset.go));
+};
+
+// ---------- Пікірлер ----------
+let rFilter = 'all';
+V.reviews = (el) => {
+  const list = D.reviews.filter((r) => rFilter === 'hidden' ? r.hidden : rFilter === 'noreply' ? !r.reply : true);
+  el.innerHTML = `<div class="chips">${[['all', t.fAll], ['noreply', t.fNoReply], ['hidden', t.fHidden]].map(([k, l]) => `<button class="chip ${rFilter === k ? 'on' : ''}" data-f="${k}">${l}</button>`).join('')}</div>
+  <div class="list">${list.length ? list.map((r) => `<article class="card ${r.hidden ? 'dim' : ''}" data-id="${r.id}">
+    <div class="row"><b style="color:var(--navy)">${esc(r.name)}</b><span class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span><span class="muted small">${fmtD(r.createdAt)}</span>${r.hidden ? `<span class="tag warn">${t.hiddenB}</span>` : ''}</div>
+    <p class="txt">${esc(r.text)}</p>
+    ${r.reply ? `<div class="reply"><b class="small" style="color:var(--green)">${t.rOur}</b><div class="txt" style="margin:2px 0 0">${esc(r.reply)}</div></div>` : ''}
+    <div class="rbox" hidden><textarea placeholder="${t.rReplyPh}" maxlength="1500">${esc(r.reply || '')}</textarea><div class="row" style="margin-top:8px"><button class="btn sm primary" data-a="rsave">${t.save}</button><button class="btn sm" data-a="rcancel">${t.cancel}</button>${r.reply ? `<button class="btn sm danger" data-a="rdel">${t.rReplyDel}</button>` : ''}</div></div>
+    <div class="row acts" style="margin-top:8px"><button class="btn sm" data-a="reply">${r.reply ? t.rReplyEdit : t.rReply}</button><button class="btn sm" data-a="toggle">${r.hidden ? t.show : t.hide}</button><span class="sp"></span><button class="btn sm danger" data-a="del">${t.del}</button></div>
+  </article>`).join('') : `<div class="empty">${t.rEmpty}</div>`}</div>`;
+  $$('[data-f]', el).forEach((b) => b.onclick = () => { rFilter = b.dataset.f; V.reviews(el); });
+  $$('[data-a]', el).forEach((b) => b.onclick = async () => {
+    const card = b.closest('[data-id]'); const id = card.dataset.id; const r = D.reviews.find((x) => x.id === id); const a = b.dataset.a;
+    if (a === 'reply') { $('.rbox', card).hidden = false; $('.acts', card).hidden = true; $('textarea', card).focus(); return; }
+    if (a === 'rcancel') return V.reviews(el);
+    try {
+      if (a === 'del') { if (!confirm(t.rConfirm)) return; await jput(`/api/admin/reviews/${id}`, {}, 'DELETE'); D.reviews = D.reviews.filter((x) => x !== r); }
+      else { const body = a === 'toggle' ? { hidden: !r.hidden } : { reply: a === 'rdel' ? '' : $('textarea', card).value }; Object.assign(r, (await jput(`/api/admin/reviews/${id}`, body, 'PATCH')).review); if (a === 'rdel') delete r.reply; }
+      toast(t.saved); V.reviews(el);
+    } catch (e) { if (e.message !== 'login') alert(t.err); }
+  });
+};
+
+// ---------- Ұсыныстар ----------
+V.sugs = (el) => {
+  el.innerHTML = `<div class="list">${D.sugs.length ? D.sugs.map((r) => `<article class="card ${r.read ? '' : 'new'}" data-id="${r.id}">
+    <div class="row">${r.topic ? `<span class="tag">${esc(r.topic)}</span>` : ''}<b style="color:var(--navy)">${r.name ? esc(r.name) : `<span class="muted">${t.anon}</span>`}</b><span class="muted small">${fmtD(r.createdAt)}</span>${r.read ? '' : `<span class="tag red">${t.sNew}</span>`}</div>
+    <p class="txt">${esc(r.text)}</p>
+    ${r.phone || r.reply ? `<div class="muted small">${r.phone ? `${t.phone}: <a href="https://wa.me/${esc(r.phone.replace(/\D/g, ''))}" target="_blank" rel="noopener">${esc(r.phone)}</a>` : ''} ${r.reply ? `· ${t.sWait}` : ''}</div>` : ''}
+    <div class="row" style="margin-top:8px"><button class="btn sm" data-a="read">${r.read ? t.sUnread : t.sRead}</button><span class="sp"></span><button class="btn sm danger" data-a="del">${t.del}</button></div>
+  </article>`).join('') : `<div class="empty">${t.sEmpty}</div>`}</div>`;
+  $$('[data-a]', el).forEach((b) => b.onclick = async () => {
+    const id = b.closest('[data-id]').dataset.id; const r = D.sugs.find((x) => x.id === id);
+    try {
+      if (b.dataset.a === 'del') { if (!confirm(t.sConfirm)) return; await jput(`/api/admin/suggestions/${id}`, {}, 'DELETE'); D.sugs = D.sugs.filter((x) => x !== r); }
+      else { r.read = (await jput(`/api/admin/suggestions/${id}`, { read: !r.read }, 'PATCH')).suggestion.read; }
+      refreshNav(); V.sugs(el);
+    } catch (e) { if (e.message !== 'login') alert(t.err); }
+  });
+};
+
+// ---------- Тапсырыстар ----------
+V.orders = (el) => {
+  const st = { new: t.oNew, done: t.oDone, cancel: t.oCancel };
+  el.innerHTML = `<div class="list">${D.orders.length ? D.orders.map((o) => `<article class="card ${o.status === 'new' ? 'new' : o.status === 'cancel' ? 'dim' : ''}" data-id="${o.id}">
+    <div class="row"><b style="color:var(--navy)">${esc(o.no)}</b><span class="muted small">${fmtD(o.createdAt)}</span><span class="tag ${o.status === 'new' ? 'red' : o.status === 'cancel' ? 'warn' : ''}">${st[o.status]}</span></div>
+    <div style="margin:8px 0"><b>${esc(o.name)}</b> · <a href="https://wa.me/${esc(o.phone.replace(/\D/g, ''))}" target="_blank" rel="noopener">${esc(o.phone)}</a> · <a href="tel:${esc(o.phone)}">☎</a></div>
+    <div class="muted small">${esc(t.oDel[o.delivery] || o.delivery)}${o.address ? ` · ${t.oAddr}: ${esc(o.address)}` : ''}</div>
+    ${o.note ? `<div class="small" style="margin-top:4px">${t.oNote}: ${esc(o.note)}</div>` : ''}
+    <ol style="margin:10px 0;padding-left:20px">${o.items.map((i) => `<li>${esc(i.title || i.slug)}, ${esc(i.size)} × ${i.qty}${i.price ? ` = <b>${money(i.price * i.qty)}</b>` : ''} <span class="muted small">${i.art ? `арт. ${esc(i.art)}` : ''}</span></li>`).join('')}</ol>
+    ${o.total ? `<div><b>${t.oTotal}: ${money(o.total)}</b></div>` : ''}
+    <div class="row" style="margin-top:10px"><select data-a="st" style="width:auto">${Object.entries(st).map(([k, l]) => `<option value="${k}" ${o.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="sp"></span><button class="btn sm danger" data-a="del">${t.del}</button></div>
+  </article>`).join('') : `<div class="empty">${t.oEmpty}</div>`}</div>`;
+  $$('[data-a]', el).forEach((b) => { const ev = b.tagName === 'SELECT' ? 'onchange' : 'onclick'; b[ev] = async () => {
+    const id = b.closest('[data-id]').dataset.id; const o = D.orders.find((x) => x.id === id);
+    try {
+      if (b.dataset.a === 'del') { if (!confirm(t.oConfirm)) return; await jput(`/api/admin/orders/${id}`, {}, 'DELETE'); D.orders = D.orders.filter((x) => x !== o); }
+      else o.status = (await jput(`/api/admin/orders/${id}`, { status: b.value }, 'PATCH')).order.status;
+      refreshNav(); V.orders(el);
+    } catch (e) { if (e.message !== 'login') alert(t.err); }
+  }; });
+};
+
+// ---------- Фотолар (галерея) ----------
+let gCat = 'all';
+const gallery = () => clone(D.cms.gallery ?? D.defs.gallery);
+V.photos = (el) => {
+  const all = gallery();
+  const photos = all.filter((g) => !g.video);
+  const cats = D.defs.galleryCategories;
+  const shown = photos.filter((g) => gCat === 'all' || g.category === gCat);
+  el.innerHTML = `<div class="chips"><button class="chip ${gCat === 'all' ? 'on' : ''}" data-c="all">${t.all} (${photos.length})</button>${cats.map((c) => { const n = photos.filter((g) => g.category === c).length; return `<button class="chip ${gCat === c ? 'on' : ''}" data-c="${esc(c)}">${esc(c)} (${n})</button>`; }).join('')}</div>
+    <div class="media"><button class="add" id="addp">${t.mAdd}</button>${shown.map((g) => `<button class="mi ${g.hidden ? 'dim' : ''}" data-id="${esc(g.id)}"><div class="ph" style="background-image:url('${esc(g.image)}')"></div>${g.hidden ? `<span class="badge tag warn">${t.mHiddenB}</span>` : ''}<div class="cap"><b>${esc(pick(g.caption) || t.mNoCap)}</b><span class="muted">${esc(g.category)}</span></div></button>`).join('')}</div>
+    ${D.cms.gallery ? `<div class="bar"><span class="sp"></span><button class="btn sm" id="resetg">${t.mReset}</button></div>` : ''}`;
+  $$('[data-c]', el).forEach((b) => b.onclick = () => { gCat = b.dataset.c; V.photos(el); });
+  $$('.mi', el).forEach((b) => b.onclick = () => editMedia(b.dataset.id, () => V.photos(el)));
+  $('#addp', el).onclick = async () => {
+    const files = await pickFiles('image/*', true); if (!files.length) return;
+    const list = gallery(); const cat = gCat === 'all' ? cats[0] : gCat;
+    const b = $('#addp', el); b.disabled = true;
+    try {
+      for (const [i, f] of files.entries()) {
+        b.textContent = `${t.mUploading} ${i + 1}/${files.length}`;
+        const [big] = await uploadImage(f, [2000]);
+        list.unshift({ id: `u-${Date.now().toString(36)}-${i}`, image: big.url, caption: { kk: '', ru: '', en: '' }, category: cat });
+      }
+      if (await saveCms('gallery', list)) { V.photos(el); if (files.length === 1) editMedia(list[0].id, () => V.photos(el)); }
+    } catch (e) { alert(e.message || t.err); V.photos(el); }
+  };
+  $('#resetg', el)?.addEventListener('click', async () => { if (confirm(t.mResetQ) && await saveCms('gallery', null)) V.photos(el); });
+};
+function editMedia(id, done) {
+  const list = gallery(); const i = list.findIndex((g) => g.id === id); const g = list[i]; if (!g) return;
+  const isV = !!g.video; const cats = D.defs.galleryCategories;
+  const close = modal(`<h3>${esc(pick(g.caption) || t.mNoCap)}</h3>
+    <div class="pv">${isV ? `<video src="${esc(g.video)}" poster="${esc(g.image)}" controls playsinline preload="metadata"></video>` : `<img src="${esc(g.image)}" alt="">`}</div>
+    <div class="prog" hidden><i></i></div>
+    ${l3Fields('cap', t.mCap, g.caption)}
+    ${isV ? '' : l3Fields('sub', t.mSub, g.sub, true, false)}
+    <label class="f">${t.mCat}<select id="cat">${cats.map((c) => `<option ${c === g.category ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></label>
+    <div class="row"><button class="btn sm" data-a="replace">${isV ? t.mReplaceV : t.mReplace}</button>${isV ? `<button class="btn sm" data-a="poster">${t.mPoster}</button>` : ''}<button class="btn sm" data-a="up">↑ ${t.up}</button><button class="btn sm" data-a="down">↓ ${t.down}</button><button class="btn sm" data-a="hide">${g.hidden ? t.show : t.hide}</button><span class="sp"></span><button class="btn sm danger" data-a="del">${t.del}</button></div>
+    <div class="row end"><button class="btn" data-a="close">${t.cancel}</button><button class="btn primary" data-a="save">${t.save}</button></div>`, (dlg, close) => {
+    const prog = $('.prog', dlg);
+    const commit = async () => {
+      g.caption = readL3(dlg, 'cap'); if (!isV) { const s = readL3(dlg, 'sub'); if (s.kk || s.ru || s.en) g.sub = s; else delete g.sub; }
+      g.category = $('#cat', dlg).value;
+      if (await saveCms('gallery', list)) { close(); done(); }
+    };
+    $$('[data-a]', dlg).forEach((b) => b.onclick = async () => {
+      const a = b.dataset.a;
+      if (a === 'close') return close();
+      if (a === 'save') return commit();
+      if (a === 'up' || a === 'down') { const j = a === 'up' ? i - 1 : i + 1; if (j < 0 || j >= list.length) return; [list[i], list[j]] = [list[j], list[i]]; return commit(); }
+      if (a === 'hide') { g.hidden = !g.hidden; if (!g.hidden) delete g.hidden; return commit(); }
+      if (a === 'del') { if (!confirm(isV ? t.mConfirmV : t.mConfirm)) return; list.splice(i, 1); if (await saveCms('gallery', list)) { close(); done(); } return; }
+      try {
+        b.disabled = true; prog.hidden = false;
+        if (a === 'replace' && !isV) { const [f] = await pickFiles('image/*'); if (!f) return; const [big] = await uploadImage(f, [2000], (p) => { $('i', prog).style.width = `${p * 100}%`; }); g.image = big.url; $('.pv', dlg).innerHTML = `<img src="${esc(g.image)}" alt="">`; }
+        if (a === 'replace' && isV) { const [f] = await pickFiles('video/*'); if (!f) return; const r = await uploadVideo(f, (p) => { $('i', prog).style.width = `${p * 100}%`; }); g.video = r.src; if (r.poster) g.image = r.poster; $('.pv', dlg).innerHTML = `<video src="${esc(g.video)}" poster="${esc(g.image)}" controls playsinline></video>`; }
+        if (a === 'poster') { const [f] = await pickFiles('image/*'); if (!f) return; const [p] = await uploadImage(f, [1280]); g.image = p.url; $('video', dlg).poster = g.image; }
+      } catch (e) { alert(e.message || t.err); } finally { b.disabled = false; prog.hidden = true; }
+    });
   });
 }
 
-// Бағалар: бастапқы мән сайттың өзінен (/catalog.json), өзгерткені серверде (/api/content)
-function viewP(msg = '') {
-  if (!cat) { tab = 'r'; return view(); }
-  const nm = (o) => o[lang] || o.ru;
+// ---------- Видеолар ----------
+const vgroups = () => D.defs.videoGroups.map((g) => ({ ...g, items: clone(D.cms.videos?.[g.id] ?? g.items) }));
+V.videos = (el) => {
+  const groups = vgroups();
+  const galV = gallery().filter((g) => g.video);
+  el.innerHTML = groups.map((g) => `<h2 class="sec">${esc(pick(g.title))}</h2>
+    <div class="media" data-g="${g.id}">${g.items.map((v, k) => `<button class="mi ${v.hidden ? 'dim' : ''}" data-k="${k}"><div class="ph" style="${v.poster ? `background-image:url('${esc(v.poster)}')` : 'background:#173B57'}"><span class="play">▶</span></div>${v.hidden ? `<span class="badge tag warn">${t.mHiddenB}</span>` : ''}<div class="cap"><b>${esc(pick(v.caption) || `${k + 1}`)}</b></div></button>`).join('')}
+    ${!g.single || !g.items.length ? `<button class="add" data-addv="${g.id}">${t.mAddV}</button>` : ''}</div>
+    ${!g.items.filter((x) => !x.hidden).length ? `<p class="muted small">${t.vEmpty}</p>` : ''}`).join('') +
+    `<h2 class="sec">${esc(t.nPhotos)} → ${lang === 'kk' ? 'Галерея беті' : 'Страница галереи'}</h2>
+    <div class="media">${galV.map((g) => `<button class="mi ${g.hidden ? 'dim' : ''}" data-gid="${esc(g.id)}"><div class="ph" style="background-image:url('${esc(g.image)}')"><span class="play">▶</span></div><div class="cap"><b>${esc(pick(g.caption) || t.mNoCap)}</b><span class="muted">${esc(g.category)}</span></div></button>`).join('')}<button class="add" id="addgv">${t.mAddV}</button></div>`;
+  $$('[data-g] .mi', el).forEach((b) => b.onclick = () => editVideo(b.closest('[data-g]').dataset.g, Number(b.dataset.k), () => V.videos(el)));
+  $$('[data-gid]', el).forEach((b) => b.onclick = () => editMedia(b.dataset.gid, () => V.videos(el)));
+  const addTo = async (b, save) => {
+    const [f] = await pickFiles('video/mp4,video/webm,video/quicktime,video/*'); if (!f) return;
+    b.disabled = true; b.textContent = t.mUploading;
+    try { const r = await uploadVideo(f, (p) => { b.textContent = `${t.mUploading} ${Math.round(p * 100)}%`; }); await save(r); } catch (e) { alert(e.message || t.err); }
+    V.videos(el);
+  };
+  $$('[data-addv]', el).forEach((b) => b.onclick = () => addTo(b, async (r) => {
+    const gs = vgroups(); const g = gs.find((x) => x.id === b.dataset.addv);
+    g.items.push({ id: `u-${Date.now().toString(36)}`, src: r.src, poster: r.poster || '', caption: { kk: '', ru: '', en: '' } });
+    await saveCms('videos', { ...(D.cms.videos || {}), [g.id]: g.items });
+  }));
+  $('#addgv', el).onclick = (e) => addTo(e.currentTarget, async (r) => {
+    const list = gallery(); const id = `v-${Date.now().toString(36)}`;
+    list.unshift({ id, image: r.poster || '/media/page-bg.webp', video: r.src, caption: { kk: '', ru: '', en: '' }, category: D.defs.galleryCategories[3] || D.defs.galleryCategories[0] });
+    if (await saveCms('gallery', list)) editMedia(id, () => V.videos(el));
+  });
+};
+function editVideo(gid, k, done) {
+  const gs = vgroups(); const g = gs.find((x) => x.id === gid); const v = g.items[k];
+  const save = async (close) => { if (await saveCms('videos', { ...(D.cms.videos || {}), [gid]: g.items })) { close(); done(); } };
+  modal(`<h3>${esc(pick(g.title))}</h3>
+    <div class="pv"><video src="${esc(v.src)}" ${v.poster ? `poster="${esc(v.poster)}"` : ''} controls playsinline preload="metadata"></video></div>
+    <div class="prog" hidden><i></i></div>
+    ${l3Fields('cap', t.mCap, v.caption)}
+    <div class="row"><button class="btn sm" data-a="replace">${t.mReplaceV}</button><button class="btn sm" data-a="poster">${t.mPoster}</button>${g.single ? '' : `<button class="btn sm" data-a="up">↑ ${t.up}</button><button class="btn sm" data-a="down">↓ ${t.down}</button>`}<button class="btn sm" data-a="hide">${v.hidden ? t.show : t.hide}</button><span class="sp"></span><button class="btn sm danger" data-a="del">${t.del}</button></div>
+    <div class="row end"><button class="btn" data-a="close">${t.cancel}</button><button class="btn primary" data-a="save">${t.save}</button></div>`, (dlg, close) => {
+    const prog = $('.prog', dlg);
+    $$('[data-a]', dlg).forEach((b) => b.onclick = async () => {
+      const a = b.dataset.a;
+      if (a === 'close') return close();
+      const cap = readL3(dlg, 'cap'); if (cap.kk || cap.ru || cap.en) v.caption = cap; else delete v.caption;
+      if (a === 'save') return save(close);
+      if (a === 'up' || a === 'down') { const j = a === 'up' ? k - 1 : k + 1; if (j < 0 || j >= g.items.length) return; [g.items[k], g.items[j]] = [g.items[j], g.items[k]]; return save(close); }
+      if (a === 'hide') { v.hidden = !v.hidden; if (!v.hidden) delete v.hidden; return save(close); }
+      if (a === 'del') { if (!confirm(t.mConfirmV)) return; g.items.splice(k, 1); return save(close); }
+      try {
+        b.disabled = true; prog.hidden = false;
+        if (a === 'replace') { const [f] = await pickFiles('video/*'); if (!f) return; const r = await uploadVideo(f, (p) => { $('i', prog).style.width = `${p * 100}%`; }); v.src = r.src; if (r.poster) v.poster = r.poster; $('video', dlg).src = v.src; if (v.poster) $('video', dlg).poster = v.poster; }
+        if (a === 'poster') { const [f] = await pickFiles('image/*'); if (!f) return; const [p] = await uploadImage(f, [1280]); v.poster = p.url; $('video', dlg).poster = v.poster; }
+      } catch (e) { alert(e.message || t.err); } finally { b.disabled = false; prog.hidden = true; }
+    });
+  });
+}
+
+// ---------- Сертификаттар ----------
+let cCat = 'all';
+const certs = () => clone(D.cms.certificates ?? D.defs.certificates);
+V.certs = (el) => {
+  const all = certs(); const cats = D.defs.certCategories;
+  const shown = all.filter((c) => cCat === 'all' || c.category === cCat);
+  el.innerHTML = `<div class="chips"><button class="chip ${cCat === 'all' ? 'on' : ''}" data-c="all">${t.all} (${all.length})</button>${cats.map((c) => `<button class="chip ${cCat === c ? 'on' : ''}" data-c="${esc(c)}">${esc(c)} (${all.filter((x) => x.category === c).length})</button>`).join('')}</div>
+    <div class="media"><button class="add" id="addc">${t.cAdd}</button>${shown.map((c) => `<button class="mi ${c.hidden ? 'dim' : ''}" data-id="${esc(c.id)}"><div class="ph" style="background-image:url('${esc(c.thumb)}');background-size:contain;background-color:#fff"></div>${c.hidden ? `<span class="badge tag warn">${t.mHiddenB}</span>` : ''}<div class="cap"><b>${esc(pick(c.title))}</b><span class="muted">${esc(c.note || '')}${c.year ? ` · ${c.year}` : ''}</span></div></button>`).join('')}</div>
+    ${D.cms.certificates ? `<div class="bar"><span class="sp"></span><button class="btn sm" id="resetc">${t.mReset}</button></div>` : ''}`;
+  $$('[data-c]', el).forEach((b) => b.onclick = () => { cCat = b.dataset.c; V.certs(el); });
+  $$('.mi', el).forEach((b) => b.onclick = () => editCert(b.dataset.id, () => V.certs(el)));
+  $('#addc', el).onclick = async (e) => {
+    const [f] = await pickFiles('image/*'); if (!f) return;
+    const b = e.currentTarget; b.disabled = true; b.textContent = t.mUploading;
+    try {
+      const [big, sm] = await uploadImage(f, [2400, 640]);
+      const list = certs(); const id = `u-${Date.now().toString(36)}`;
+      list.unshift({ id, image: big.url, thumb: sm.url, title: { kk: '', ru: '', en: '' }, year: new Date().getFullYear(), category: cCat === 'all' ? cats[0] : cCat, note: '', landscape: big.w > big.h });
+      if (await saveCms('certificates', list)) { V.certs(el); editCert(id, () => V.certs(el)); }
+    } catch (err) { alert(err.message || t.err); V.certs(el); }
+  };
+  $('#resetc', el)?.addEventListener('click', async () => { if (confirm(t.mResetQ) && await saveCms('certificates', null)) V.certs(el); });
+};
+function editCert(id, done) {
+  const list = certs(); const i = list.findIndex((c) => c.id === id); const c = list[i]; if (!c) return;
+  modal(`<h3>${esc(pick(c.title) || t.mNoCap)}</h3>
+    <div class="pv" style="background:#fff"><img src="${esc(c.thumb)}" alt=""></div>
+    ${l3Fields('title', t.cTitle, c.title, true)}
+    <div class="grid2"><label class="f">${t.mCat}<select id="cat">${D.defs.certCategories.map((x) => `<option ${x === c.category ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></label>
+    <label class="f">${t.cNote}<input id="note" value="${esc(c.note || '')}"></label>
+    <label class="f">${t.cYear}<input id="year" type="number" min="1990" max="2100" value="${c.year ?? ''}"></label></div>
+    <div class="row"><button class="btn sm" data-a="replace">${t.mReplace}</button><button class="btn sm" data-a="up">↑ ${t.up}</button><button class="btn sm" data-a="down">↓ ${t.down}</button><button class="btn sm" data-a="hide">${c.hidden ? t.show : t.hide}</button><span class="sp"></span><button class="btn sm danger" data-a="del">${t.del}</button></div>
+    <div class="row end"><button class="btn" data-a="close">${t.cancel}</button><button class="btn primary" data-a="save">${t.save}</button></div>`, (dlg, close) => {
+    const commit = async () => { if (await saveCms('certificates', list)) { close(); done(); } };
+    const read = () => { c.title = readL3(dlg, 'title'); c.category = $('#cat', dlg).value; c.note = $('#note', dlg).value.trim(); const y = parseInt($('#year', dlg).value, 10); c.year = Number.isInteger(y) ? y : null; };
+    $$('[data-a]', dlg).forEach((b) => b.onclick = async () => {
+      const a = b.dataset.a;
+      if (a === 'close') return close();
+      read();
+      if (a === 'save') return commit();
+      if (a === 'up' || a === 'down') { const j = a === 'up' ? i - 1 : i + 1; if (j < 0 || j >= list.length) return; [list[i], list[j]] = [list[j], list[i]]; return commit(); }
+      if (a === 'hide') { c.hidden = !c.hidden; if (!c.hidden) delete c.hidden; return commit(); }
+      if (a === 'del') { if (!confirm(t.cConfirm)) return; list.splice(i, 1); return commit(); }
+      if (a === 'replace') { const [f] = await pickFiles('image/*'); if (!f) return; b.disabled = true; try { const [big, sm] = await uploadImage(f, [2400, 640]); c.image = big.url; c.thumb = sm.url; c.landscape = big.w > big.h; $('.pv img', dlg).src = c.thumb; } catch (e) { alert(e.message || t.err); } b.disabled = false; }
+    });
+  });
+}
+
+// ---------- Бағалар ----------
+let q = '';
+V.prices = (el, msg = '') => {
+  const cat = D.catalog, content = D.content;
   const pv = (r) => content.prices[r.id] || r;
   const vv = (p, v) => content.products[`${p.slug}|${v.size}`] || v;
   const prod = cat.products.filter((p) => !q || (p.name + ' ' + p.variants.map((v) => v.art).join(' ')).toLowerCase().includes(q.toLowerCase()));
-  app.innerHTML = `<header><h1>${t.tabP}</h1><div class="tools">${langSel()}<a href="/"><button type="button">${t.site}</button></a><button id="out">${t.logout}</button></div></header>${tabs()}
-    <p class="muted">${t.priceHint}</p>
-    <h2 class="sec">${t.priceList}</h2>
-    ${cat.prices.map((g) => `<h3 class="grp">${esc(nm(g.title))}</h3><div class="rows">${g.rows.map((r) => { const c = pv(r); return `<div class="row ${c.hidden ? 'off' : ''}" data-pr="${esc(r.id)}">
-      <div class="nm">${esc(nm(r.name))}</div>
-      <div class="ctl"><input type="number" min="0" step="500" inputmode="numeric" data-k="min" value="${c.min}" aria-label="${t.min}"> – <input type="number" min="0" step="500" inputmode="numeric" data-k="max" value="${c.max}" aria-label="${t.max}">
-      <label class="chk"><input type="checkbox" data-k="hidden" ${c.hidden ? 'checked' : ''}>${t.hideRow}</label></div></div>`; }).join('')}</div>`).join('')}
-    <h2 class="sec">${t.shop}</h2>
-    <input id="q" type="search" placeholder="${t.search}" value="${esc(q)}" style="width:100%;max-width:420px;margin-bottom:12px">
-    <div class="rows">${prod.map((p) => p.variants.map((v) => { const c = vv(p, v); return `<div class="row" data-pp="${esc(p.slug)}|${esc(v.size)}">
-      <div class="nm">${esc(p.name)}<small>${esc(v.size)} · арт. ${esc(v.art)}</small></div>
-      <div class="ctl"><input type="number" min="0" step="100" inputmode="numeric" data-k="price" value="${c.price ?? ''}" placeholder="${t.price}" aria-label="${t.price}">
-      <select data-k="stock" aria-label="${t.stock}"><option value="">${t.stock}: ${t.stockU}</option><option value="1" ${c.inStock === true ? 'selected' : ''}>${t.stockY}</option><option value="0" ${c.inStock === false ? 'selected' : ''}>${t.stockN}</option></select></div></div>`; }).join('')).join('')}</div>
-    <div class="bar"><button class="primary" id="save">${t.save}</button><span id="msg" class="${msg ? 'ok' : 'muted'}">${esc(msg)}</span></div>`;
-  bindLang(); bindTabs();
-  document.getElementById('out').onclick = async () => { await api('/api/admin/logout', { method: 'POST' }); loginView(); };
-  const mark = () => { dirty = true; const m = document.getElementById('msg'); m.className = 'err'; m.textContent = t.unsaved; };
-  app.querySelectorAll('.row input, .row select').forEach((el) => { el.oninput = mark; el.onchange = (e) => { mark(); if (el.dataset.k === 'hidden') el.closest('.row').classList.toggle('off', el.checked); }; });
-  // Іздегенде енгізілген мәндер жоғалмасын: алдымен жадқа жинаймыз
-  document.getElementById('q').oninput = (e) => { const c = collect(); if (!c) return; content = c; q = e.target.value; viewP(); const i = document.getElementById('q'); i.focus(); i.setSelectionRange(q.length, q.length); if (dirty) mark(); };
-  document.getElementById('save').onclick = async () => {
-    const c = collect(); if (!c) return;
-    const res = await api('/api/admin/content', { method: 'PUT', body: JSON.stringify(c) });
-    if (res.status === 401) return loginView();
-    if (!res.ok) return alert(t.err);
-    content = await res.json(); dirty = false; viewP(t.saved);
+  el.innerHTML = `<p class="muted">${t.pHint}</p>
+    <h2 class="sec">${t.pList}</h2>
+    ${cat.prices.map((g) => `<h3 style="color:var(--green);font-size:1rem;margin:16px 0 6px">${esc(pick(g.title))}</h3><div class="rows">${g.rows.map((r) => { const c = pv(r); return `<div class="pr ${c.hidden ? 'off' : ''}" data-pr="${esc(r.id)}">
+      <div>${esc(pick(r.name))}</div>
+      <div class="ctl"><input type="number" min="0" step="500" inputmode="numeric" data-k="min" value="${c.min}" aria-label="${t.pMin}"> – <input type="number" min="0" step="500" inputmode="numeric" data-k="max" value="${c.max}" aria-label="${t.pMax}">
+      <label class="chk"><input type="checkbox" data-k="hidden" ${c.hidden ? 'checked' : ''}>${t.hide}</label></div></div>`; }).join('')}</div>`).join('')}
+    <h2 class="sec">${t.pShop}</h2>
+    <input id="q" type="search" placeholder="${t.search}" value="${esc(q)}" style="max-width:420px;margin-bottom:12px">
+    <div class="rows">${prod.map((p) => p.variants.map((v) => { const c = vv(p, v); return `<div class="pr" data-pp="${esc(p.slug)}|${esc(v.size)}">
+      <div>${esc(p.name)}<small>${esc(v.size)} · арт. ${esc(v.art)}</small></div>
+      <div class="ctl"><input type="number" min="0" step="100" inputmode="numeric" data-k="price" value="${c.price ?? ''}" placeholder="${t.pPrice}" aria-label="${t.pPrice}">
+      <select data-k="stock" aria-label="${t.pStock}"><option value="">${t.pStock}: ${t.pU}</option><option value="1" ${c.inStock === true ? 'selected' : ''}>${t.pY}</option><option value="0" ${c.inStock === false ? 'selected' : ''}>${t.pN}</option></select></div></div>`; }).join('')).join('')}</div>
+    <div class="bar"><button class="btn primary" id="save">${t.save}</button><span id="msg" class="${msg ? '' : 'muted'}" style="${msg ? 'color:var(--green);font-weight:600' : ''}">${esc(msg)}</span></div>`;
+  const mark = () => { dirty = true; const m = $('#msg', el); m.className = 'err'; m.style.cssText = ''; m.textContent = t.unsaved; };
+  $$('.pr input, .pr select', el).forEach((i) => { i.oninput = mark; i.onchange = () => { mark(); if (i.dataset.k === 'hidden') i.closest('.pr').classList.toggle('off', i.checked); }; });
+  $('#q', el).oninput = (e) => { const c = collectPrices(el); if (!c) return; D.content = c; q = e.target.value; const wasDirty = dirty; V.prices(el); const i = $('#q', el); i.focus(); i.setSelectionRange(q.length, q.length); if (wasDirty) mark(); };
+  $('#save', el).onclick = async () => {
+    const c = collectPrices(el); if (!c) return;
+    try { D.content = await jput('/api/admin/content', c); dirty = false; V.prices(el, t.pSaved); } catch (e) { if (e.message !== 'login') alert(t.err); }
   };
-}
-// Тек бастапқы мәннен өзгеше жолдар сақталады
-function collect() {
-  const out = { prices: { ...content.prices }, products: { ...content.products } };
-  const int = (el) => el.value.trim() === '' ? null : /^\d+$/.test(el.value.trim()) ? Number(el.value) : NaN;
-  const rows = Object.fromEntries(cat.prices.flatMap((g) => g.rows.map((r) => [r.id, r])));
-  for (const el of app.querySelectorAll('[data-pr]')) {
-    const r = rows[el.dataset.pr];
-    const min = int(el.querySelector('[data-k=min]')), max = int(el.querySelector('[data-k=max]'));
-    const hidden = el.querySelector('[data-k=hidden]').checked;
-    if (Number.isNaN(min) || Number.isNaN(max) || min === null || max === null) { alert(t.badNum); el.querySelector('input').focus(); return null; }
+};
+function collectPrices(el) {
+  const out = { prices: { ...D.content.prices }, products: { ...D.content.products } };
+  const int = (i) => i.value.trim() === '' ? null : /^\d+$/.test(i.value.trim()) ? Number(i.value) : NaN;
+  const rows = Object.fromEntries(D.catalog.prices.flatMap((g) => g.rows.map((r) => [r.id, r])));
+  for (const r0 of $$('[data-pr]', el)) {
+    const r = rows[r0.dataset.pr]; const min = int($('[data-k=min]', r0)), max = int($('[data-k=max]', r0)); const hidden = $('[data-k=hidden]', r0).checked;
+    if (Number.isNaN(min) || Number.isNaN(max) || min === null || max === null) { alert(t.pBad); $('input', r0).focus(); return null; }
     const lo = Math.min(min, max), hi = Math.max(min, max);
     if (lo === r.min && hi === r.max && !hidden) delete out.prices[r.id]; else out.prices[r.id] = { min: lo, max: hi, ...(hidden ? { hidden: true } : {}) };
   }
-  const vars = Object.fromEntries(cat.products.flatMap((p) => p.variants.map((v) => [`${p.slug}|${v.size}`, v])));
-  for (const el of app.querySelectorAll('[data-pp]')) {
-    const v = vars[el.dataset.pp];
-    const price = int(el.querySelector('[data-k=price]'));
-    if (Number.isNaN(price)) { alert(t.badNum); el.querySelector('input').focus(); return null; }
-    const st = el.querySelector('[data-k=stock]').value;
-    const inStock = st === '' ? null : st === '1';
-    const p = price || null;
-    if (p === v.price && inStock === v.inStock) delete out.products[el.dataset.pp]; else out.products[el.dataset.pp] = { price: p, inStock };
+  const vars = Object.fromEntries(D.catalog.products.flatMap((p) => p.variants.map((v) => [`${p.slug}|${v.size}`, v])));
+  for (const r0 of $$('[data-pp]', el)) {
+    const v = vars[r0.dataset.pp]; const price = int($('[data-k=price]', r0));
+    if (Number.isNaN(price)) { alert(t.pBad); $('input', r0).focus(); return null; }
+    const st = $('[data-k=stock]', r0).value; const inStock = st === '' ? null : st === '1'; const p = price || null;
+    if (p === v.price && inStock === v.inStock) delete out.products[r0.dataset.pp]; else out.products[r0.dataset.pp] = { price: p, inStock };
   }
   return out;
 }
+
+// ---------- Байланыс ----------
+V.contacts = (el) => {
+  const d = D.defs.contacts; const c = { ...clone(d), ...clone(D.cms.contacts || {}) };
+  const phoneRow = (p = { number: '', display: '' }) => `<div class="row ph-row"><input data-p="display" placeholder="8 700 000 00 00" value="${esc(p.display)}" style="flex:1;min-width:180px"><button class="btn sm danger" data-rm type="button">✕</button></div>`;
+  const hourRow = (h = { days: {}, time: '' }) => `<div class="card h-row" style="display:grid;gap:8px;padding:12px">${l3Fields('days', t.kDays, h.days, false, false)}<div class="row"><label class="f" style="flex:1">${t.kTime}<input data-h="time" value="${esc(h.time)}" placeholder="10:00 – 18:00"></label><button class="btn sm danger" data-rm type="button" style="align-self:end">✕</button></div></div>`;
+  el.innerHTML = `<form id="cf" class="list" novalidate>
+    <div class="card list"><h2 class="sec">${t.kPhones}</h2><div id="phones" class="list">${(c.phones || []).map(phoneRow).join('')}</div><div><button class="btn sm" type="button" id="addph">${t.kAddPhone}</button></div></div>
+    <div class="card list"><h2 class="sec">WhatsApp</h2>
+      <label class="f">${t.kWa}<input name="whatsapp" inputmode="numeric" placeholder="77001234567" value="${esc(c.whatsapp || '')}"><span class="small muted" style="font-weight:400">${t.kWaHint}</span></label>
+      <label class="f">${t.kWaLink}<input name="whatsappLink" placeholder="https://wa.me/..." value="${esc(c.whatsappLink || '')}"></label>
+      <div class="grid2"><label class="f">${t.kOrders}<input name="ordersWhatsapp" inputmode="numeric" value="${esc(c.ordersWhatsapp || '')}"></label><label class="f">${t.kFeedback}<input name="feedbackWhatsapp" inputmode="numeric" value="${esc(c.feedbackWhatsapp || '')}"></label></div>
+    </div>
+    <div class="card list"><h2 class="sec">${t.kSocial}</h2>
+      <div class="grid2"><label class="f">Instagram<input name="instagram" placeholder="https://www.instagram.com/..." value="${esc(c.instagram || '')}"></label><label class="f">TikTok<input name="tiktok" placeholder="https://www.tiktok.com/@..." value="${esc(c.tiktok || '')}"></label>
+      <label class="f">YouTube<input name="youtube" placeholder="https://www.youtube.com/@..." value="${esc(c.youtube || '')}"></label><label class="f">${t.kBooking}<input name="bookingUrl" value="${esc(c.bookingUrl || '')}"></label>
+      <label class="f">${t.k2gis}<input name="twoGisUrl" value="${esc(c.twoGisUrl || '')}"></label></div>
+    </div>
+    <div class="card list"><h2 class="sec">${t.kAddr}</h2>${l3Fields('address', t.kAddr, c.address, false, false)}${l3Fields('addressNote', t.kAddrNote, c.addressNote, false, false)}</div>
+    <div class="card list"><h2 class="sec">${t.kHours}</h2><div id="hours" class="list">${(c.hours || []).map(hourRow).join('')}</div><div><button class="btn sm" type="button" id="addh">${t.kAddHours}</button></div></div>
+    <div class="bar"><button class="btn primary" type="submit">${t.save}</button>${D.cms.contacts ? `<span class="sp"></span><button class="btn sm" type="button" id="resetk">${t.mReset}</button>` : ''}</div>
+  </form>`;
+  const f = $('#cf', el);
+  f.addEventListener('input', () => { dirty = true; });
+  f.addEventListener('click', (e) => { if (e.target.closest('[data-rm]')) { e.target.closest('.ph-row, .h-row').remove(); dirty = true; } });
+  $('#addph', el).onclick = () => $('#phones', el).insertAdjacentHTML('beforeend', phoneRow());
+  $('#addh', el).onclick = () => $('#hours', el).insertAdjacentHTML('beforeend', hourRow());
+  $('#resetk', el)?.addEventListener('click', async () => { if (confirm(t.mResetQ) && await saveCms('contacts', null)) { dirty = false; V.contacts(el); } });
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    const val = (n) => f.elements[n].value.trim();
+    const urls = ['whatsappLink', 'instagram', 'tiktok', 'youtube', 'bookingUrl', 'twoGisUrl'];
+    for (const u of urls) if (val(u) && !/^https?:\/\//.test(val(u))) { alert(t.kBadUrl); f.elements[u].focus(); return; }
+    const digits = (v) => v.replace(/\D/g, '').replace(/^8(?=\d{10}$)/, '7');
+    const out = {
+      phones: $$('.ph-row', el).map((r) => { const d0 = $('[data-p=display]', r).value.trim(); return { number: digits(d0), display: d0 }; }).filter((p) => p.number.length >= 10),
+      whatsapp: digits(val('whatsapp')) || null, ordersWhatsapp: digits(val('ordersWhatsapp')) || d.ordersWhatsapp, feedbackWhatsapp: digits(val('feedbackWhatsapp')) || d.feedbackWhatsapp,
+      address: readL3(f, 'address'), addressNote: readL3(f, 'addressNote'),
+      hours: $$('.h-row', el).map((r) => ({ days: readL3(r, 'days'), time: $('[data-h=time]', r).value.trim() })).filter((h) => h.time || h.days.kk || h.days.ru),
+    };
+    for (const u of urls) out[u] = val(u) || null;
+    if (await saveCms('contacts', out)) { dirty = false; V.contacts(el); }
+  };
+};
+
+// ---------- Беттердегі мәтіндер ----------
+let tPage = 'index', tq = '';
+V.texts = (el) => {
+  const cat = D.texts; const pages = Object.keys(cat);
+  if (!pages.length) { el.innerHTML = `<div class="empty">${t.tNone}</div>`; return; }
+  if (!cat[tPage]) tPage = pages.includes('index') ? 'index' : pages[0];
+  const ov = clone(D.cms.texts || {}); const mine = ov[tPage] || {};
+  const order = Object.keys(t.pages);
+  const sorted = pages.sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99));
+  const rows = Object.entries(cat[tPage]).filter(([k, v]) => !tq || [k, v.kk, v.ru, v.en, mine[k]?.kk, mine[k]?.ru].join(' ').toLowerCase().includes(tq.toLowerCase()));
+  el.innerHTML = `<div class="row" style="margin-bottom:12px"><label class="f" style="flex:1;min-width:220px">${t.tPage}<select id="pg">${sorted.map((p) => `<option value="${p}" ${p === tPage ? 'selected' : ''}>${esc(t.pages[p] || p)}${ov[p] ? ' •' : ''}</option>`).join('')}</select></label><label class="f" style="flex:1;min-width:200px">${t.search}<input id="tq" type="search" value="${esc(tq)}"></label></div>
+    <p class="muted small">${t.tHint}</p>
+    <div class="list">${rows.map(([k, d]) => { const cur = { ...d, ...(mine[k] || {}) }; const ch = !!mine[k]; const long = Math.max(...['kk', 'ru', 'en'].map((l) => (cur[l] || '').length)) > 70; return `<div class="tx ${ch ? 'ch' : ''}" data-k="${esc(k)}"><div class="k"><span>${esc(k)}</span>${ch ? `<span class="tag">${t.tChanged}</span><button class="btn sm ghost" data-reset title="${t.tReset}">↺</button>` : ''}</div>
+      <div class="grid3">${['kk', 'ru', 'en'].map((l) => `<label class="f"><span class="lg">${l === 'kk' ? 'ҚАЗ' : l === 'ru' ? 'РУС' : 'ENG'}</span><textarea data-l="${l}" rows="${long ? 3 : 1}">${esc(cur[l] || '')}</textarea></label>`).join('')}</div></div>`; }).join('')}</div>
+    <div class="bar"><button class="btn primary" id="save">${t.save}</button><span id="msg" class="muted"></span></div>`;
+  const collect = () => {
+    const page = { ...(mine) };
+    for (const box of $$('.tx', el)) {
+      const k = box.dataset.k; const d = cat[tPage][k]; const v = {};
+      for (const ta of $$('textarea', box)) { const l = ta.dataset.l; if (ta.value !== (d[l] || '')) v[l] = ta.value; }
+      if (Object.keys(v).length) page[k] = v; else delete page[k];
+    }
+    return page;
+  };
+  const store = () => { const p = collect(); if (Object.keys(p).length) ov[tPage] = p; else delete ov[tPage]; return ov; };
+  el.addEventListener('input', (e) => { if (e.target.tagName === 'TEXTAREA') { dirty = true; const m = $('#msg', el); m.className = 'err'; m.textContent = t.unsaved; } }, { once: false });
+  $('#pg', el).onchange = (e) => { if (dirty && !confirm(t.leave)) { e.target.value = tPage; return; } dirty = false; tPage = e.target.value; tq = ''; V.texts(el); };
+  $('#tq', el).onchange = (e) => { if (dirty) D.cms.texts = store(); tq = e.target.value; V.texts(el); };
+  $$('[data-reset]', el).forEach((b) => b.onclick = () => { const box = b.closest('.tx'); const d = cat[tPage][box.dataset.k]; $$('textarea', box).forEach((ta) => { ta.value = d[ta.dataset.l] || ''; }); dirty = true; box.classList.remove('ch'); });
+  $('#save', el).onclick = async () => { const all = store(); if (await saveCms('texts', all)) { dirty = false; V.texts(el); } };
+};
+
+// ---------- Баптаулар ----------
+V.settings = (el) => {
+  const open = D.cms.seo?.open !== false; const b = D.build || {};
+  el.innerHTML = `<div class="list">
+    <div class="card"><label class="chk" style="font-size:1rem;color:var(--text);font-weight:600"><input type="checkbox" id="seo" ${open ? 'checked' : ''}> ${t.stSeo}</label><p class="muted small" style="margin:6px 0 0">${t.stSeoHint}</p></div>
+    <div class="card"><div class="row"><span>${t.stInfo}: <b>${b.finishedAt ? fmtD(b.finishedAt) : '–'}</b>${b.ms ? ` <span class="muted small">(${Math.round(b.ms / 1000)} с)</span>` : ''}</span><span class="sp"></span><button class="btn sm" id="rb" ${D.canBuild ? '' : 'disabled'}>${t.stRebuild}</button></div>${b.state === 'error' ? `<pre class="small" style="white-space:pre-wrap;color:var(--red)">${esc(b.error)}</pre>` : ''}</div>
+  </div>`;
+  $('#seo', el).onchange = async (e) => { if (!await saveCms('seo', { open: e.target.checked })) e.target.checked = !e.target.checked; };
+  $('#rb', el).onclick = async () => { await saveCms('seo', { open: D.cms.seo?.open !== false }); V.settings(el); };
+};
+
+// ---------- Іске қосу ----------
 addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
-
-function view() {
-  document.documentElement.lang = lang;
-  if (tab === 's') return viewS();
-  if (tab === 'p') return viewP();
-  const vis = items.filter((r) => !r.hidden);
-  const avg = vis.length ? (vis.reduce((s, r) => s + r.rating, 0) / vis.length).toFixed(1) : '–';
-  const shown = filter === 'hidden' ? items.filter((r) => r.hidden) : items;
-  app.innerHTML = `<header><h1>${t.title}</h1><div class="tools">${langSel()}
-    <select id="flt"><option value="all">${t.filterAll}</option><option value="hidden" ${filter === 'hidden' ? 'selected' : ''}>${t.filterHidden}</option></select>
-    <a href="/"><button type="button">${t.site}</button></a><button id="out">${t.logout}</button></div></header>${tabs()}
-    <div class="stat muted"><span>${t.all}: <b>${items.length}</b></span><span>${t.visible}: <b>${vis.length}</b></span><span>${t.hiddenN}: <b>${items.length - vis.length}</b></span><span>${t.avg}: <b>${avg}</b></span></div>
-    <div class="list">${shown.length ? shown.map((r) => `<article class="card ${r.hidden ? 'hidden' : ''}" data-id="${r.id}">
-      <div class="top"><b>${esc(r.name)}</b><span class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span><span class="muted">${fmt(r.createdAt)}</span>${r.hidden ? `<span class="badge">${t.hiddenB}</span>` : ''}</div>
-      <p class="text">${esc(r.text)}</p>
-      <div class="acts"><button data-act="toggle">${r.hidden ? t.show : t.hide}</button><button class="danger" data-act="del">${t.del}</button></div></article>`).join('') : `<p class="muted">${t.empty}</p>`}</div>`;
-  bindLang(); bindTabs();
-  document.getElementById('flt').onchange = (e) => { filter = e.target.value; view(); };
-  document.getElementById('out').onclick = async () => { await api('/api/admin/logout', { method: 'POST' }); loginView(); };
-  app.querySelectorAll('[data-act]').forEach((b) => b.onclick = async () => {
-    const id = b.closest('[data-id]').dataset.id;
-    const r = items.find((x) => x.id === id);
-    let res;
-    if (b.dataset.act === 'del') { if (!confirm(t.confirm)) return; res = await api(`/api/admin/reviews/${id}`, { method: 'DELETE' }); }
-    else res = await api(`/api/admin/reviews/${id}`, { method: 'PATCH', body: JSON.stringify({ hidden: !r.hidden }) });
-    if (res.status === 401) return loginView();
-    if (!res.ok) return alert(t.err);
-    load();
-  });
+async function start() {
+  try { await loadAll(); } catch (e) { if (e.message !== 'login') showLogin(t.err); return; }
+  shell(); pollBuild(500);
+  // Жаңа пікір, ұсыныс, тапсырыс бар-жоғын әр минут сайын тексереміз
+  setInterval(async () => {
+    if (!$('.app')) return;
+    try {
+      const [r, s, o] = await Promise.all([api('/api/admin/reviews'), api('/api/admin/suggestions'), api('/api/admin/orders')]);
+      D.reviews = (await r.json()).reviews; D.sugs = (await s.json()).suggestions; D.orders = (await o.json()).orders;
+      refreshNav();
+      if (!dirty && !$('.modal') && ['home', 'reviews', 'sugs', 'orders'].includes(view) && !$('.rbox:not([hidden])')) render();
+    } catch {}
+  }, 60000);
 }
-
-let timer;
-async function load(quiet) {
-  const [r, s] = await Promise.all([api('/api/admin/reviews'), api('/api/admin/suggestions')]);
-  if (r.status === 401) { clearInterval(timer); return loginView(); }
-  if (!r.ok || !s.ok) return quiet ? null : loginView(t.err);
-  items = (await r.json()).reviews;
-  sugs = (await s.json()).suggestions;
-  if (!cat) {
-    const [c, k] = await Promise.all([fetch('/catalog.json'), fetch('/api/content')]);
-    if (c.ok && k.ok) { cat = await c.json(); content = await k.json(); }
-  }
-  if (quiet && tab === 'p') return; // бағаларды енгізіп жатқанда бетті қайта салмаймыз
-  if (!cat && tab === 'p') tab = 'r';
-  view();
-  clearInterval(timer);
-  timer = setInterval(() => { if (!document.querySelector('form.login')) load(true); }, 60000); // әр минут сайын жаңалау
-}
-load();
+start();
 </script>
 </body>
 </html>

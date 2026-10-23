@@ -1,0 +1,251 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { getLang, langPaths } from '../../i18n';
+
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+// Мазмұн орталықтың «Внутренний регламент №1 — Миссия подолога» құжатынан (Жанна Ким, 2026-10-23).
+// Клиентке қатысты бөліктері ғана алынды; қызметкерлердің ішкі ережелері сайтқа шықпайды.
+const T = pageText('mission', {
+  kk: {
+    title: 'Миссия және стандарттар', crumb: 'Миссия',
+    desc: '«Подолог» орталығының миссиясы, құндылықтары, жұмыс қағидалары және қауіпсіздік стандарттары.',
+    h1: 'Подологтың миссиясы', lead: 'Кәсібилік, қамқорлық, қауіпсіздік, жеке тәсіл және нақты нәтиже.',
+    slogan: 'Сау табан — бақытты өмір!',
+    missionH: 'Біздің миссиямыз',
+    mission: 'Адамдарға табан мен тырнақ денсаулығын сақтауға, жайсыздықтан арылуға, өмір сапасын жақсартуға және өзіне сенімділікті қайтаруға көмектесу.',
+    missionText: 'Біз жай ғана педикюр немесе жеке процедура жасамаймыз. Мәселені анықтаймыз, оны өз құзыретіміз шегінде шешеміз, асқынудың алдын аламыз, дұрыс күтімге үйретеміз және клиентті нәтижеге дейін сүйемелдейміз.',
+    valuesH: 'Біздің құндылықтарымыз',
+    values: [['Қамқорлық', 'әр клиентке'], ['Қауіпсіздік', 'және 100% стерильділік'], ['Кәсібилік', 'және үнемі даму'], ['Командалық жұмыс', 'бір мақсат үшін'], ['Адалдық', 'және ашықтық']],
+    resultH: 'Сіз не аласыз', resultText: 'Біз үшін басты нәтиже — нақты нәтижесі бар клиент.',
+    result: ['Ауырсыну мен жайсыздықтың азаюы', 'Тері мен тырнақ күйінің жақсаруы', 'Асқынусыз процедура', 'Мәселенің себебін түсіну', 'Жеке күтім жоспары', 'Үйде орындауға түсінікті ұсыныстар', 'Нәтижені бақылау', 'Мәселе қайталану қаупінің азаюы', 'Орталыққа сенім'],
+    princH: 'Подологтың 10 басты қағидасы',
+    princ: [
+      ['Зиян келтірме', 'қауіпсіздік әрқашан коммерциялық нәтижеден жоғары'],
+      ['Адамды құрметте', 'ешқандай сын мен айыптау жоқ'],
+      ['Кәсіби жұмыс істе', 'әр әрекеттің негізі бар'],
+      ['Құзырет шегін сақта', 'дәрігер ісіне араласпаймыз'],
+      ['Адал бол', 'тәуекел мен шектеулерді жасырмаймыз'],
+      ['Жеке жұмыс істе', 'барлығына бірдей схема жоқ'],
+      ['Клиентті үйрет', 'үй күтімі маңызды'],
+      ['Динамиканы бақыла', 'бір процедурамен шектелмейміз'],
+      ['Үнемі дамы', 'дәлелді әдістерді қолданамыз'],
+      ['Сапаға жауап бер', 'қателерді талдап, алдын аламыз'],
+    ],
+    stdH: 'Біздің стандарттарымыз',
+    std: ['Стерилизация ережелері әр процедурада сақталады', 'Таза форма, жеке гигиена және жеке қорғаныс құралдары', 'Әр клиентке карта жүргізіледі: фото, ұсыныстар, нәтиже', 'Тәуекелдер мен шектеулер туралы алдын ала айтамыз', 'Құпиялылық және әдепті қарым-қатынас', 'Мамандар біліктілігін үнемі арттырады'],
+    bordH: 'Құзырет шегі', bordText: 'Подолог дәрігер емес. Не істейтінімізді және қашан дәрігерге жіберетінімізді ашық айтамыз.',
+    canH: 'Подолог жасайды',
+    can: ['Гигиеналық және парамедициналық педикюр', 'Табан терісі мен тырнақ күтімі', 'Натоптыш, мүйізгек, жарықтарды өңдеу', 'Түзету жүйелерін орнату (титан, Unibrace, ЭТО т.б.)', 'Күтім құралдары мен профилактиканы таңдау', 'Клиентке кеңес беру және үйрету'],
+    cantH: 'Бұл жағдайда дәрігерге жібереміз',
+    cant: ['Ауруларды диагностикалау және емдеу', 'Хирургиялық манипуляциялар', 'Жара, инфекция, іріңді үдерістер', 'Ісіктерді алып тастау', 'Дәрілік препараттар тағайындау'],
+    teamH: 'Сізге кім көмектеседі',
+    team: [['Әкімші', 'Жазылу, сүйемелдеу, ақпарат'], ['Подолог', 'Диагностика, процедуралар, күтім жоспары'], ['Ортопед', 'Ұлтарақтар, ортездер, биомеханика'], ['Клиентке қамқорлық бөлімі', 'Нәтижені бақылау, кері байланыс'], ['Жетекші', 'Даму, оқыту, сапа мен стандарттар']],
+    quote: 'Біз жай ғана әдемі табан жасамаймыз, ұзақ жылдарға денсаулық, жайлылық және өмір сапасын жасаймыз.',
+    ctaTitle: 'Бірге сау табанға!', ctaText: 'Жазылыңыз — сіздің мәселеңізден бастаймыз.',
+  },
+  ru: {
+    title: 'Миссия и стандарты', crumb: 'Миссия',
+    desc: 'Миссия, ценности, принципы работы и стандарты безопасности центра «Подолог».',
+    h1: 'Миссия подолога', lead: 'Профессионализм, забота, безопасность, индивидуальный подход и реальный результат.',
+    slogan: 'Здоровые стопы — счастливая жизнь!',
+    missionH: 'Наша миссия',
+    mission: 'Помогать людям сохранять здоровье стоп и ногтей, избавляться от дискомфорта, улучшать качество жизни и возвращать уверенность в себе.',
+    missionText: 'Мы не просто выполняем педикюр или отдельную процедуру. Мы выявляем проблему, работаем над её устранением в пределах своей компетенции, предупреждаем осложнения, обучаем правильному уходу и сопровождаем клиента на пути к результату.',
+    valuesH: 'Наши ценности',
+    values: [['Забота', 'о каждом клиенте'], ['Безопасность', 'и стерильность 100%'], ['Профессио\u00ADнализм', 'и постоянное развитие'], ['Командная работа', 'ради общей цели'], ['Честность', 'и прозрачность']],
+    resultH: 'Что вы получаете', resultText: 'Главный результат нашей работы — клиент с реальным результатом.',
+    result: ['Снижение боли и дискомфорта', 'Улучшение состояния кожи и ногтей', 'Отсутствие осложнений', 'Понимание причин проблемы', 'Индивидуальный план ухода', 'Понятные рекомендации для дома', 'Контроль динамики', 'Снижение риска повторных проблем', 'Уверенность и доверие к центру'],
+    princH: '10 главных принципов подолога',
+    princ: [
+      ['Не навреди', 'безопасность всегда выше коммерческого результата'],
+      ['Уважай человека', 'никакой критики и осуждения'],
+      ['Работай профессионально', 'каждое действие обосновано'],
+      ['Соблюдай границы компетенции', 'не берём на себя работу врача'],
+      ['Будь честным', 'не скрываем риски и ограничения'],
+      ['Работай индивидуально', 'нет одной схемы для всех'],
+      ['Обучай клиента', 'домашний уход важен'],
+      ['Контролируй динамику', 'не ограничиваемся одной процедурой'],
+      ['Развивайся постоянно', 'применяем доказательные методы'],
+      ['Отвечай за качество', 'разбираем ошибки и предотвращаем их'],
+    ],
+    stdH: 'Наши стандарты',
+    std: ['Правила стерилизации соблюдаются на каждой процедуре', 'Чистая форма, личная гигиена и средства индивидуальной защиты', 'На каждого клиента ведётся карта: фото, рекомендации, результат', 'Заранее говорим о рисках и ограничениях', 'Конфиденциальность и этичное общение', 'Специалисты постоянно повышают квалификацию'],
+    bordH: 'Границы компетенции', bordText: 'Подолог не врач. Мы открыто говорим, что делаем сами и когда направляем к врачу.',
+    canH: 'Подолог выполняет',
+    can: ['Гигиенический и парамедицинский педикюр', 'Уход за кожей стоп и ногтями', 'Обработку натоптышей, мозолей, трещин', 'Установку коррекционных систем (титан, Unibrace, ЭТО и др.)', 'Подбор средств ухода и профилактики', 'Консультирование и обучение клиента'],
+    cantH: 'В этих случаях направляем к врачу',
+    cant: ['Диагностика и лечение заболеваний', 'Хирургические манипуляции', 'Раны, инфекции, гнойные процессы', 'Удаление новообразований', 'Назначение лекарственных препаратов'],
+    teamH: 'Кто вам помогает',
+    team: [['Администратор', 'Запись, сопровождение, информация'], ['Подолог', 'Диагностика, процедуры, план ухода'], ['Ортопед', 'Стельки, ортезы, биомеханика'], ['Отдел заботы о клиенте', 'Контроль результата, обратная связь'], ['Руководитель', 'Развитие, обучение, качество и стандарты']],
+    quote: 'Мы создаём не просто красивые стопы, а здоровье, комфорт и качество жизни на долгие годы.',
+    ctaTitle: 'Вместе к здоровым стопам!', ctaText: 'Запишитесь — начнём с вашей задачи.',
+  },
+  en: {
+    title: 'Mission and standards', crumb: 'Mission',
+    desc: 'The mission, values, working principles and safety standards of the Podolog center.',
+    h1: 'Our mission', lead: 'Professionalism, care, safety, an individual approach and real results.',
+    slogan: 'Healthy feet, happy life!',
+    missionH: 'Our mission',
+    mission: 'To help people keep their feet and nails healthy, get rid of discomfort, improve their quality of life and regain their confidence.',
+    missionText: 'We do more than a pedicure or a single procedure. We identify the problem, work on it within our competence, prevent complications, teach proper care and support each client all the way to the result.',
+    valuesH: 'Our values',
+    values: [['Care', 'for every client'], ['Safety', 'and 100% sterility'], ['Profession\u00ADalism', 'and constant growth'], ['Teamwork', 'toward a shared goal'], ['Honesty', 'and transparency']],
+    resultH: 'What you get', resultText: 'For us, the main result is a client with a real result.',
+    result: ['Less pain and discomfort', 'Healthier skin and nails', 'No complications', 'An understanding of the cause', 'An individual care plan', 'Clear advice for home care', 'Progress monitoring', 'Lower risk of the problem coming back', 'Confidence and trust in the center'],
+    princH: 'The podiatrist’s 10 key principles',
+    princ: [
+      ['Do no harm', 'safety always comes before commercial results'],
+      ['Respect the person', 'no criticism or judgment'],
+      ['Work professionally', 'every action has a reason'],
+      ['Know your limits', 'we never take on a doctor’s work'],
+      ['Be honest', 'we do not hide risks or limitations'],
+      ['Work individually', 'no one-size-fits-all plan'],
+      ['Teach the client', 'home care matters'],
+      ['Monitor progress', 'we do not stop at one procedure'],
+      ['Keep growing', 'we use evidence-based methods'],
+      ['Own the quality', 'we review mistakes and prevent them'],
+    ],
+    stdH: 'Our standards',
+    std: ['Sterilization rules are followed at every procedure', 'Clean uniforms, personal hygiene and protective equipment', 'A record is kept for every client: photos, advice, results', 'We tell you about risks and limitations in advance', 'Confidentiality and respectful communication', 'Our specialists keep improving their skills'],
+    bordH: 'Limits of competence', bordText: 'A podiatrist is not a doctor. We are open about what we do and when we refer you to a doctor.',
+    canH: 'A podiatrist does',
+    can: ['Hygienic and paramedical pedicure', 'Care for the skin of the feet and nails', 'Treatment of corns, calluses and cracks', 'Fitting correction systems (titanium, Unibrace, ETO and others)', 'Choosing care and prevention products', 'Advising and teaching the client'],
+    cantH: 'In these cases we refer you to a doctor',
+    cant: ['Diagnosing and treating diseases', 'Surgical procedures', 'Wounds, infections, purulent processes', 'Removing growths', 'Prescribing medication'],
+    teamH: 'Who helps you',
+    team: [['Administrator', 'Booking, support, information'], ['Podiatrist', 'Diagnostics, procedures, care plan'], ['Orthopedist', 'Insoles, orthoses, biomechanics'], ['Client care team', 'Result follow-up, feedback'], ['Head of the center', 'Growth, training, quality and standards']],
+    quote: 'We create more than beautiful feet: we create health, comfort and quality of life for years to come.',
+    ctaTitle: 'Together toward healthy feet!', ctaText: 'Book an appointment and we will start with your concern.',
+  },
+})[lang];
+// Әр құндылыққа мағынасына сай фото
+const vImgs = [
+  ['/media/cards/zhanna-procedure.webp', '50% 35%'],
+  ['/media/cards/act-steril.webp', '50% 60%'],
+  ['/media/real/congress-2025-sm.webp', '50% 45%'],
+  ['/media/real/team4-logo-sm.webp', '50% 55%'],
+  ['/media/cards/consult.webp', '30% 45%'],
+];
+---
+<Base title={T.title} path="/mission" description={T.desc}>
+  <PageHero eyebrow={T.title} title={T.h1} lead={T.lead} crumbs={[{ href: '/mission', label: T.crumb }]} />
+
+  <section class="section" style="padding-top: 32px;">
+    <div class="wrap mis">
+      <div class="stack">
+        <h2>{T.missionH}</h2>
+        <p class="mis__main">{T.mission}</p>
+        <p class="muted">{T.missionText}</p>
+      </div>
+      <div class="slg">
+        <img class="slg__bg" src="/media/footer-bg.webp" alt="" aria-hidden="true" loading="lazy" />
+        <svg class="slg__foot" viewBox="0 0 64 64" aria-hidden="true"><g fill="currentColor"><ellipse cx="34" cy="40" rx="13" ry="19"/><circle cx="22" cy="14" r="5.5"/><circle cx="32" cy="10" r="4.5"/><circle cx="40.5" cy="11.5" r="4"/><circle cx="47" cy="16" r="3.4"/><circle cx="51" cy="22.5" r="3"/></g></svg>
+        <p class="slg__t">{T.slogan}</p>
+        <span class="slg__line" aria-hidden="true"></span>
+        <span class="slg__by">«Подолог» · Zhanna Kim</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mint">
+    <div class="wrap stack-lg">
+      <h2>{T.valuesH}</h2>
+      <div class="vals">
+        {T.values.map(([t, d], i) => <div class="val card"><img class="val__img" src={vImgs[i][0]} style={`object-position:${vImgs[i][1]}`} alt="" loading="lazy" /><div class="val__body"><strong>{t}</strong><span class="muted small">{d}</span></div></div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid grid--2" style="align-items: start;">
+      <div class="stack">
+        <h2>{T.resultH}</h2>
+        <p class="muted">{T.resultText}</p>
+        <ul class="ticks">{T.result.map((r) => <li><span class="tick"><Icon name="check" /></span>{r}</li>)}</ul>
+      </div>
+      <div class="stack">
+        <h2>{T.stdH}</h2>
+        <ul class="ticks">{T.std.map((r) => <li><span class="tick"><Icon name="shield" /></span>{r}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mint">
+    <div class="wrap stack-lg">
+      <h2>{T.princH}</h2>
+      <ol class="princ">
+        {T.princ.map(([t, d]) => <li><div><strong>{t}</strong><span class="muted small">{d}</span></div></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack-lg">
+      <div class="stack"><h2>{T.bordH}</h2><p class="muted">{T.bordText}</p></div>
+      <div class="grid grid--2" style="align-items: start;">
+        <div class="card bord bord--yes"><h3>{T.canH}</h3><ul>{T.can.map((c) => <li>{c}</li>)}</ul></div>
+        <div class="card bord bord--no"><h3>{T.cantH}</h3><ul>{T.cant.map((c) => <li>{c}</li>)}</ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mint">
+    <div class="wrap stack-lg">
+      <h2>{T.teamH}</h2>
+      <ol class="roles">
+        {T.team.map(([t, d]) => <li class="card"><strong>{t}</strong><span class="muted small">{d}</span></li>)}
+      </ol>
+      <p class="mis__quote">{T.quote}</p>
+    </div>
+  </section>
+
+  <CtaBand title={T.ctaTitle} text={T.ctaText} />
+</Base>
+<style>
+  .mis { display: grid; gap: 24px; align-items: center; }
+  @media (min-width: 860px) { .mis { grid-template-columns: 1fr 320px; } }
+  .mis__main { margin: 0; font-size: var(--fs-lg); font-weight: 700; color: var(--navy); }
+  .slg { position: relative; overflow: hidden; isolation: isolate; border-radius: 28px; padding: 40px 24px 30px; text-align: center; display: grid; justify-items: center; gap: 10px; box-shadow: 0 14px 40px rgba(163, 50, 90, .14); border: 1px solid rgba(255,255,255,.9); }
+  .slg__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+  .slg::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(120% 90% at 50% 40%, rgba(255,255,255,.86) 0%, rgba(255,240,246,.62) 50%, rgba(252,222,234,.25) 100%); }
+  .slg__foot { width: 40px; height: 40px; color: #6CC24A; transform: rotate(-12deg); }
+  .slg__t { margin: 0; font-family: 'Noto Serif', Georgia, serif; font-style: italic; font-weight: 600; font-size: clamp(1.7rem, 6.4vw, 2.6rem); line-height: 1.2; color: #9B2C55; letter-spacing: .01em; text-wrap: balance; text-shadow: 0 2px 12px rgba(255,255,255,.9); }
+  .slg__line { width: 64px; height: 3px; border-radius: 3px; background: linear-gradient(90deg, #E77FA4, #6CC24A); }
+  .slg__by { font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #12305A; opacity: .8; }
+  :root[data-theme="dark"] .slg::before { background: radial-gradient(120% 90% at 50% 40%, rgba(20,30,50,.82), rgba(40,20,40,.78)); }
+  :root[data-theme="dark"] .slg__t { color: #FFC2D6; text-shadow: none; }
+  :root[data-theme="dark"] .slg__by { color: #DDE7F3; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .slg::before { background: radial-gradient(120% 90% at 50% 40%, rgba(20,30,50,.82), rgba(40,20,40,.78)); } :root:not([data-theme="light"]) .slg__t { color: #FFC2D6; text-shadow: none; } :root:not([data-theme="light"]) .slg__by { color: #DDE7F3; } }
+  .mis__slogan { margin: 0; padding: 28px 24px; border-radius: var(--r-lg); background: #FCE8EF; color: #A3325A; font-size: 1.5rem; font-weight: 800; text-align: center; line-height: 1.25; }
+  .vals { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+  @media (max-width: 420px) { .vals { grid-template-columns: 1fr 1fr; } }
+  .val { display: grid; grid-template-rows: auto 1fr; gap: 0; padding: 0; overflow: hidden; }
+  .val__img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+  .val__body { display: grid; gap: 4px; padding: 14px 16px 18px; align-content: start; min-width: 0; }
+  .val strong { color: var(--navy); font-size: 1.05rem; line-height: 1.25; overflow-wrap: break-word; hyphens: manual; }
+  .ticks { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .ticks li { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: center; }
+  .tick { width: 32px; height: 32px; border-radius: 50%; background: var(--mint); color: var(--green); display: grid; place-items: center; }
+  .tick :global(svg) { width: 18px; height: 18px; }
+  .princ { list-style: none; margin: 0; padding: 0; counter-reset: pr; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); }
+  .princ li { counter-increment: pr; display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; background: var(--surface); border-radius: var(--r-md); padding: 14px 16px; }
+  .princ li::before { content: counter(pr); width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: #fff; font-weight: 800; display: grid; place-items: center; }
+  .princ li div { display: grid; gap: 2px; }
+  .princ strong { color: var(--navy); }
+  .bord { gap: 12px; }
+  .bord h3 { margin: 0; font-size: var(--fs-lg); }
+  .bord ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+  .bord--yes h3 { color: var(--green); } .bord--yes li::marker { color: var(--green); }
+  .bord--no { background: #FFF5F5; color: #3B1A1A; } .bord--no h3 { color: #B42318; } .bord--no li::marker { color: #B42318; }
+  .roles { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+  .roles li { display: grid; gap: 4px; padding: 18px; }
+  .roles strong { color: var(--navy); }
+  .mis__quote { margin: 0; padding: 4px 0 4px 18px; border-left: 3px solid var(--lime); color: var(--navy); font-weight: 700; font-size: var(--fs-lg); }
+</style>

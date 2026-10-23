@@ -1,0 +1,268 @@
+/* Layout: кең ақ кеңістік, 1180px контейнер, бөлімдер арасы 96/64px; телефонда төменгі навигация. */
+:root {
+  --bg: #F7FAFC;
+  --surface: #FFFFFF;
+  --navy: #173372;
+  --lime: #7ED43D;
+  --green: #258477;
+  --mint: #EAF5F1;
+  --text: #28343D;
+  --muted: #5B6B77;
+  --line: #DCE6EC;
+  --on-accent: #FFFFFF;
+  --wa: #1F8F55;
+  --warn-bg: #FFF6E5;
+  --warn: #8A5A00;
+  --shadow: 0 1px 2px rgb(23 59 87 / .06), 0 8px 28px rgb(23 59 87 / .07);
+
+  --font: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --fs-xs: .8125rem;
+  --fs-sm: .9375rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  --fs-2xl: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --wrap: 1180px;
+  --header-h: 68px;
+  --bottom-h: 0px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1A23; --surface: #14242F; --navy: #CFE3F1; --green: #4DB5A5; --mint: #16302D;
+    --text: #E3EBF0; --muted: #9DB0BC; --line: #24394A; --on-accent: #06201C; --wa: #3FBF7F;
+    --warn-bg: #33270F; --warn: #F0C46A; --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 28px rgb(0 0 0 / .25);
+    --lime: #8EE04F; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1A23; --surface: #14242F; --navy: #CFE3F1; --green: #4DB5A5; --mint: #16302D;
+  --text: #E3EBF0; --muted: #9DB0BC; --line: #24394A; --on-accent: #06201C; --wa: #3FBF7F;
+  --warn-bg: #33270F; --warn: #F0C46A; --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 28px rgb(0 0 0 / .25);
+  --lime: #8EE04F; color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 16px); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: var(--fs-md); line-height: 1.6;
+  padding-bottom: calc(var(--bottom-h) + env(safe-area-inset-bottom, 0px));
+}
+/* Телефонда бет жанына тартылмауы үшін: ештеңе экран енінен шықпайды */
+html, body { overflow-x: clip; }
+h1, h2, h3 { overflow-wrap: break-word; hyphens: auto; min-width: 0; }
+[hidden] { display: none !important; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--green); text-underline-offset: 3px; }
+h1, h2, h3 { color: var(--navy); line-height: 1.15; text-wrap: balance; margin: 0; letter-spacing: -.015em; }
+h1 { font-size: var(--fs-2xl); font-weight: 700; }
+h2 { font-size: var(--fs-xl); font-weight: 700; }
+h3 { font-size: var(--fs-lg); font-weight: 600; }
+p { margin: 0; }
+:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+
+.wrap {
+  max-width: var(--wrap); margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 720px) { .wrap { padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); } }
+
+.section { padding-block: 64px; }
+@media (min-width: 900px) { .section { padding-block: 96px; } }
+.section--mint { background: var(--mint); }
+.section--tight { padding-block: 40px; }
+
+.eyebrow { font-size: var(--fs-xs); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--green); }
+.lead { font-size: var(--fs-lg); color: var(--muted); max-width: 60ch; }
+.muted { color: var(--muted); }
+.small { font-size: var(--fs-sm); }
+.stack { display: grid; gap: 16px; }
+.stack-lg { display: grid; gap: 32px; }
+.sec-head { display: grid; gap: 12px; margin-bottom: 40px; max-width: 720px; }
+.sec-head--row { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; max-width: none; }
+.sec-head--row > div { display: grid; gap: 12px; max-width: 640px; min-width: 0; }
+
+/* Батырмалар */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 48px; padding: 12px 22px; border-radius: 999px; border: 1.5px solid transparent;
+  font: 600 var(--fs-sm)/1.2 var(--font); text-decoration: none; cursor: pointer;
+  transition: transform .15s ease, background-color .15s ease, border-color .15s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn svg { width: 20px; height: 20px; flex: none; }
+.btn--primary { background: var(--green); color: var(--on-accent); }
+.btn--primary:hover { background: color-mix(in srgb, var(--green) 88%, #000); }
+.btn--navy { background: var(--navy); color: var(--bg); }
+.btn--ghost { border-color: var(--line); color: var(--navy); background: var(--surface); }
+.btn--ghost:hover { border-color: var(--green); }
+.btn--wa { background: var(--wa); color: #fff; }
+.btn--block { width: 100%; }
+.btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; transform: none; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* Карточкалар */
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+  padding: 28px; display: grid; gap: 14px; align-content: start; min-width: 0; grid-template-columns: minmax(0, 1fr);
+}
+.card--link { text-decoration: none; color: inherit; transition: border-color .15s ease, transform .15s ease; }
+.card--link:hover { border-color: var(--green); transform: translateY(-2px); }
+.card__more { font-weight: 600; font-size: var(--fs-sm); color: var(--green); display: inline-flex; gap: 6px; align-items: center; margin-top: auto; white-space: nowrap; }
+.card__more svg { width: 18px; height: 18px; flex: none; }
+/* Фоны сурет карточкалар: мәтін төменде, қараңғы градиент үстінде */
+.photo-card { position: relative; overflow: hidden; isolation: isolate; padding: 0; border: 0; background: #173B57; color: #fff; align-content: end; }
+.photo-card__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform .4s ease; }
+.photo-card::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10,30,45,0) 25%, rgba(10,30,45,.55) 55%, rgba(10,30,45,.92) 100%); }
+.photo-card:hover .photo-card__bg { transform: scale(1.04); }
+.photo-card__body { display: grid; gap: 10px; padding: 24px; align-content: end; min-width: 0; }
+.photo-card h3 { color: #fff; margin: 0; }
+.photo-card p { color: rgba(255,255,255,.88); margin: 0; }
+.photo-card .meta, .photo-card .meta b { color: #fff; }
+.photo-card .card__more { color: #9BE3C6; }
+.grid { display: grid; gap: 20px; }
+.grid--3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.grid--4 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.grid--2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 32px; align-items: center; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+  font-size: var(--fs-xs); font-weight: 600; background: var(--mint); color: var(--green); width: fit-content;
+}
+.chip--warn { background: var(--warn-bg); color: var(--warn); }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: var(--fs-sm); color: var(--muted); }
+.meta b { color: var(--text); font-weight: 600; }
+
+.icon-badge {
+  width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center;
+  background: var(--mint); color: var(--green);
+}
+.icon-badge svg { width: 24px; height: 24px; }
+.section--mint .icon-badge { background: var(--surface); }
+
+/* Қадамдар: шын реттілік */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; counter-reset: step; }
+.steps--row { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.steps li { counter-increment: step; display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 14px; align-items: start; }
+.steps li::before {
+  content: counter(step); width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; font-size: var(--fs-sm);
+  background: var(--surface); color: var(--green); border: 1.5px solid var(--green);
+}
+.steps strong { display: block; color: var(--navy); }
+
+/* Фото орны: материал келгенше */
+.ph {
+  position: relative; border-radius: var(--r-lg); overflow: hidden; aspect-ratio: 4 / 3; max-width: 100%;
+  background:
+    radial-gradient(120% 80% at 20% 0%, color-mix(in srgb, var(--green) 18%, transparent), transparent 60%),
+    linear-gradient(160deg, var(--mint), color-mix(in srgb, var(--mint) 60%, var(--surface)));
+  border: 1px dashed color-mix(in srgb, var(--green) 40%, var(--line));
+  display: grid; place-items: center; text-align: center; color: var(--green);
+}
+.ph span { display: grid; gap: 8px; justify-items: center; font-size: var(--fs-sm); font-weight: 600; padding: 16px; }
+.ph svg { width: 32px; height: 32px; opacity: .8; }
+.ph--tall { aspect-ratio: 3 / 4; }
+.ph--wide { aspect-ratio: 16 / 9; }
+
+/* Хабарлама жолағы */
+.notice {
+  display: flex; gap: 12px; align-items: flex-start; padding: 14px 18px; border-radius: var(--r-md);
+  background: var(--warn-bg); color: var(--warn); font-size: var(--fs-sm);
+}
+.notice svg { width: 20px; height: 20px; flex: none; margin-top: 2px; }
+
+/* FAQ */
+.faq { display: grid; gap: 12px; }
+.faq details { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 0 20px; }
+.faq summary { cursor: pointer; list-style: none; padding: 18px 0; font-weight: 600; color: var(--navy); display: flex; justify-content: space-between; gap: 16px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '+'; font-size: 1.4rem; line-height: 1; color: var(--green); }
+.faq details[open] summary::after { content: '−'; }
+.faq details p { padding-bottom: 18px; color: var(--muted); }
+
+/* Формалар */
+.form { display: grid; gap: 18px; }
+.field { display: grid; gap: 6px; }
+.field label { font-weight: 600; font-size: var(--fs-sm); color: var(--navy); }
+.field input, .field select, .field textarea {
+  font: inherit; color: var(--text); background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: var(--r-sm); padding: 12px 14px; min-height: 48px; width: 100%;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 25%, transparent); }
+.field .err { color: #B42318; font-size: var(--fs-xs); font-weight: 600; }
+.field [aria-invalid="true"] { border-color: #B42318; }
+
+/* Бет басы */
+.page-hero { padding-block: 40px 40px; margin-bottom: 24px; position: relative; isolation: isolate; overflow: hidden; background: #6EA2F2; color: #fff; }
+.page-hero__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; z-index: -2; }
+.page-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(18,40,120,.62), rgba(18,40,120,.28)); }
+.page-hero h1 { color: #fff; }
+.page-hero .eyebrow { color: #DCE8FF; }
+.page-hero .lead, .page-hero .crumbs, .page-hero .crumbs a { color: rgba(255,255,255,.92); }
+.page-hero .btn--ghost { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.7); }
+.page-hero .chip { background: rgba(255,255,255,.9); }
+.page-hero .wrap { display: grid; gap: 14px; }
+.crumbs { font-size: var(--fs-xs); color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
+.crumbs a { color: var(--muted); }
+
+/* Сүзгі */
+.filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 24px; scrollbar-width: none; }
+.filters button {
+  flex: none; font: 600 var(--fs-sm)/1 var(--font); padding: 10px 16px; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--navy);
+}
+.filters button[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: var(--bg); }
+
+.empty {
+  border: 1.5px dashed var(--line); border-radius: var(--r-lg); padding: 40px 24px;
+  display: grid; gap: 12px; justify-items: center; text-align: center; color: var(--muted);
+}
+.empty svg { width: 40px; height: 40px; color: var(--green); }
+.empty strong { color: var(--navy); font-size: var(--fs-lg); }
+
+/* 3D өнім суреті: еңкею (саусақ/тінтуір/телефон қисаюы), жылтыр және көлеңке */
+.p3d { display: block; perspective: 900px; }
+.p3d__in {
+  position: relative; display: block; width: 100%; height: 100%; border-radius: 18px; overflow: hidden;
+  transform: rotateX(var(--rx, 5deg)) rotateY(var(--ry, -7deg)) translateZ(0);
+  transform-style: preserve-3d; transition: transform .25s ease-out;
+  box-shadow: calc(var(--ry, -7deg) / 1deg * -1.2px) calc(14px + var(--rx, 5deg) / 1deg * 1.2px) 28px rgb(23 51 114 / .22), 0 2px 6px rgb(23 51 114 / .12);
+  animation: p3d-float 6s ease-in-out infinite;
+}
+.p3d--big .p3d__in { border-radius: 26px; }
+.p3d__in img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.p3d__glare {
+  position: absolute; inset: 0; pointer-events: none; mix-blend-mode: soft-light;
+  background: radial-gradient(circle at var(--gx, 30%) var(--gy, 20%), rgb(255 255 255 / .45), transparent 55%);
+}
+@keyframes p3d-float { 50% { translate: 0 -6px; } }
+@media (prefers-reduced-motion: reduce) { .p3d__in { animation: none; transition: none; } }
+
+/* Байланыс бөлімдері: футермен бірдей ашық көк фон (Aza 2026-10-23) */
+.sec-blue { position: relative; isolation: isolate; overflow: hidden; background: #CFE0F7; }
+.sec-blue__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; z-index: -2; }
+.sec-blue::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgba(255,255,255,.58); }
+.sec-blue h2, .sec-blue h3 { color: #12305A; font-weight: 800; }
+.sec-blue .eyebrow { color: #12305A; font-weight: 800; }
+.sec-blue p, .sec-blue li, .sec-blue span { font-weight: 600; }
+
+/* Ақ бөлімдердің фоны: екі абстракт сурет кезектесіп тұрады (Aza 2026-10-23). Тек ашық тақырыпта. */
+:root:not([data-theme="dark"]) main > .section:not(.section--mint):not(.sec-blue):not(.wave) {
+  background-color: #F4F8FD;
+  background-image: linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.5)), url(/media/sec-bg-blue.webp);
+  background-size: cover; background-position: center;
+}
+:root:not([data-theme="dark"]) main > .section:not(.section--mint):not(.sec-blue):not(.wave):nth-of-type(4n+3),
+:root:not([data-theme="dark"]) main > .section:not(.section--mint):not(.sec-blue):not(.wave):nth-of-type(4n) {
+  background-image: linear-gradient(rgba(255,255,255,.45), rgba(255,255,255,.45)), url(/media/sec-bg-white.webp);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) main > .section:not(.section--mint):not(.sec-blue):not(.wave) { background-image: none !important; background-color: transparent; }
+}

@@ -1,0 +1,53 @@
+---
+// Галерея мен сертификаттарға ортақ: санат сүзгісі және толық экранды көрініс.
+import { getLang } from '../i18n';
+import { ui } from '../i18n/ui';
+const t = ui[getLang(Astro)];
+---
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label={t.lbDialog}>
+  <button class="lb__btn lb__close" type="button" data-lb-close aria-label={t.close}>×</button>
+  <button class="lb__btn lb__prev" type="button" data-lb-prev aria-label={t.prev}>‹</button>
+  <figure class="lb__fig"><img id="lb-img" alt="" /><figcaption id="lb-cap"></figcaption></figure>
+  <button class="lb__btn lb__next" type="button" data-lb-next aria-label={t.next}>›</button>
+</div>
+<script is:inline>
+  (() => {
+    const lb = document.getElementById('lb');
+    const img = document.getElementById('lb-img');
+    const cap = document.getElementById('lb-cap');
+    let list = [], i = 0, last = null;
+    const visible = () => [...document.querySelectorAll('[data-lb]')].filter((el) => !el.closest('[hidden]'));
+    const show = () => { const el = list[i]; img.src = el.dataset.lb; img.alt = el.dataset.caption || ''; cap.textContent = el.dataset.caption || ''; };
+    const open = (el) => { list = visible(); i = list.indexOf(el); last = el; show(); lb.hidden = false; document.documentElement.style.overflow = 'hidden'; lb.querySelector('[data-lb-close]').focus(); };
+    const close = () => { lb.hidden = true; document.documentElement.style.overflow = ''; last?.focus(); };
+    const step = (d) => { i = (i + d + list.length) % list.length; show(); };
+    document.addEventListener('click', (e) => {
+      const t = e.target.closest('[data-lb]'); if (t) { e.preventDefault(); open(t); return; }
+      if (e.target.closest('[data-lb-close]') || e.target === lb) close();
+      if (e.target.closest('[data-lb-prev]')) step(-1);
+      if (e.target.closest('[data-lb-next]')) step(1);
+      const f = e.target.closest('[data-filter]');
+      if (f) {
+        const group = f.closest('.filters');
+        group.querySelectorAll('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b === f)));
+        document.querySelectorAll(`[data-cat-of="${group.id}"]`).forEach((el) => { el.hidden = f.dataset.filter !== 'all' && el.dataset.cat !== f.dataset.filter; });
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (lb.hidden) return;
+      if (e.key === 'Escape') close(); if (e.key === 'ArrowLeft') step(-1); if (e.key === 'ArrowRight') step(1);
+    });
+    let x0 = null;
+    lb.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend', (e) => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1); x0 = null; });
+  })();
+</script>
+<style>
+  .lb { position: fixed; inset: 0; z-index: 80; background: rgb(8 18 26 / .92); display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+  .lb__fig { margin: 0; display: grid; gap: 12px; justify-items: center; min-width: 0; }
+  .lb__fig img { max-height: 80vh; width: auto; max-width: 100%; border-radius: 12px; touch-action: pinch-zoom; }
+  .lb__fig figcaption { color: #E3EBF0; font-size: var(--fs-sm); text-align: center; }
+  .lb__btn { background: rgb(255 255 255 / .12); color: #fff; border: 0; width: 48px; height: 48px; border-radius: 50%; font-size: 28px; line-height: 1; cursor: pointer; }
+  .lb__close { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); }
+</style>

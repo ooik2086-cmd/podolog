@@ -1,0 +1,35 @@
+---
+import Icon from './Icon.astro';
+import WaButton from './WaButton.astro';
+import type { WaTopic } from '../data/site';
+import { getLang, localize } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props { title?: string; text?: string; topic?: WaTopic }
+const lang = getLang(Astro);
+const t = ui[lang];
+const { title = t.ctaTitle, text = t.ctaText, topic = 'booking' } = Astro.props;
+---
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="band">
+      <div class="stack">
+        <h2>{title}</h2>
+        <p>{text}</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn band__btn" href={localize(lang, '/booking')}><Icon name="calendar" />{t.book}</a>
+        <WaButton topic={topic} />
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  .band {
+    background: var(--navy); color: var(--bg); border-radius: var(--r-lg); padding: clamp(28px, 5vw, 56px);
+    display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center;
+  }
+  .band h2 { color: var(--bg); }
+  .band p { opacity: .8; max-width: 52ch; }
+  .band__btn { background: var(--bg); color: var(--navy); }
+</style>

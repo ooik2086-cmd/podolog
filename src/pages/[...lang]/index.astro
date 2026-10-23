@@ -1,0 +1,416 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import WaButton from '../../components/WaButton.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import Photo from '../../components/Photo.astro';
+import InsolePoster from '../../components/InsolePoster.astro';
+import ContactBlock from '../../components/ContactBlock.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Reviews from '../../components/Reviews.astro';
+import { popularServicesFor } from '../../data/services';
+import { certificatesFor, galleryFor } from '../../data/media';
+import { siteFor } from '../../data/site';
+import { getLang, localize, langPaths } from '../../i18n';
+
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const u = (p: string) => localize(lang, p);
+const site = siteFor(lang);
+const certificates = certificatesFor(lang);
+const gallery = galleryFor(lang);
+// «Жұмыс процесі»: адамсыз 6 сурет (кабинет пен өнімдер), Aza 2026-10-23
+const workKeys = ['cabinet-branded', 'reception', 'cabinet-white', 'pf-11', 'pf-07', 'pf-03'];
+const workPick = workKeys.map((k) => gallery.find((g) => g.image.endsWith(`/${k}.webp`))).filter((g) => g) as typeof gallery;
+const popularServices = popularServicesFor(lang);
+const y = site.experienceYears;
+
+const T = pageText('index', {
+  kk: {
+    title: 'Басты бет',
+    desc: `${site.city} қаласындағы подология және ортопедия орталығы. Подолог қабылдауы, жеке ортопедиялық ұлтарақтар, PodiaFarm өнімдері және подологияға оқыту.`,
+    eyebrow: 'Подология және ортопедия',
+    h1: 'Аяқ табанына кәсіби күтім және жеке ортопедиялық ұлтарақтар',
+    lead: `Ішке өскен тырнақ, мүйізгек, диабеттік табан және «сүйек шығу» кезінде кәсіби көмек. Бір келуде жасалатын жеке ұлтарақтар. Жетекшісі ${site.head}, тәжірибесі ${y} жыл.`,
+    book: 'Қабылдауға жазылу', orderInsoles: 'Ұлтараққа тапсырыс беру', programs: 'Оқу бағдарламалары',
+    heroWa: 'Сұрағыңыз болса, WhatsApp-қа жазыңыз', heroAlt: 'Подолог табан мен тырнаққа күтім жасап жатыр',
+    pathsH: 'Не іздейсіз?', start: 'Бастау',
+    paths: [
+      ['Қабылдауға жазылу', ['Қызметті таңдайсыз', 'Күн мен уақытты көрсетесіз', 'Біз растаймыз']],
+      ['Ұлтараққа тапсырыс', ['Табанды тексереміз', 'Өлшем аламыз', 'Жеке жасаймыз']],
+      ['PodiaFarm өнімдері', ['Өнімді таңдайсыз', 'Тапсырыс бересіз', 'Аласыз немесе жеткіземіз']],
+      ['Оқу бағдарламалары', ['Бағдарламаны таңдайсыз', 'Тіркелесіз', 'Оқуды бастайсыз']],
+    ],
+    svcEyebrow: 'Қызметтер', svcH: 'Жиі жазылатын қызметтер', svcAll: 'Барлық қызметтер',
+    insAlt: 'Ортопедиялық ұлтарақ: табан доғасын қолдап, жүктемені біркелкі таратады', insNeed: 'ұлтарақ',
+    insEyebrow: 'Ортопедиялық ұлтарақтар', insH: 'Табаныңызға ғана арналған ұлтарақ',
+    insText: 'Дайын ұлтарақ орташа табанға жасалады. Біз алдымен табаныңызды тексеріп, қажеттілікті бағалаймыз. Ұлтарақ керек болса, оны сол келуде өлшеміңізге сай жасаймыз. Қалыңдығы 2–4 мм, кез келген аяқ киімге сыяды.',
+    insSteps: [['Тексеру', 'Табан мен жүрісті бағалау'], ['Өлшем алу', 'Табан пішінін түсіру'], ['Дайындау', 'Сол келуде жеке жасалады'], ['Киіп көру', 'Нәтижені бірден сезесіз']],
+    insMore: 'Ұлтарақ туралы толығырақ', insWa: 'Ұлтарақ бойынша сұрау',
+    aboutEyebrow: 'Орталық туралы', aboutH: 'Подология, ортопедия және оқыту бір жерде',
+    aboutText: `«Подолог» орталығы ${site.city} қаласында аяқ табаны мен тырнақ күтіміне, жеке ортопедиялық ұлтарақтарға және подологтарды оқытуға маманданған. Медициналық тәсіл, тәжірибелі мамандар, премиум материалдар және әр адамға жеке тәсіл.`,
+    headAlt: `${site.head}, орталық жетекшісі, подолог-ортопед`, headNeed: `${site.head} портреті`, headChip: 'Орталық жетекшісі',
+    headText: `Медициналық білімі бар, тәжірибесі ${y} жыл. Подологтарды оқытады.`, headMore: 'Маман туралы',
+    teamAlt: '«Подолог» орталығының командасы', teamNeed: 'команда',
+    sergeiAlt: 'Подолог-ортопед Сергей Анатольевич ортопедиялық ұлтарақтармен', recAlt: 'Жетекші подолог Светлана Лим', recNeed: 'қабылдау',
+    workEyebrow: 'Біздің жұмыс', workH: 'Жұмыс процесі', workOpen: 'Галереяны ашу',
+    workPh: [['Ұлтарақ жасау', 'ұлтарақ жасау'], ['Жабдықтар', 'жабдықтар'], ['Сабақ', 'сабақтар']],
+    certEyebrow: 'Біліктілік', certH: 'Сертификаттар және кәсіби жетістіктер', certText: 'Подология, ортопедия, ұлтарақ жасау және PodiaFarm бойынша құжаттар.',
+    certAll: 'Барлық сертификаттар', cert: 'Сертификат', certNeed: 'сертификат',
+    pfEyebrow: 'Интернет-дүкен', pfH: 'PodiaFarm күтім өнімдері',
+    pfText: 'Тырнақ пен табан терісіне арналған кәсіби күтім құралдары: кератолитиктер, проблемалы тырнақтарға, саңырауқұлаққа және терлеуге қарсы құралдар. Өнімді маманмен ақылдасып таңдауға болады.',
+    pfView: 'Өнімдерді қарау', pfWa: 'Өнім бойынша кеңес',
+    pfAlt: 'PodiaFarm: антисептикалық спрей, табан тазартатын мусс және антибактериялық көбік', pfNeed: 'PodiaFarm өнімдері',
+    crsEyebrow: 'Оқу', crsH: 'Подологтарға арналған оқу бағдарламалары', crsText: 'Жаңадан бастаушыларға және біліктілігін арттырғысы келетін мамандарға.',
+    crsTypes: ['Онлайн курстар', 'Офлайн курстар', 'Практикалық оқыту', 'Тәлімгерлік', 'PodiaFarm бойынша семинарлар'],
+    crsView: 'Бағдарламаларды көру', crsWa: 'Оқу бойынша кеңес',
+    rvEyebrow: 'Пікірлер', rvH: 'Клиенттер пікірі', rvText: 'Біздің қабылдауда болған адамдардың шынайы пікірлері.',
+    ctEyebrow: 'Байланыс', ctH: 'Орталыққа қалай жетуге болады',
+  },
+  ru: {
+    title: 'Главная',
+    desc: `Центр подологии и ортопедии в городе ${site.city}. Приём подолога, индивидуальные ортопедические стельки, продукция PodiaFarm и обучение подологии.`,
+    eyebrow: 'Подология и ортопедия',
+    h1: 'Профессиональный уход за стопами и индивидуальные ортопедические стельки',
+    lead: `Профессиональная помощь при вросшем ногте, мозолях, диабетической стопе и «косточке». Индивидуальные стельки за один визит. Руководитель центра ${site.head}, опыт ${y} лет.`,
+    book: 'Записаться на приём', orderInsoles: 'Заказать стельки', programs: 'Программы обучения',
+    heroWa: 'Есть вопрос? Напишите нам в WhatsApp', heroAlt: 'Подолог ухаживает за стопой и ногтями',
+    pathsH: 'Что вы ищете?', start: 'Начать',
+    paths: [
+      ['Запись на приём', ['Выбираете услугу', 'Указываете день и время', 'Мы подтверждаем']],
+      ['Заказ стелек', ['Осматриваем стопу', 'Снимаем мерки', 'Изготавливаем индивидуально']],
+      ['Продукция PodiaFarm', ['Выбираете продукт', 'Оформляете заказ', 'Забираете или получаете доставку']],
+      ['Программы обучения', ['Выбираете программу', 'Регистрируетесь', 'Начинаете обучение']],
+    ],
+    svcEyebrow: 'Услуги', svcH: 'Популярные услуги', svcAll: 'Все услуги',
+    insAlt: 'Ортопедическая стелька: поддерживает свод стопы и равномерно распределяет нагрузку', insNeed: 'стелька',
+    insEyebrow: 'Ортопедические стельки', insH: 'Стельки, созданные только для ваших стоп',
+    insText: 'Готовые стельки делают под «среднюю» стопу. Мы сначала осматриваем ваши стопы и оцениваем, что нужно. Если стельки нужны, изготавливаем их по вашим меркам в тот же визит. Толщина 2–4 мм, подходят к любой обуви.',
+    insSteps: [['Осмотр', 'Оценка стопы и походки'], ['Мерки', 'Снятие формы стопы'], ['Изготовление', 'Индивидуально, в тот же визит'], ['Примерка', 'Результат чувствуется сразу']],
+    insMore: 'Подробнее о стельках', insWa: 'Спросить о стельках',
+    aboutEyebrow: 'О центре', aboutH: 'Подология, ортопедия и обучение в одном месте',
+    aboutText: `Центр «Подолог» в городе ${site.city} специализируется на уходе за стопами и ногтями, индивидуальных ортопедических стельках и обучении подологов. Медицинский подход, опытные специалисты, премиальные материалы и индивидуальный подход к каждому.`,
+    headAlt: `${site.head}, руководитель центра, подолог-ортопед`, headNeed: `портрет: ${site.head}`, headChip: 'Руководитель центра',
+    headText: `Медицинское образование, опыт ${y} лет. Обучает подологов.`, headMore: 'О специалисте',
+    teamAlt: 'Команда центра «Подолог»', teamNeed: 'команда',
+    sergeiAlt: 'Подолог-ортопед Сергей Анатольевич с ортопедическими стельками', recAlt: 'Ведущий подолог Светлана Лим', recNeed: 'приём',
+    workEyebrow: 'Наша работа', workH: 'Как мы работаем', workOpen: 'Открыть галерею',
+    workPh: [['Изготовление стелек', 'изготовление стелек'], ['Оборудование', 'оборудование'], ['Занятие', 'занятия']],
+    certEyebrow: 'Квалификация', certH: 'Сертификаты и профессиональные достижения', certText: 'Документы по подологии, ортопедии, изготовлению стелек и PodiaFarm.',
+    certAll: 'Все сертификаты', cert: 'Сертификат', certNeed: 'сертификат',
+    pfEyebrow: 'Интернет-магазин', pfH: 'Средства ухода PodiaFarm',
+    pfText: 'Профессиональные средства ухода за ногтями и кожей стоп: кератолитики, средства для проблемных ногтей, против грибка и потливости. Продукт можно подобрать вместе со специалистом.',
+    pfView: 'Смотреть продукцию', pfWa: 'Консультация по продукции',
+    pfAlt: 'PodiaFarm: антисептический спрей, мусс для очищения стоп и антибактериальная пенка', pfNeed: 'продукция PodiaFarm',
+    crsEyebrow: 'Обучение', crsH: 'Программы обучения для подологов', crsText: 'Для начинающих и для специалистов, которые хотят повысить квалификацию.',
+    crsTypes: ['Онлайн-курсы', 'Офлайн-курсы', 'Практическое обучение', 'Наставничество', 'Семинары по PodiaFarm'],
+    crsView: 'Смотреть программы', crsWa: 'Консультация по обучению',
+    rvEyebrow: 'Отзывы', rvH: 'Отзывы клиентов', rvText: 'Настоящие отзывы людей, которые были у нас на приёме.',
+    ctEyebrow: 'Контакты', ctH: 'Как добраться до центра',
+  },
+  en: {
+    title: 'Home',
+    desc: `Podiatry and orthopedics center in ${site.city}. Podiatrist appointments, custom orthopedic insoles, PodiaFarm products and podiatry training.`,
+    eyebrow: 'Podiatry and orthopedics',
+    h1: 'Professional foot care and custom orthopedic insoles',
+    lead: `Professional help with ingrown toenails, calluses, diabetic foot and bunions. Custom insoles made in a single visit. Led by ${site.head}, ${y} years of experience.`,
+    book: 'Book an appointment', orderInsoles: 'Order insoles', programs: 'Training programs',
+    heroWa: 'Have a question? Message us on WhatsApp', heroAlt: 'A podiatrist caring for a client’s foot and nails',
+    pathsH: 'What are you looking for?', start: 'Start',
+    paths: [
+      ['Book an appointment', ['Choose a service', 'Pick a day and time', 'We confirm']],
+      ['Order insoles', ['We examine your feet', 'We take measurements', 'We make them for you']],
+      ['PodiaFarm products', ['Choose a product', 'Place an order', 'Pick up or get delivery']],
+      ['Training programs', ['Choose a program', 'Sign up', 'Start learning']],
+    ],
+    svcEyebrow: 'Services', svcH: 'Popular services', svcAll: 'All services',
+    insAlt: 'Orthopedic insole: supports the arch and spreads the load evenly', insNeed: 'insole',
+    insEyebrow: 'Orthopedic insoles', insH: 'Insoles made only for your feet',
+    insText: 'Off-the-shelf insoles are made for an “average” foot. We first examine your feet and assess what you need. If insoles are needed, we make them to your measurements in the same visit. They are 2–4 mm thick and fit any shoes.',
+    insSteps: [['Examination', 'Assessing your feet and gait'], ['Measurements', 'Capturing the shape of your feet'], ['Making', 'Made for you in the same visit'], ['Fitting', 'You feel the result right away']],
+    insMore: 'More about insoles', insWa: 'Ask about insoles',
+    aboutEyebrow: 'About the center', aboutH: 'Podiatry, orthopedics and training in one place',
+    aboutText: `The Podolog center in ${site.city} specializes in foot and nail care, custom orthopedic insoles and training podiatrists. A medical approach, experienced specialists, premium materials and individual care for everyone.`,
+    headAlt: `${site.head}, head of the center, podiatrist and orthopedist`, headNeed: `portrait of ${site.head}`, headChip: 'Head of the center',
+    headText: `Medical education, ${y} years of experience. Trains podiatrists.`, headMore: 'About the specialist',
+    teamAlt: 'The Podolog center team', teamNeed: 'team',
+    sergeiAlt: 'Podiatrist and orthopedist Sergei Anatolyevich with orthopedic insoles', recAlt: 'Lead podiatrist Svetlana Lim', recNeed: 'appointment',
+    workEyebrow: 'Our work', workH: 'How we work', workOpen: 'Open the gallery',
+    workPh: [['Making insoles', 'making insoles'], ['Equipment', 'equipment'], ['Class', 'classes']],
+    certEyebrow: 'Qualifications', certH: 'Certificates and professional achievements', certText: 'Documents in podiatry, orthopedics, insole making and PodiaFarm.',
+    certAll: 'All certificates', cert: 'Certificate', certNeed: 'certificate',
+    pfEyebrow: 'Online shop', pfH: 'PodiaFarm care products',
+    pfText: 'Professional care products for nails and foot skin: keratolytics and products for problem nails, fungus and sweating. You can choose a product together with a specialist.',
+    pfView: 'View products', pfWa: 'Product advice',
+    pfAlt: 'PodiaFarm: antiseptic spray, foot cleansing mousse and antibacterial foam', pfNeed: 'PodiaFarm products',
+    crsEyebrow: 'Training', crsH: 'Training programs for podiatrists', crsText: 'For beginners and for specialists who want to advance their skills.',
+    crsTypes: ['Online courses', 'In-person courses', 'Hands-on training', 'Mentoring', 'PodiaFarm seminars'],
+    crsView: 'View programs', crsWa: 'Training advice',
+    rvEyebrow: 'Reviews', rvH: 'Client reviews', rvText: 'Genuine reviews from people who have visited us.',
+    ctEyebrow: 'Contacts', ctH: 'How to find us',
+  },
+})[lang];
+
+const pathMeta = [
+  { icon: 'calendar', href: '/booking', img: '/media/cards/reception.webp', pos: '50% 50%' },
+  { icon: 'insole', href: '/insoles', img: '/media/cards/sergei.webp', pos: '50% 62%' },
+  { icon: 'bag', href: '/shop', img: '/media/cards/podiafarm.webp', pos: '50% 45%' },
+  { icon: 'cap', href: '/courses', img: '/media/cards/team.webp', pos: '50% 40%' },
+] as const;
+const paths = pathMeta.map((m, i) => ({ ...m, title: T.paths[i][0] as string, steps: T.paths[i][1] as string[] }));
+---
+<Base title={T.title} path="/" description={T.desc}>
+
+  <section class="hero">
+    <img class="hero__bg" src="/media/hero-bg.webp" alt="" aria-hidden="true" />
+    <div class="wrap hero__grid">
+      <div class="hero__text">
+        <span class="eyebrow">{site.city}, {site.address} · {T.eyebrow}</span>
+        <h1>{T.h1}</h1>
+        <p class="lead">{T.lead}</p>
+        <div class="hero__ctas">
+          <a class="btn btn--primary" href={u('/booking')}><Icon name="calendar" />{T.book}</a>
+          <a class="btn btn--navy" href={u('/insoles')}><Icon name="insole" />{T.orderInsoles}</a>
+          <a class="btn btn--ghost" href={u('/courses')}><Icon name="cap" />{T.programs}</a>
+        </div>
+        <WaButton class="hero__wa" label={T.heroWa} />
+      </div>
+      <img class="hero__photo" src="/media/hero-procedure.webp" alt={T.heroAlt} width="1254" height="1254" fetchpriority="high" />
+    </div>
+  </section>
+
+  <section class="section section--tight" aria-labelledby="paths-h">
+    <div class="wrap">
+      <h2 id="paths-h" class="sr-h">{T.pathsH}</h2>
+      <div class="grid grid--4 paths">
+        {paths.map((p) => (
+          <a class="card card--link path photo-card" href={u(p.href)}>
+            <img class="photo-card__bg" src={p.img} alt="" loading="lazy" decoding="async" style={`object-position: ${p.pos}`} />
+            <div class="photo-card__body">
+              <h3>{p.title}</h3>
+              <ol class="path__steps">{p.steps.map((s) => <li>{s}</li>)}</ol>
+              <span class="card__more">{T.start} <Icon name="arrow" class="i16" /></span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="services">
+    <div class="wrap">
+      <div class="sec-head sec-head--row">
+        <div>
+          <span class="eyebrow">{T.svcEyebrow}</span>
+          <h2>{T.svcH}</h2>
+        </div>
+        <a class="btn btn--ghost" href={u('/services')}>{T.svcAll} <Icon name="arrow" /></a>
+      </div>
+      <div class="grid grid--4">{popularServices.map((s) => <ServiceCard service={s} />)}</div>
+    </div>
+  </section>
+
+  <section class="section section--mint" id="insoles">
+    <div class="wrap grid grid--2">
+      <InsolePoster alt={T.insAlt} />
+      <div class="stack-lg">
+        <div class="stack">
+          <span class="eyebrow">{T.insEyebrow}</span>
+          <h2>{T.insH}</h2>
+          <p class="muted">{T.insText}</p>
+        </div>
+        <ol class="steps">
+          {T.insSteps.map(([a, b]) => <li><div><strong>{a}</strong><span class="muted small">{b}</span></div></li>)}
+        </ol>
+        <div class="btn-row">
+          <a class="btn btn--primary" href={u('/insoles')}>{T.insMore}</a>
+          <WaButton topic="insoles" label={T.insWa} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="wrap grid grid--2">
+      <div class="stack-lg">
+        <div class="stack">
+          <span class="eyebrow">{T.aboutEyebrow}</span>
+          <h2>{T.aboutH}</h2>
+          <p class="muted">{T.aboutText}</p>
+        </div>
+        <div class="person card">
+          <Photo src="/media/team/zhanna-kim-face.webp" alt={T.headAlt} need={T.headNeed} shape="tall" class="person__ph" />
+          <div class="stack">
+            <span class="chip">{T.headChip}</span>
+            <h3>{site.head}</h3>
+            <p class="muted small">{T.headText}</p>
+            <a class="card__more" href={u('/about')}>{T.headMore} <Icon name="arrow" class="i16" /></a>
+          </div>
+        </div>
+      </div>
+      <div class="mosaic">
+        <Photo src="/media/team/team.webp" alt={T.teamAlt} need={T.teamNeed} pos="50% 40%" />
+        <Photo src="/media/team/sergei-kim-insoles.webp" alt={T.sergeiAlt} need={T.insNeed} shape="tall" pos="50% 45%" />
+        <Photo src="/media/real/svetlana-tool.webp" alt={T.recAlt} need={T.recNeed} shape="tall" pos="50% 30%" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mint" id="work">
+    <div class="wrap">
+      <div class="sec-head sec-head--row">
+        <div>
+          <span class="eyebrow">{T.workEyebrow}</span>
+          <h2>{T.workH}</h2>
+        </div>
+        <a class="btn btn--ghost" href={u('/gallery')}>{T.workOpen} <Icon name="arrow" /></a>
+      </div>
+      {gallery.length ? (
+        <div class="grid grid--3 work">{workPick.map((g) => <Photo src={g.image} alt={g.caption} need={g.category} />)}</div>
+      ) : (
+        <div class="grid grid--3">
+          {T.workPh.map(([alt, need]) => <Photo alt={alt} need={need} />)}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="section" id="certificates">
+    <div class="wrap">
+      <div class="sec-head sec-head--row">
+        <div>
+          <span class="eyebrow">{T.certEyebrow}</span>
+          <h2>{T.certH}</h2>
+          <p class="muted">{T.certText}</p>
+        </div>
+        <a class="btn btn--ghost" href={u('/certificates')}>{T.certAll} <Icon name="arrow" /></a>
+      </div>
+      <div class="grid grid--4">
+        {[0, 1, 2, 3].map((i) => certificates[i] ? (
+          <a href={u('/certificates')} class="cert"><img src={certificates[i].thumb} alt={certificates[i].title} loading="lazy" /></a>
+        ) : <Photo alt={T.cert} need={T.certNeed} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mint" id="podiafarm">
+    <div class="wrap grid grid--2">
+      <div class="stack-lg">
+        <div class="stack">
+          <span class="eyebrow">{T.pfEyebrow}</span>
+          <h2>{T.pfH}</h2>
+          <p class="muted">{T.pfText}</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn--primary" href={u('/shop')}><Icon name="bag" />{T.pfView}</a>
+          <WaButton topic="products" label={T.pfWa} />
+        </div>
+      </div>
+      <Photo src="/media/podiafarm/pf-11.webp" alt={T.pfAlt} need={T.pfNeed} class="pf-img" />
+    </div>
+  </section>
+
+  <section class="section" id="courses">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">{T.crsEyebrow}</span>
+        <h2>{T.crsH}</h2>
+        <p class="muted">{T.crsText}</p>
+      </div>
+      <div class="courses">
+        {T.crsTypes.map((c, i) => <a class="courses__item" href={u(`/courses#k${i}`)}><Icon name="cap" /><span>{c}</span><Icon name="arrow" class="courses__go" /></a>)}
+      </div>
+      <div class="btn-row" style="margin-top: 28px;">
+        <a class="btn btn--primary" href={u('/courses')}>{T.crsView}</a>
+        <WaButton topic="courses" label={T.crsWa} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mint" id="reviews">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">{T.rvEyebrow}</span>
+        <h2>{T.rvH}</h2>
+        <p class="muted">{T.rvText}</p>
+      </div>
+      <Reviews mode="home" />
+    </div>
+  </section>
+
+  <section class="section sec-blue" id="contacts">
+    <img class="sec-blue__bg" src="/media/footer-bg.webp" alt="" aria-hidden="true" loading="lazy" />
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">{T.ctEyebrow}</span>
+        <h2>{T.ctH}</h2>
+      </div>
+      <ContactBlock />
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .sr-h { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .hero { padding-block: 40px 40px; position: relative; isolation: isolate; overflow: hidden; background: #3B54C4; color: #fff; }
+  .hero__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 70% 50%; z-index: -2; }
+  .hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(20,35,110,.55), rgba(20,35,110,.15)); }
+  .hero h1 { color: #fff; }
+  .hero .eyebrow { color: #CFE0FF; }
+  .hero .lead { color: rgba(255,255,255,.92); }
+  .hero .btn--navy { background: #fff; color: #173B57; }
+  .hero .btn--ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.7); }
+  .hero :global(.hero__wa) { color: #fff !important; }
+  .hero__grid { display: grid; gap: 40px; align-items: center; }
+  @media (min-width: 960px) { .hero { padding-block: 72px 72px; } .hero__grid { grid-template-columns: 1.1fr .9fr; gap: 56px; } }
+  .hero__text { display: grid; gap: 20px; min-width: 0; }
+  .hero__ctas { display: grid; gap: 12px; margin-top: 8px; }
+  @media (min-width: 560px) { .hero__ctas { display: flex; flex-wrap: wrap; } }
+  .hero :global(.hero__wa) { background: transparent; color: var(--wa); padding-inline: 0; justify-content: flex-start; min-height: 40px; }
+  .hero__visual {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 32px; padding: 28px 20px 20px;
+    display: grid; gap: 14px; justify-items: center;
+  }
+  @media (max-width: 959px) { .hero__visual { max-width: 420px; justify-self: center; width: 100%; } }
+  .work :global(img) { aspect-ratio: 4 / 3; height: auto; }
+  .hero__photo { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 32px; box-shadow: 0 20px 50px -24px rgba(23, 59, 87, .35); }
+  @media (max-width: 959px) { .hero__photo { max-width: 480px; justify-self: center; } }
+
+  .path :global(.i16), .person :global(.i16) { width: 16px; height: 16px; }
+  @media (max-width: 559px) {
+    .paths { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .path { min-width: 0; }
+    .path { min-height: 220px; }
+    .path .photo-card__body { padding: 16px; gap: 8px; }
+    .path h3 { font-size: var(--fs-md); }
+    .path .path__steps { display: none; }
+  }
+  .path { min-height: 300px; }
+  .path__steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; color: rgba(255,255,255,.88); font-size: var(--fs-sm); }
+  .path__steps li::marker { color: #9BE3C6; font-weight: 700; }
+
+  .person { grid-template-columns: 120px minmax(0, 1fr); align-items: center; gap: 20px; padding: 20px; }
+  @media (max-width: 374px) { .person { grid-template-columns: 84px minmax(0, 1fr); gap: 14px; padding: 16px; } }
+  .person :global(.person__ph) { border-radius: var(--r-md); }
+  .person :global(.ph span) { font-size: var(--fs-xs); }
+  :global(.pf-img) { max-height: 520px; object-fit: cover; }
+  .cert { display: block; aspect-ratio: 1 / 1; border-radius: var(--r-lg); overflow: hidden; background: color-mix(in srgb, var(--mint) 55%, var(--surface)); border: 1px solid var(--line); }
+  .cert img { width: 100%; height: 100%; object-fit: contain; padding: 14px; filter: drop-shadow(0 2px 6px rgb(0 0 0 / .12)); }
+  .mosaic { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .mosaic > :global(:first-child) { grid-column: span 2; aspect-ratio: 4 / 3; height: auto; }
+
+  .courses { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 12px; }
+  .courses__item {
+    display: flex; gap: 12px; align-items: center; padding: 18px 20px; border-radius: var(--r-md);
+    border: 1px solid var(--line); background: var(--surface); font-weight: 600; color: var(--navy);
+  }
+  .courses__item :global(svg) { width: 22px; height: 22px; color: var(--green); flex: none; }
+  .courses__item { text-decoration: none; transition: border-color .15s ease, transform .15s ease; }
+  .courses__item:hover { border-color: var(--green); transform: translateY(-2px); }
+  .courses__item :global(.courses__go) { width: 18px; height: 18px; margin-left: auto; color: var(--muted); }
+</style>

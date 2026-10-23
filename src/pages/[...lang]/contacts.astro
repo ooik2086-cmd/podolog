@@ -1,0 +1,44 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import ContactBlock from '../../components/ContactBlock.astro';
+import WaButton from '../../components/WaButton.astro';
+import { siteFor } from '../../data/site';
+import { getLang, langPaths } from '../../i18n';
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const site = siteFor(lang);
+const T = pageText('contacts', {
+  kk: { title: 'Байланыс', h1: 'Байланыс және мекенжай', desc: `Подолог орталығы, ${site.city}: мекенжай, 2GIS картасы, телефон, WhatsApp, жұмыс уақыты.`, lead: 'Маршрутты 2GIS арқылы құрыңыз немесе бізге WhatsApp-қа жазыңыз.', topicH: 'Қай сұрақ бойынша жазасыз?', topicText: 'Әр батырма өз дайын мәтінімен ашылады, сізге тек жіберу қалады.', signCap: 'Кіреберістегі маңдайша: Абай даңғылы, 30, Есенов көшесінен кіру.', entCap: 'Орталыққа кіретін есік. Кешкі уақытта маңдайша жарықпен жанып тұрады.', topics: ['Қабылдауға жазылу', 'Ұлтарақ бойынша', 'Өнімге тапсырыс', 'Оқу бойынша'] },
+  ru: { title: 'Контакты', h1: 'Контакты и адрес', desc: `Центр «Подолог», ${site.city}: адрес, карта 2GIS, телефон, WhatsApp, время работы.`, lead: 'Постройте маршрут в 2GIS или напишите нам в WhatsApp.', topicH: 'По какому вопросу пишете?', topicText: 'Каждая кнопка открывается с готовым текстом, вам остаётся только отправить.', signCap: 'Вывеска над входом: пр-т Абая, 30, вход со стороны Есенова.', entCap: 'Вход в центр. Вечером вывеска светится.', topics: ['Запись на приём', 'По стелькам', 'Заказ продукции', 'По обучению'] },
+  en: { title: 'Contacts', h1: 'Contacts and address', desc: `Podolog center, ${site.city}: address, 2GIS map, phone, WhatsApp, opening hours.`, lead: 'Get directions in 2GIS or message us on WhatsApp.', topicH: 'What is your question about?', topicText: 'Each button opens with a ready message, so you only need to send it.', signCap: 'The sign above our entrance: 30 Abai Ave, entrance from Esenov St.', entCap: 'Our entrance. In the evening the sign is lit up.', topics: ['Booking', 'Insoles', 'Product order', 'Training'] },
+})[lang];
+const topics = (['booking', 'insoles', 'products', 'courses'] as const).map((topic, i) => ({ topic, label: T.topics[i] }));
+---
+<Base title={T.title} path="/contacts" description={T.desc}>
+  <PageHero eyebrow={T.title} title={T.h1} lead={T.lead} crumbs={[{ href: '/contacts', label: T.title }]} />
+  <section class="section sec-blue" style="padding-top: 32px;">
+    <img class="sec-blue__bg" src="/media/footer-bg.webp" alt="" aria-hidden="true" loading="lazy" />
+    <div class="wrap stack-lg">
+      <ContactBlock />
+      <div class="signs"><figure class="sign"><img src="/media/real/facade.webp" alt={T.signCap} loading="lazy" decoding="async" /><figcaption>{T.signCap}</figcaption></figure><figure class="sign sign--door"><img src="/media/real/entrance.webp" alt={T.entCap} loading="lazy" decoding="async" /><figcaption>{T.entCap}</figcaption></figure></div>
+      {site.whatsapp && <div class="card">
+        <h2>{T.topicH}</h2>
+        <p class="muted small">{T.topicText}</p>
+        <div class="btn-row">{topics.map((t) => <WaButton topic={t.topic} label={t.label} />)}</div>
+      </div>}
+    </div>
+  </section>
+</Base>
+<style>
+  .signs { display: grid; gap: 18px; }
+  @media (min-width: 720px) { .signs { grid-template-columns: 1.78fr 1fr; align-items: start; } }
+  .sign { margin: 0; display: grid; gap: 8px; }
+  .sign img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--r-lg); }
+  .sign figcaption { font-weight: 700; color: #12305A; }
+  .sign--door img { aspect-ratio: 4 / 5; object-position: 50% 40%; }
+  @media (min-width: 720px) { .sign--door img { aspect-ratio: 1 / 1; } }
+</style>

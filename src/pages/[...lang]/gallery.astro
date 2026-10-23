@@ -1,0 +1,28 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import MediaGrid from '../../components/MediaGrid.astro';
+import Lightbox from '../../components/Lightbox.astro';
+import { galleryFor, galleryCategoriesFor } from '../../data/media';
+import { getLang, langPaths } from '../../i18n';
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const items = galleryFor(lang).map((g) => ({ image: g.image, video: g.video, caption: g.caption, sub: g.sub, category: g.category }));
+const T = pageText('gallery', {
+  kk: { title: 'Жұмыс галереясы', crumb: 'Галерея', eyebrow: 'Біздің жұмыс', desc: 'Подолог орталығының жұмыс процесі: кабинет, жабдықтар, ұлтарақ жасау, сабақтар мен семинарлар.', lead: 'Кабинет, жабдықтар, ұлтарақ жасау, сабақтар мен семинарлар.', emptyT: 'Фото мен видео қосылады', emptyD: 'Клиенттердің суреттері тек олардың келісімімен жарияланады.' },
+  ru: { title: 'Галерея работ', crumb: 'Галерея', eyebrow: 'Наша работа', desc: 'Как работает центр «Подолог»: кабинет, оборудование, изготовление стелек, занятия и семинары.', lead: 'Кабинет, оборудование, изготовление стелек, занятия и семинары.', emptyT: 'Фото и видео скоро появятся', emptyD: 'Фотографии клиентов публикуются только с их согласия.' },
+  en: { title: 'Work gallery', crumb: 'Gallery', eyebrow: 'Our work', desc: 'Inside the Podolog center: treatment room, equipment, insole making, classes and seminars.', lead: 'Treatment room, equipment, insole making, classes and seminars.', emptyT: 'Photos and videos coming soon', emptyD: 'Photos of clients are published only with their consent.' },
+})[lang];
+---
+<Base title={T.title} path="/gallery" description={T.desc}>
+  <PageHero eyebrow={T.eyebrow} title={T.title} lead={T.lead} crumbs={[{ href: '/gallery', label: T.crumb }]} />
+  <section class="section" style="padding-top: 32px;">
+    <div class="wrap">
+      <MediaGrid id="gal-f" categories={galleryCategoriesFor(lang)} items={items} emptyTitle={T.emptyT} emptyText={T.emptyD} />
+    </div>
+  </section>
+  <Lightbox />
+</Base>

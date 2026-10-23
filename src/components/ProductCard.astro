@@ -1,0 +1,67 @@
+---
+import Icon from './Icon.astro';
+import { type Product, productThumb, categoriesFor, audienceFor, sizeFor } from '../data/products';
+import { getLang, localize } from '../i18n';
+import { ui, fmt } from '../i18n/ui';
+interface Props { p: Product }
+const { p } = Astro.props;
+const lang = getLang(Astro);
+const t = ui[lang];
+const cat = categoriesFor(lang).find((c) => c.id === p.category)!;
+const url = localize(lang, `/shop/${p.slug}`);
+const single = p.variants.length === 1;
+const sizes = p.variants.map((v) => sizeFor(lang, v.size)).join(' · ');
+const search = [p.name, p.short, cat.title, sizes, ...p.variants.map((v) => v.art)].join(' ').toLowerCase();
+---
+<article class="pc" data-cat={p.category} data-aud={p.audience} data-search={search}>
+  <a class="pc__img" href={url} tabindex="-1" aria-hidden="true">
+    <span class="p3d"><span class="p3d__in"><img src={productThumb(p)} alt="" loading="lazy" decoding="async" width="360" height="360" /><i class="p3d__glare"></i></span></span>
+    {p.isNew && <span class="chip pc__new">{t.isNew}</span>}
+  </a>
+  <div class="pc__body">
+    <span class="pc__cat">{cat.title}</span>
+    <h3 class="pc__name"><a href={url}>{p.name}</a></h3>
+    <p class="pc__short">{p.short}</p>
+    <p class="pc__meta"><span>{sizes}</span><span>{audienceFor(lang)[p.audience]}</span></p>
+    <div class="pc__foot">
+      <span class="pc__price" data-pp={p.slug} data-sizes={p.variants.map((v) => v.size).join('|')}>{t.priceLater}</span>
+      {single
+        ? <button class="pc__add" type="button" data-add={p.slug} data-size={p.variants[0].size} aria-label={fmt(t.addToCart, { n: p.name, s: sizeFor(lang, p.variants[0].size) })}><Icon name="plus" /></button>
+        : <a class="pc__add" href={url} aria-label={fmt(t.chooseSize, { n: p.name })}><Icon name="arrow" /></a>}
+    </div>
+  </div>
+</article>
+<style>
+  .pc {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden;
+    display: grid; grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 1fr); min-width: 0; transition: border-color .15s ease;
+  }
+  .pc:hover { border-color: var(--green); }
+  .pc__img { position: relative; display: block; background: #EAF5F1; aspect-ratio: 1; border-bottom: 1px solid var(--line); }
+  .pc__img .p3d { position: absolute; inset: 12%; }
+  .pc__new { position: absolute; top: 12px; left: 12px; background: var(--lime); color: #12340A; }
+  .pc__body { padding: 16px 18px 18px; display: grid; gap: 6px; align-content: start; grid-template-rows: auto auto 1fr auto auto; grid-template-columns: minmax(0, 1fr); }
+  .pc__cat { font-size: var(--fs-xs); color: var(--green); font-weight: 600; }
+  .pc__name { font-size: 1rem; line-height: 1.3; overflow-wrap: anywhere; }
+  .pc__name a { color: var(--navy); text-decoration: none; }
+  .pc__name a:hover { color: var(--green); }
+  .pc__name a::after { content: none; }
+  .pc__short { margin: 0; font-size: var(--fs-xs); color: var(--muted); line-height: 1.5; }
+  .pc__meta { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: var(--fs-xs); color: var(--muted); }
+  .pc__meta span:first-child { color: var(--text); font-weight: 600; }
+  .pc__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+  .pc__price { font-size: var(--fs-xs); font-weight: 600; color: var(--navy); }
+  .pc__add {
+    flex: none; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; cursor: pointer;
+    border: 0; background: var(--green); color: var(--on-accent);
+  }
+  .pc__add:hover { filter: brightness(1.08); }
+  .pc__add :global(svg) { width: 20px; height: 20px; }
+  @media (max-width: 520px) {
+    .pc__body { padding: 12px; }
+    .pc__name { font-size: .9rem; overflow-wrap: anywhere; }
+    .pc__short { display: none; }
+    .pc__meta span + span { display: none; }
+    .pc__add { width: 38px; height: 38px; }
+  }
+</style>

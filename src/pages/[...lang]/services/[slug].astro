@@ -1,0 +1,72 @@
+---
+import { pageText } from '../../../data/cms';
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import Photo from '../../../components/Photo.astro';
+import Icon from '../../../components/Icon.astro';
+import WaButton from '../../../components/WaButton.astro';
+import ServiceCard from '../../../components/ServiceCard.astro';
+import { services, servicesFor } from '../../../data/services';
+import { siteFor } from '../../../data/site';
+import { fmtFrom } from '../../../data/prices';
+import { getLang, localize, langPaths } from '../../../i18n';
+
+export function getStaticPaths() {
+  return langPaths(() => services.map((s) => ({ params: { slug: s.slug } })));
+}
+const lang = getLang(Astro);
+const u = (p: string) => localize(lang, p);
+const site = siteFor(lang);
+const all = servicesFor(lang);
+const s = all.find((x) => x.slug === Astro.params.slug)!;
+const others = all.filter((x) => x.slug !== s.slug).slice(0, 3);
+const T = pageText('services-item', {
+  kk: { eyebrow: 'Қызмет', crumb: 'Қызметтер', unconfirmed: 'Сипаттама мен баға нақтыланады', insoles: 'Ұлтарақтар беті', howH: 'Қабылдау қалай өтеді', about: 'Қызмет туралы', price: 'Бағасы', duration: 'Ұзақтығы', city: 'Қала', tbd: 'Нақтыланады', book: 'Осы қызметке жазылу', wa: 'WhatsApp арқылы сұрау', note: 'Нақты қажеттілігіңізді маман қабылдауда бағалайды.', others: 'Басқа қызметтер' },
+  ru: { eyebrow: 'Услуга', crumb: 'Услуги', unconfirmed: 'Описание и цена уточняются', insoles: 'Страница о стельках', howH: 'Как проходит приём', about: 'Об услуге', price: 'Цена', duration: 'Длительность', city: 'Город', tbd: 'Уточняется', book: 'Записаться на эту услугу', wa: 'Спросить в WhatsApp', note: 'Точную потребность специалист оценит на приёме.', others: 'Другие услуги' },
+  en: { eyebrow: 'Service', crumb: 'Services', unconfirmed: 'Description and price to be confirmed', insoles: 'Insoles page', howH: 'How the appointment goes', about: 'About the service', price: 'Price', duration: 'Duration', city: 'City', tbd: 'On request', book: 'Book this service', wa: 'Ask on WhatsApp', note: 'The specialist will assess your exact needs at the appointment.', others: 'Other services' },
+})[lang];
+---
+<Base title={s.title} path={`/services/${s.slug}`} description={`${s.title}, ${site.city}. ${s.short}`}>
+  <PageHero eyebrow={T.eyebrow} title={s.title} lead={s.short} crumbs={[{ href: '/services', label: T.crumb }]}>
+    {!s.confirmed && <span class="chip chip--warn">{T.unconfirmed}</span>}
+  </PageHero>
+  <section class="section" style="padding-top: 32px;">
+    <div class="wrap detail">
+      <div class="stack-lg">
+        {s.photo ? <img class="svc-photo" src={s.photo} alt={s.title} width="1536" height="1024" /> : <Photo src={s.image} pos={s.imagePos} alt={s.title} need={s.title.toLowerCase()} shape="wide" />}
+        <div class="stack">{s.about.map((p) => <p>{p}</p>)}</div>
+        {s.slug === 'ortoped-ultaraq' && <a class="btn btn--ghost" href={u('/insoles')}>{T.insoles} <Icon name="arrow" /></a>}
+        <div class="stack">
+          <h2>{T.howH}</h2>
+          <ol class="steps">{s.steps.map((st) => <li><div><strong>{st}</strong></div></li>)}</ol>
+        </div>
+      </div>
+      <aside class="card side">
+        <h3>{T.about}</h3>
+        <dl class="dl">
+          <div><dt>{T.price}</dt><dd>{s.price ? <a href={u('/prices')}>{fmtFrom(lang, s.price)}</a> : T.tbd}</dd></div>
+          <div><dt>{T.duration}</dt><dd>{s.duration ?? T.tbd}</dd></div>
+          <div><dt>{T.city}</dt><dd>{site.city}</dd></div>
+        </dl>
+        <a class="btn btn--primary btn--block" href={`${u('/booking')}?service=${s.slug}`}><Icon name="calendar" />{T.book}</a>
+        <WaButton topic="booking" class="btn--block" label={T.wa} />
+        <p class="small muted">{T.note}</p>
+      </aside>
+    </div>
+  </section>
+  <section class="section section--mint">
+    <div class="wrap">
+      <div class="sec-head"><h2>{T.others}</h2></div>
+      <div class="grid grid--3">{others.map((o) => <ServiceCard service={o} />)}</div>
+    </div>
+  </section>
+</Base>
+<style>
+  .svc-photo { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 75%; border-radius: var(--r-lg); display: block; }
+  .detail { display: grid; gap: 32px; }
+  @media (min-width: 960px) { .detail { grid-template-columns: 1fr 360px; align-items: start; } .side { position: sticky; top: calc(var(--header-h) + 24px); } }
+  .dl { margin: 0; display: grid; gap: 0; }
+  .dl div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .dl dt { color: var(--muted); }
+  .dl dd { margin: 0; font-weight: 600; color: var(--navy); text-align: right; }
+</style>

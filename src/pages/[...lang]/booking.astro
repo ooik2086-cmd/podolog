@@ -1,0 +1,88 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import WaButton from '../../components/WaButton.astro';
+import { siteFor } from '../../data/site';
+import { getLang, localize, langPaths } from '../../i18n';
+// Орталық онлайн жазылуды Altegio жүйесінде жүргізеді: бос уақыт, маман таңдау,
+// растау және екі клиенттің бір уақытқа жазылмауын сол жүйе қадағалайды.
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const u = (p: string) => localize(lang, p);
+const site = siteFor(lang);
+const T = pageText('booking', {
+  kk: {
+    title: 'Қабылдауға жазылу', crumb: 'Брондау', desc: `${site.city} подолог орталығында онлайн жазылу: қызметті, маманды және бос уақытты таңдаңыз.`,
+    lead: 'Онлайн жазылуда бос уақыттың бәрі көрінеді. Ыңғайлысын таңдап, бірден растайсыз.', online: 'Онлайн жазылу',
+    steps: [['Қызметті таңдайсыз', ''], ['Маманды таңдайсыз', 'Қаласаңыз, кез келген маман'], ['Бос күн мен уақытты таңдайсыз', 'Қызылорда уақыты бойынша'], ['Аты-жөніңіз бен телефоныңызды жазасыз', ''], ['Жазылуды растайсыз', 'Жазылу туралы хабарлама келеді']],
+    open: 'Онлайн жазылуды ашу', newWin: 'Жазылу беті жаңа терезеде ашылады.',
+    otherH: 'Басқа тәсілмен жазылу', otherText: 'Қай қызмет керек екенін білмесеңіз, жазыңыз немесе қоңырау шалыңыз. Маман кеңес береді.', wa: 'WhatsApp арқылы жазылу', hours: 'Жұмыс уақыты',
+  },
+  ru: {
+    title: 'Запись на приём', crumb: 'Запись', desc: `Онлайн-запись в центр подологии, ${site.city}: выберите услугу, специалиста и свободное время.`,
+    lead: 'В онлайн-записи видно всё свободное время. Выберите удобное и сразу подтвердите.', online: 'Онлайн-запись',
+    steps: [['Выбираете услугу', ''], ['Выбираете специалиста', 'Или любого свободного'], ['Выбираете свободный день и время', 'По времени Кызылорды'], ['Указываете имя и телефон', ''], ['Подтверждаете запись', 'Придёт уведомление о записи']],
+    open: 'Открыть онлайн-запись', newWin: 'Страница записи откроется в новом окне.',
+    otherH: 'Другие способы записи', otherText: 'Если не знаете, какая услуга нужна, напишите или позвоните. Специалист подскажет.', wa: 'Записаться через WhatsApp', hours: 'Время работы',
+  },
+  en: {
+    title: 'Book an appointment', crumb: 'Booking', desc: `Online booking at the podiatry center in ${site.city}: choose a service, a specialist and a free time slot.`,
+    lead: 'Online booking shows every free slot. Pick the one that suits you and confirm right away.', online: 'Online booking',
+    steps: [['Choose a service', ''], ['Choose a specialist', 'Or any available one'], ['Pick a free day and time', 'Kyzylorda time'], ['Enter your name and phone', ''], ['Confirm your booking', 'You will get a booking notification']],
+    open: 'Open online booking', newWin: 'The booking page opens in a new window.',
+    otherH: 'Other ways to book', otherText: 'If you are not sure which service you need, message or call us. A specialist will advise you.', wa: 'Book via WhatsApp', hours: 'Opening hours',
+  },
+})[lang];
+---
+<Base title={T.title} path="/booking" description={T.desc}>
+  <PageHero eyebrow={T.crumb} title={T.title} lead={T.lead} crumbs={[{ href: '/booking', label: T.crumb }]} />
+  <section class="section" style="padding-top: 32px;">
+    <div class="wrap bk">
+      <div class="card main">
+        <div class="icon-badge"><Icon name="calendar" /></div>
+        <h2>{T.online}</h2>
+        <ol class="steps">
+          {T.steps.map(([a, b]) => <li><div><strong>{a}</strong>{b && <span class="muted small">{b}</span>}</div></li>)}
+        </ol>
+        {site.bookingUrl && (
+          <a class="btn btn--primary btn--block" href={site.bookingUrl} target="_blank" rel="noopener" data-track="booking:online">
+            <Icon name="calendar" />{T.open}
+          </a>
+        )}
+        <p class="small muted">{T.newWin}</p>
+      </div>
+
+      <aside class="stack">
+        <div class="card">
+          <h3>{T.otherH}</h3>
+          <p class="muted small">{T.otherText}</p>
+          <WaButton topic="booking" class="btn--block" label={T.wa} />
+          <ul class="tels">
+            {site.phones.map((p) => <li><a href={`tel:${p.number}`}><Icon name="phone" />{p.display}</a></li>)}
+          </ul>
+        </div>
+        <div class="card">
+          <h3>{T.hours}</h3>
+          <dl class="hrs">{site.workingHours.map((h) => <div><dt>{h.days}</dt><dd>{h.time}</dd></div>)}</dl>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+<style>
+  .bk { display: grid; gap: 24px; }
+  @media (min-width: 960px) { .bk { grid-template-columns: 1fr 380px; align-items: start; } }
+  .main { gap: 20px; }
+  .tels { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+  .tels a { display: flex; gap: 10px; align-items: center; padding: 10px 0; color: var(--navy); text-decoration: none; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tels :global(svg) { width: 18px; height: 18px; color: var(--green); }
+  .hrs { margin: 0; }
+  .hrs div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .hrs div:last-child { border-bottom: 0; }
+  .hrs dt { color: var(--muted); }
+  .hrs dd { margin: 0; font-weight: 600; color: var(--navy); font-variant-numeric: tabular-nums; }
+</style>

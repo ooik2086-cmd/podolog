@@ -1,0 +1,522 @@
+---
+import '../styles/global.css';
+import Logo from '../components/Logo.astro';
+import Icon from '../components/Icon.astro';
+import WaButton from '../components/WaButton.astro';
+import { navFor, bottomNavFor } from '../data/nav';
+import { siteFor, missing, waLink, fullAddressFor, androidAppLinks } from '../data/site';
+import { getLang, localize, langs, langInfo, defaultLang } from '../i18n';
+import { ui } from '../i18n/ui';
+import { cms } from '../data/cms';
+
+// path — тілсіз жол ('/shop'), сілтемелер тілге қарай беріледі
+interface Props { title: string; description: string; path: string }
+const { title, description, path } = Astro.props;
+const lang = getLang(Astro);
+const t = ui[lang];
+const site = siteFor(lang);
+const fullAddress = fullAddressFor(lang);
+const nav = navFor(lang);
+const bottomNav = bottomNavFor(lang);
+const u = (p: string) => localize(lang, p);
+const fullTitle = path === '/' ? `${site.fullName} | ${site.city}` : `${title} | ${t.titleSuffix}, ${site.city}`;
+const canonical = new URL(u(path), Astro.site).href;
+const alternates = langs.map((l) => ({ l, href: new URL(localize(l, path), Astro.site).href }));
+const isActive = (p: string) => (p === '/' ? path === '/' : path.startsWith(p));
+// Браузер скриптеріне керек мәтіндер
+const priceT = {
+  kk: { from: '{n}-ден', out: 'Қазір жоқ' },
+  ru: { from: 'от {n}', out: 'Нет в наличии' },
+  en: { from: 'from {n}', out: 'Out of stock' },
+}[lang];
+const clientT = { cart: t.cart, cartN: t.cartN, added: t.addedToCart, ...priceT };
+
+// Тек расталған өрістер ғана құрылымдық деректерге кіреді
+const ld: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'MedicalBusiness',
+  name: site.fullName,
+  url: Astro.site?.href,
+  address: { '@type': 'PostalAddress', addressLocality: site.city, addressCountry: 'KZ', ...(site.address ? { streetAddress: site.address } : {}) },
+  ...(site.phones[0] ? { telephone: site.phones[0].number } : {}),
+  openingHours: ['Mo-Sa 10:00-18:00', 'Su 12:00-17:00'],
+  sameAs: Object.values(site.social).filter(Boolean),
+};
+---
+<!doctype html>
+<html lang={langInfo[lang].html}>
+<head>
+  <meta charset="utf-8" />
+  <script is:inline>try { var th = localStorage.getItem('pd_theme'); if (th === 'dark' || th === 'light') document.documentElement.dataset.theme = th; } catch (e) {}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>{fullTitle}</title>
+  <meta name="claude:viewport-fit-sides" content="cover" />
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  {cms.seo?.google && <meta name="google-site-verification" content={cms.seo.google} />}
+  {cms.seo?.yandex && <meta name="yandex-verification" content={cms.seo.yandex} />}
+  {alternates.map((a) => <link rel="alternate" hreflang={langInfo[a.l].html} href={a.href} />)}
+  <link rel="alternate" hreflang="x-default" href={alternates.find((a) => a.l === defaultLang)!.href} />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:locale" content={langInfo[lang].og} />
+  <meta name="theme-color" content="#173B57" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Serif:ital,wght@1,600&display=swap" />
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+</head>
+<body>
+  <a class="skip" href="#main">{t.skip}</a>
+
+  {(missing.contacts || missing.map) && (
+    <div class="draft">
+      <div class="wrap draft__in">
+        <Icon name="info" />
+        <span>{t.draft}</span>
+      </div>
+    </div>
+  )}
+
+  <header class="hdr">
+    <div class="wrap hdr__in">
+      <Logo />
+      <nav class="hdr__nav" aria-label={t.mainMenu}>
+        {nav.slice(1).filter((n) => !n.menuOnly).map((n) => <a href={n.href} aria-current={isActive(n.path) ? 'page' : undefined}>{n.short ?? n.label}</a>)}
+      </nav>
+      <div class="hdr__act">
+        <details class="lsw">
+          <summary aria-label={`${t.lang}: ${langInfo[lang].name}`}><Icon name="globe" /><span>{langInfo[lang].short}</span></summary>
+          <ul class="lsw__menu">
+            {langs.map((l) => <li><a href={localize(l, path)} hreflang={langInfo[l].html} lang={langInfo[l].html} aria-current={l === lang ? 'true' : undefined}><b>{langInfo[l].short}</b>{langInfo[l].name}</a></li>)}
+          </ul>
+        </details>
+        <button class="hdr__cart hdr__theme" type="button" id="themeBtn" data-dark={t.toDark} data-light={t.toLight} aria-label={t.toDark} title={t.toDark}>
+          <Icon name="moon" class="th-moon" /><Icon name="sun" class="th-sun" />
+        </button>
+        <a class="hdr__cart" href={u('/cart')} aria-current={path === '/cart' ? 'page' : undefined}>
+          <Icon name="cart" /><span class="sr">{t.cart}</span><span class="hdr__badge" data-cart-count hidden>0</span>
+        </a>
+        <a class="btn btn--primary hdr__cta" href={u('/booking')}><Icon name="calendar" /><span class="hdr__cta-t">{t.signUp}</span></a>
+        <button class="hdr__burger" type="button" aria-expanded="false" aria-controls="drawer" id="burger">
+          <Icon name="menu" /><span class="sr">{t.openMenu}</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="drawer" id="drawer" hidden>
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-label={t.menu}>
+      <div class="drawer__top">
+        <Logo />
+        <button class="hdr__burger" type="button" id="drawer-close"><Icon name="close" /><span class="sr">{t.closeMenu}</span></button>
+      </div>
+      <nav class="drawer__nav" aria-label={t.mobileMenu}>
+        {nav.map((n) => <a href={n.href} aria-current={isActive(n.path) ? 'page' : undefined}>{n.label}<Icon name="arrow" /></a>)}
+      </nav>
+      <div class="stack">
+        <div class="drawer__lang" role="group" aria-label={t.lang}>
+          {langs.map((l) => <a href={localize(l, path)} hreflang={langInfo[l].html} lang={langInfo[l].html} aria-current={l === lang ? 'true' : undefined}>{langInfo[l].name}</a>)}
+        </div>
+        <a class="btn btn--primary btn--block" href={u('/booking')}><Icon name="calendar" />{t.book}</a>
+        <WaButton class="btn--block" />
+      </div>
+    </div>
+  </div>
+
+  <main id="main"><slot /></main>
+
+  <footer class="ftr">
+    <img class="ftr__bg" src="/media/footer-bg.webp" alt="" aria-hidden="true" loading="lazy" />
+    <div class="wrap ftr__grid">
+      <div class="stack">
+        <div class="ftr__logo"><Logo /></div>
+        <p class="muted small">{site.fullName}. {t.headLabel}: {site.head}.</p>
+      </div>
+      <div class="stack">
+        <b>{t.sections}</b>
+        <ul class="ftr__list">{nav.slice(1, 6).map((n) => <li><a href={n.href}>{n.label}</a></li>)}</ul>
+      </div>
+      <div class="stack">
+        <b>{t.center}</b>
+        <ul class="ftr__list">
+          {nav.slice(6).filter((n) => !n.menuOnly).map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+          <li><a href={u('/prices')}>{t.prices}</a></li>
+          <li><a href={u('/feedback')}>{t.feedback}</a></li>
+          <li><a href={u('/privacy')}>{t.privacy}</a></li>
+        </ul>
+      </div>
+      <div class="stack">
+        <b>{t.contact}</b>
+        <ul class="ftr__list">
+          <li class="muted">{fullAddress}</li>
+          {site.phones.map((p) => <li><a href={`tel:${p.number}`}>{p.display}</a></li>)}
+          {site.workingHours.map((h) => <li class="muted">{h.days}: {h.time}</li>)}
+          {site.social.instagram && <li><a href={site.social.instagram} target="_blank" rel="noopener" class="ftr__soc"><Icon name="instagram" />Instagram</a></li>}
+          {site.social.tiktok && <li><a href={site.social.tiktok} target="_blank" rel="noopener" class="ftr__soc ftr__soc--tt"><Icon name="tiktok" />TikTok</a></li>}
+          {site.social.youtube && <li><a href={site.social.youtube} target="_blank" rel="noopener" class="ftr__soc"><Icon name="youtube" />YouTube</a></li>}
+        </ul>
+      </div>
+    </div>
+    <div class="wrap ftr__base muted small">© {new Date().getFullYear()} {t.titleSuffix}, {site.city}</div>
+  </footer>
+
+  <a class="wa-fab" href={waLink('general', '', lang) ?? u('/contacts')} target="_blank" rel="noopener" aria-label={t.waFab}><Icon name="whatsapp" /></a>
+
+  <nav class="bnav" aria-label={t.quickNav}>
+    {bottomNav.map((n) => (
+      <a href={n.href} aria-current={isActive(n.path) ? 'page' : undefined}><Icon name={n.icon} /><span>{n.label}</span></a>
+    ))}
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script is:inline define:vars={{ androidAppLinks, clientT }}>
+    window.podoT = clientT;
+    // Android: 2GIS мен Instagram сілтемелерін бірден қолданбада ашу.
+    // Бет iframe ішінде болса (мысалы, алдын ала қарау), intent:// бөгеледі, сондықтан https қалады.
+    let framed = true;
+    try { framed = window.self !== window.top; } catch {}
+    // iframe ішінде tel: сілтемесі бөгеледі, жаңа терезе арқылы ашамыз
+    if (framed) document.querySelectorAll('a[href^="tel:"]').forEach((a) => { a.target = '_blank'; a.rel = 'noopener'; });
+    if (/Android/i.test(navigator.userAgent) && !framed) {
+      document.querySelectorAll('a[href]').forEach((a) => {
+        const app = androidAppLinks[a.getAttribute('href')];
+        if (app) a.setAttribute('href', app);
+      });
+    }
+  </script>
+
+  <script is:inline>
+    // Себет: браузерде сақталады (localStorage), серверге жіберілмейді
+    (() => {
+      const KEY = 'podo-cart-v1';
+      let mem = [];
+      const read = () => { try { const v = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(v) ? v : []; } catch { return mem; } };
+      const write = (items) => { mem = items; try { localStorage.setItem(KEY, JSON.stringify(items)); } catch {} render(); document.dispatchEvent(new CustomEvent('cart:change')); };
+      const count = () => read().reduce((n, i) => n + i.qty, 0);
+      const render = () => {
+        const n = count();
+        document.querySelectorAll('[data-cart-count]').forEach((el) => { el.textContent = n > 99 ? '99+' : String(n); el.hidden = n === 0; });
+        document.querySelectorAll('.hdr__cart .sr').forEach((el) => { const T = window.podoT || {}; el.textContent = n ? (T.cartN || '{n}').replace('{n}', n) : (T.cart || ''); });
+      };
+      let tt;
+      const toast = (msg) => {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.hidden = false;
+        clearTimeout(tt); tt = setTimeout(() => { t.hidden = true; }, 2600);
+      };
+      window.podoCart = {
+        get: read,
+        count,
+        add(slug, size, qty = 1) {
+          const items = read();
+          const it = items.find((i) => i.slug === slug && i.size === size);
+          if (it) it.qty = Math.min(99, it.qty + qty); else items.push({ slug, size, qty });
+          write(items);
+          toast((window.podoT || {}).added || '✓');
+        },
+        set(slug, size, qty) {
+          const items = read().map((i) => (i.slug === slug && i.size === size ? { ...i, qty } : i)).filter((i) => i.qty > 0);
+          write(items);
+        },
+        clear() { write([]); },
+        toast,
+      };
+      document.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-add]');
+        if (!b) return;
+        const sizeEl = b.dataset.sizeFrom ? document.querySelector(b.dataset.sizeFrom + ':checked') : null;
+        const qtyEl = b.dataset.qtyFrom ? document.querySelector(b.dataset.qtyFrom) : null;
+        window.podoCart.add(b.dataset.add, sizeEl ? sizeEl.value : b.dataset.size, qtyEl ? Math.max(1, parseInt(qtyEl.value, 10) || 1) : 1);
+      });
+      window.addEventListener('storage', (e) => { if (e.key === KEY) { render(); document.dispatchEvent(new CustomEvent('cart:change')); } });
+      render();
+    })();
+
+    // Әкімші бөлімінде өзгертілген бағалар мен «бар/жоқ» белгісі (/api/content).
+    // Сервер жоқ болса (статикалық демо), беттегі бастапқы мәтін қалады.
+    (() => {
+      const T = window.podoT || {};
+      const num = (n) => Number(n).toLocaleString('ru-RU').replace(/\s/g, ' ');
+      const money = (n) => `${num(n)} ₸`;
+      let C = { prices: {}, products: {} };
+      const pr = (slug, size) => C.products[`${slug}|${size}`] || null;
+      window.podoMoney = money;
+      window.podoPrice = (slug, size) => pr(slug, size)?.price || null;
+      const label = (slug, sizes) => {
+        const vs = sizes.map((z) => pr(slug, z));
+        const prices = vs.map((v) => v?.price).filter(Boolean);
+        if (!prices.length) return null;
+        const min = Math.min(...prices);
+        const txt = sizes.length > 1 && prices.some((x) => x !== min) ? T.from.replace('{n}', money(min)) : money(min);
+        return vs.every((v) => v?.inStock === false) ? `${txt} · ${T.out}` : txt;
+      };
+      const pd = () => document.querySelectorAll('[data-pd-price]').forEach((el) => {
+        const size = document.querySelector('input[name="size"]:checked')?.value;
+        const v = size && pr(el.dataset.pdPrice, size);
+        if (!el.dataset.def) el.dataset.def = el.textContent;
+        el.textContent = v?.price ? money(v.price) + (v.inStock === false ? ` · ${T.out}` : '') : v?.inStock === false ? T.out : el.dataset.def;
+      });
+      const apply = () => {
+        document.querySelectorAll('[data-pr]').forEach((el) => {
+          const o = C.prices[el.dataset.pr];
+          if (!o) return;
+          const li = el.closest('li');
+          if (li) li.hidden = !!o.hidden;
+          el.textContent = o.min === o.max ? money(o.min) : `${money(o.min).replace(' ₸', '')} – ${money(o.max)}`;
+        });
+        document.querySelectorAll('[data-pp]').forEach((el) => { const l = label(el.dataset.pp, el.dataset.sizes.split('|')); if (l) el.textContent = l; });
+        pd();
+        document.dispatchEvent(new CustomEvent('content:ready'));
+      };
+      document.addEventListener('change', (e) => { if (e.target.name === 'size') pd(); });
+      if (!document.querySelector('[data-pr], [data-pp], [data-pd-price], .cl__row')) return;
+      fetch('/api/content').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d && d.prices) { C = d; apply(); } }).catch(() => {});
+    })();
+
+    // 3D өнім суреттері: тінтуір/саусақпен және телефон қисаюымен еңкейеді
+    (() => {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches || !document.querySelector('.p3d')) return;
+      const set = (el, x, y) => {
+        el.style.setProperty('--ry', `${(x - 0.5) * 28}deg`);
+        el.style.setProperty('--rx', `${(0.5 - y) * 22}deg`);
+        el.style.setProperty('--gx', `${x * 100}%`);
+        el.style.setProperty('--gy', `${y * 100}%`);
+      };
+      const reset = (el) => ['--rx', '--ry', '--gx', '--gy'].forEach((k) => el.style.removeProperty(k));
+      document.addEventListener('pointermove', (e) => {
+        const box = e.target.closest?.('.p3d');
+        if (!box) return;
+        const r = box.getBoundingClientRect();
+        set(box.querySelector('.p3d__in'), (e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height);
+      });
+      document.addEventListener('pointerout', (e) => {
+        const box = e.target.closest?.('.p3d');
+        if (box && !box.contains(e.relatedTarget)) reset(box.querySelector('.p3d__in'));
+      });
+      // Телефон қисайғанда барлық суреттер бірге бұрылады (Android; iOS рұқсатсыз бермейді)
+      let raf = 0;
+      addEventListener('deviceorientation', (e) => {
+        if (e.beta == null || raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const x = Math.max(0, Math.min(1, 0.5 + (e.gamma || 0) / 50));
+          const y = Math.max(0, Math.min(1, 0.5 + ((e.beta || 0) - 40) / 60));
+          document.querySelectorAll('.p3d__in').forEach((el) => set(el, x, y));
+        });
+      });
+    })();
+
+    // Тіл мәзірі сырт басқанда немесе Esc басқанда жабылады
+    document.addEventListener('click', (e) => { document.querySelectorAll('.lsw[open]').forEach((d) => { if (!d.contains(e.target)) d.open = false; }); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.lsw[open]').forEach((d) => { d.open = false; d.querySelector('summary').focus(); }); });
+
+    // Мобильді мәзір
+    const drawer = document.getElementById('drawer');
+    const burger = document.getElementById('burger');
+    const open = (v) => {
+      drawer.hidden = !v;
+      burger.setAttribute('aria-expanded', String(v));
+      document.documentElement.style.overflow = v ? 'hidden' : '';
+      if (v) drawer.querySelector('a')?.focus(); else burger.focus();
+    };
+    burger.addEventListener('click', () => open(true));
+    document.getElementById('drawer-close').addEventListener('click', () => open(false));
+    drawer.addEventListener('click', (e) => { if (e.target === drawer) open(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !drawer.hidden) open(false); });
+  </script>
+  <script is:inline>
+    (() => {
+      const b = document.getElementById('themeBtn');
+      if (!b) return;
+      const root = document.documentElement;
+      const mq = matchMedia('(prefers-color-scheme: dark)');
+      const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : mq.matches;
+      const sync = () => { const l = isDark() ? b.dataset.light : b.dataset.dark; b.setAttribute('aria-label', l); b.title = l; };
+      sync();
+      mq.addEventListener?.('change', sync);
+      b.addEventListener('click', () => {
+        const next = isDark() ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try { localStorage.setItem('pd_theme', next); } catch (e) {}
+        sync();
+        window.dispatchEvent(new Event('themechange'));
+      });
+    })();
+  </script>
+  <script is:inline>
+    document.addEventListener('play', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO' || v.muted) return;
+      document.querySelectorAll('video').forEach(function (o) { if (o !== v && !o.paused && !o.muted) o.pause(); });
+    }, true);
+    document.addEventListener('volumechange', function (e) {
+      var v = e.target;
+      if (!v || v.tagName !== 'VIDEO' || v.muted || v.paused) return;
+      document.querySelectorAll('video').forEach(function (o) { if (o !== v && !o.paused && !o.muted) o.pause(); });
+    }, true);
+  </script>
+</body>
+</html>
+
+<style>
+  .skip { position: absolute; left: -9999px; }
+  .skip:focus { left: 16px; top: 16px; z-index: 100; background: var(--surface); padding: 10px 16px; border-radius: 8px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  .draft { background: var(--warn-bg); color: var(--warn); font-size: var(--fs-xs); font-weight: 500; }
+  .draft__in { display: flex; gap: 10px; align-items: center; padding-block: 8px; }
+  .draft :global(svg) { width: 16px; height: 16px; flex: none; }
+
+  .hdr {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 41; background: var(--bg); }
+  .hdr__in { display: flex; align-items: center; gap: 16px; min-height: var(--header-h); }
+  .hdr__nav { display: none; gap: 5px; margin-left: auto; }
+  .hdr__nav a {
+    color: var(--navy); text-decoration: none; font-size: .8rem; font-weight: 600; line-height: 1;
+    padding: 9px 10px; border-radius: 999px; white-space: nowrap;
+    background: var(--surface); border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(23, 59, 87, .06);
+    transition: background .15s, color .15s, border-color .15s, transform .15s;
+  }
+  .hdr__nav a:hover { background: var(--mint); color: var(--green); border-color: var(--green); transform: translateY(-1px); }
+  .hdr__nav a[aria-current="page"] { color: var(--on-accent, #fff); background: var(--green); border-color: var(--green); }
+  .hdr__act { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+  .lsw { position: relative; }
+  .lsw summary {
+    list-style: none; height: 46px; padding: 0 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+    display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--navy); font-weight: 700; font-size: var(--fs-xs);
+  }
+  .lsw summary::-webkit-details-marker { display: none; }
+  .lsw summary :global(svg) { width: 18px; height: 18px; }
+  .lsw[open] summary, .lsw summary:hover { border-color: var(--green); color: var(--green); }
+  .lsw__menu {
+    position: absolute; right: 0; top: calc(100% + 8px); z-index: 50; list-style: none; margin: 0; padding: 6px; min-width: 170px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow);
+  }
+  .lsw__menu a { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 8px; color: var(--text); text-decoration: none; font-weight: 500; font-size: var(--fs-sm); }
+  .lsw__menu a b { width: 24px; color: var(--muted); font-size: var(--fs-xs); }
+  .lsw__menu a:hover { background: var(--mint); }
+  .lsw__menu a[aria-current] { color: var(--green); background: var(--mint); }
+  .lsw__menu a[aria-current] b { color: var(--green); }
+  @media (max-width: 380px) { .lsw summary span { display: none; } }
+  /* Тар телефондарда (320–374px) батырмалар сыйып тұруы үшін */
+  @media (max-width: 374px) {
+    .hdr__in { gap: 10px; }
+    .hdr__act { gap: 6px; }
+    .hdr__cart, .hdr__burger { width: 40px; height: 40px; }
+    .lsw summary { height: 40px; padding: 0 10px; }
+  }
+  .drawer__lang { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+  .drawer__lang a { text-align: center; padding: 10px 6px; border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 600; font-size: var(--fs-sm); }
+  .drawer__lang a[aria-current] { background: var(--mint); color: var(--green); }
+  .hdr__cart {
+    position: relative; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
+    color: var(--navy); border: 1px solid var(--line); background: var(--surface);
+  }
+  .hdr__theme { cursor: pointer; padding: 0; font: inherit; }
+  .hdr__theme :global(.th-sun) { display: none; }
+  :global(html[data-theme="dark"]) .hdr__theme :global(.th-sun) { display: block; }
+  :global(html[data-theme="dark"]) .hdr__theme :global(.th-moon) { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :global(html:not([data-theme="light"])) .hdr__theme :global(.th-sun) { display: block; }
+    :global(html:not([data-theme="light"])) .hdr__theme :global(.th-moon) { display: none; }
+  }
+  .hdr__cart:hover, .hdr__cart[aria-current="page"] { border-color: var(--green); color: var(--green); }
+  .hdr__cart :global(svg) { width: 22px; height: 22px; }
+  .hdr__badge {
+    position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px;
+    background: var(--green); color: var(--on-accent); font-size: 11px; font-weight: 700; line-height: 20px; text-align: center;
+    border: 2px solid var(--bg);
+  }
+  .toast {
+    position: fixed; left: 50%; transform: translateX(-50%); z-index: 70;
+    bottom: calc(24px + var(--bottom-h) + env(safe-area-inset-bottom, 0px));
+    background: var(--navy); color: var(--bg); padding: 12px 20px; border-radius: 999px;
+    font-size: var(--fs-sm); font-weight: 600; box-shadow: var(--shadow);
+  }
+  .hdr__cta { display: none; min-height: 42px; padding: 10px 18px; }
+  .hdr__burger {
+    width: 46px; height: 46px; border-radius: 12px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--navy); display: grid; place-items: center; cursor: pointer;
+  }
+  .hdr__burger :global(svg) { width: 22px; height: 22px; }
+  .hdr__in { max-width: 1320px; }
+  @media (min-width: 1600px) { .hdr__in { max-width: 1480px; } }
+  @media (min-width: 1340px) {
+    .hdr__nav { display: flex; }
+    .hdr__nav + .hdr__act { margin-left: 0; }
+    .hdr__burger { display: none; }
+  }
+  @media (min-width: 640px) { .hdr__cta { display: inline-flex; } }
+  @media (min-width: 1340px) and (max-width: 1599px) { .hdr__cta { padding: 10px 12px; } .hdr__cta-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } }
+
+  .drawer { position: fixed; inset: 0; z-index: 60; background: rgb(10 25 35 / .45); }
+  .drawer__panel {
+    position: absolute; inset: 0 0 0 auto; width: min(420px, 100%); background: var(--bg);
+    padding: calc(16px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) 20px;
+    display: grid; grid-template-rows: auto 1fr auto; gap: 20px; overflow-y: auto;
+    animation: slide .22s ease-out;
+  }
+  @keyframes slide { from { transform: translateX(24px); opacity: .6; } }
+  .drawer__top { display: flex; justify-content: space-between; align-items: center; }
+  .drawer__nav { display: grid; align-content: start; }
+  .drawer__nav a {
+    display: flex; justify-content: space-between; align-items: center; padding: 15px 4px;
+    border-bottom: 1px solid var(--line); color: var(--navy); text-decoration: none; font-weight: 600;
+  }
+  .drawer__nav a :global(svg) { width: 18px; height: 18px; color: var(--muted); }
+  .drawer__nav a[aria-current="page"] { color: var(--green); }
+
+  .ftr { padding-block: 56px 24px; margin-top: 0; position: relative; isolation: isolate; overflow: hidden; background: #CFE0F7; color: #173B57; }
+  .ftr__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; z-index: -2; }
+  .ftr::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgba(255,255,255,.18); }
+  .ftr__grid { display: grid; gap: 14px; }
+  @media (min-width: 900px) { .ftr__grid { grid-template-columns: 1.1fr 1fr 1fr 1.2fr; align-items: start; } }
+  .ftr__grid > .stack { background: rgba(255,255,255,.78); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.9); border-radius: 18px; padding: 18px 20px; box-shadow: 0 6px 24px rgba(30,70,130,.10); }
+  .ftr__logo { background: #fff; border-radius: 16px; padding: 10px 14px; width: fit-content; }
+  .ftr b { color: #12305A; font-weight: 800; font-size: var(--fs-md); }
+  .ftr p, .ftr li { font-weight: 600; }
+  .ftr :global(.muted) { color: #1E3D66 !important; }
+  .ftr__list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; font-size: var(--fs-sm); }
+  .ftr__list a { color: #12305A; text-decoration: none; font-weight: 700; }
+  .ftr__list a:hover { color: var(--green); }
+  .ftr__soc { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+  .ftr__soc :global(svg) { width: 20px; height: 20px; color: #C13584; }
+  .ftr__soc--tt :global(svg) { color: #000; stroke-width: 2.4; }
+  .ftr__base { margin-top: 20px; padding-block: 10px; background: rgba(255,255,255,.7); border-radius: 12px; text-align: center; }
+
+  .wa-fab {
+    position: fixed; z-index: 30; width: 56px; height: 56px; border-radius: 50%;
+    right: max(20px, calc(env(safe-area-inset-right, 0px) + 12px));
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    background: var(--wa); color: #fff; display: grid; place-items: center;
+    box-shadow: 0 6px 20px rgb(31 143 85 / .35);
+  }
+  .wa-fab :global(svg) { width: 28px; height: 28px; }
+
+  .bnav { display: none; }
+  @media (max-width: 760px) {
+    :global(:root) { --bottom-h: 64px; }
+    .bnav {
+      position: fixed; inset: auto 0 0; z-index: 45; display: grid; grid-template-columns: repeat(5, 1fr);
+      background: var(--surface); border-top: 1px solid var(--line);
+      padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+    }
+    .bnav a {
+      display: grid; justify-items: center; gap: 2px; padding: 6px 2px; border-radius: 10px;
+      color: var(--muted); text-decoration: none; font-size: .6875rem; font-weight: 600;
+    }
+    .bnav a :global(svg) { width: 22px; height: 22px; }
+    .bnav a[aria-current="page"] { color: var(--green); }
+    .wa-fab { width: 50px; height: 50px; bottom: calc(var(--bottom-h) + 14px + env(safe-area-inset-bottom, 0px)); }
+  }
+</style>

@@ -1,0 +1,19 @@
+---
+// Нақты фото болса — сурет, жоқ болса — не қойылатынын айтатын орын.
+import Icon from './Icon.astro';
+import { getLang, localize } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props { src?: string | null; alt: string; need: string; shape?: 'tall' | 'wide' | 'default'; class?: string; pos?: string }
+const { src, alt, need, shape = 'default', class: cls = '', pos = 'center' } = Astro.props;
+const t = ui[getLang(Astro)];
+const ratio = shape === 'tall' ? 'aspect-ratio: 3 / 4;' : shape === 'wide' ? 'aspect-ratio: 16 / 9;' : '';
+const shapeCls = shape === 'default' ? '' : `ph--${shape}`;
+---
+{src ? (
+  <img class={cls} src={src} alt={alt} loading="lazy" decoding="async" style={`border-radius: var(--r-lg); width: 100%; object-fit: cover; object-position: ${pos}; ${ratio}`} />
+) : (
+  <div class={`ph ${shapeCls} ${cls}`} role="img" aria-label={`${alt} (${t.photoAwaited})`}>
+    <span><Icon name="image" />{t.photo}: {need}</span>
+  </div>
+)}

@@ -1,0 +1,20 @@
+---
+// Түпнұсқа логотип (ақ фоны мөлдір етілді, пропорциясы өзгертілмеген).
+import { getLang, localize } from '../i18n';
+import { ui } from '../i18n/ui';
+interface Props { size?: 'sm' | 'lg' }
+const { size = 'sm' } = Astro.props;
+const lang = getLang(Astro);
+---
+<a href={localize(lang, '/')} class={`logo logo--${size}`} aria-label={ui[lang].logoHome}>
+  <img src="/media/logo-480.png" alt={ui[lang].logoAlt} width="480" height="239" />
+</a>
+<style>
+  .logo { display: inline-flex; align-items: center; flex: none; border-radius: 10px; }
+  .logo img { height: 46px; width: auto; }
+  .logo--lg img { height: 64px; }
+  @media (max-width: 374px) { .logo:not(.logo--lg) img { height: 38px; } }
+  /* Логотиптің көк түсі қараңғы фонда көрінуі үшін ақ тақта */
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo { background: #fff; padding: 4px 8px; } }
+  :root[data-theme="dark"] .logo { background: #fff; padding: 4px 8px; }
+</style>

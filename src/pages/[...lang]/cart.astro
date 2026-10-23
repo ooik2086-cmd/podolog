@@ -1,0 +1,306 @@
+---
+import { pageText } from '../../data/cms';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import { visibleProductsFor, productThumb, sizeFor } from '../../data/products';
+import { siteFor, ordersWhatsapp, ordersPhoneDisplay } from '../../data/site';
+import { getLang, localize, langPaths } from '../../i18n';
+import { ui } from '../../i18n/ui';
+// Статикалық кезең: тапсырыс серверге сақталмайды. Клиент дайын мәтінді WhatsApp арқылы жібереді.
+// 3-кезеңде осы форма API-ге (тапсырыс + Kaspi/Halyk төлем) қосылады.
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = getLang(Astro);
+const u = (p: string) => localize(lang, p);
+const site = siteFor(lang);
+const t = ui[lang];
+const rows = visibleProductsFor(lang).flatMap((p) => p.variants.map((v) => ({ p, v })));
+const T = pageText('cart', {
+  kk: {
+    title: 'Себет', desc: 'PodiaFarm өнімдеріне тапсырыс: себет және тапсырысты рәсімдеу.', eyebrow: 'Тапсырыс', products: 'Өнімдер',
+    emptyT: 'Себет бос', emptyD: 'Каталогтан өнім таңдап, себетке қосыңыз.', toCatalog: 'Каталогқа өту', art: 'арт.',
+    dec: 'Азайту', inc: 'Көбейту', rm: 'Себеттен алып тастау', items: 'тауар', sum: 'Жиыны', sumPart: 'бағасы белгілі тауарлар', addMore: 'Тағы қосу',
+    priceNote: 'Бағалар сайтта әлі жарияланбаған. Тапсырысты жібергеннен кейін маман әр өнімнің бағасын, бар-жоғын және жалпы соманы хабарлайды.',
+    formH: 'Тапсырысты рәсімдеу', name: 'Атыңыз', nameErr: 'Атыңызды жазыңыз', phone: 'Телефон', phoneErr: 'Нөмірді +7 7XX XXX XX XX форматында жазыңыз',
+    delivery: 'Алу тәсілі', deliveries: [['pickup', 'Орталықтан алып кету', ''], ['city', 'Қызылорда бойынша жеткізу', 'Шарты мен құны нақтыланады'], ['other', 'Басқа қалаға жіберу', 'Тәсілі мен құны нақтыланады']],
+    address: 'Мекенжай', addrPh: 'Қала, көше, үй', addrErr: 'Мекенжайды жазыңыз', note: 'Түсініктеме', optional: '(міндетті емес)',
+    agree: 'Деректерімді тапсырысты өңдеу үшін беруге келісемін.', agreeErr: 'Келісімді белгілеңіз', submit: 'Тапсырысты дайындау',
+    doneH: ['Тапсырыс', 'дайын'], doneText: 'Тапсырыс әлі жіберілген жоқ. Мәтінді көшіріп, WhatsApp арқылы орталыққа жіберіңіз. Маман бағасы мен алу уақытын хабарлайды.',
+    copy: 'Мәтінді көшіру', sendWa: 'WhatsApp-қа жіберу', pasteHint: 'WhatsApp ашылғанда көшірілген мәтінді хабарламаға қойыңыз.', orCall: 'Немесе қоңырау шалыңыз:', clear: 'Себетті тазалау',
+    hello: 'Сәлеметсіз бе! PodiaFarm өнімдеріне тапсырыс', nameL: 'Аты', bye: 'Бағасы мен бар-жоғын растауыңызды сұраймын.', copied: 'Мәтін көшірілді',
+  },
+  ru: {
+    title: 'Корзина', desc: 'Заказ продукции PodiaFarm: корзина и оформление заказа.', eyebrow: 'Заказ', products: 'Продукция',
+    emptyT: 'Корзина пуста', emptyD: 'Выберите продукты в каталоге и добавьте их в корзину.', toCatalog: 'Перейти в каталог', art: 'арт.',
+    dec: 'Уменьшить', inc: 'Увеличить', rm: 'Удалить из корзины', items: 'шт.', sum: 'Итого', sumPart: 'товары с известной ценой', addMore: 'Добавить ещё',
+    priceNote: 'Цены на сайте пока не опубликованы. После отправки заказа специалист сообщит цену каждого продукта, наличие и общую сумму.',
+    formH: 'Оформление заказа', name: 'Ваше имя', nameErr: 'Укажите имя', phone: 'Телефон', phoneErr: 'Укажите номер в формате +7 7XX XXX XX XX',
+    delivery: 'Способ получения', deliveries: [['pickup', 'Самовывоз из центра', ''], ['city', 'Доставка по Кызылорде', 'Условия и стоимость уточняются'], ['other', 'Отправка в другой город', 'Способ и стоимость уточняются']],
+    address: 'Адрес', addrPh: 'Город, улица, дом', addrErr: 'Укажите адрес', note: 'Комментарий', optional: '(необязательно)',
+    agree: 'Согласен(на) на передачу данных для обработки заказа.', agreeErr: 'Отметьте согласие', submit: 'Подготовить заказ',
+    doneH: ['Заказ', 'готов'], doneText: 'Заказ ещё не отправлен. Скопируйте текст и отправьте его в центр через WhatsApp. Специалист сообщит цену и время получения.',
+    copy: 'Скопировать текст', sendWa: 'Отправить в WhatsApp', pasteHint: 'Когда откроется WhatsApp, вставьте скопированный текст в сообщение.', orCall: 'Или позвоните:', clear: 'Очистить корзину',
+    hello: 'Здравствуйте! Заказ продукции PodiaFarm', nameL: 'Имя', bye: 'Прошу подтвердить цену и наличие.', copied: 'Текст скопирован',
+  },
+  en: {
+    title: 'Cart', desc: 'Order PodiaFarm products: cart and checkout.', eyebrow: 'Order', products: 'Products',
+    emptyT: 'Your cart is empty', emptyD: 'Choose products in the catalog and add them to your cart.', toCatalog: 'Go to catalog', art: 'item',
+    dec: 'Decrease', inc: 'Increase', rm: 'Remove from cart', items: 'items', sum: 'Total', sumPart: 'items with a known price', addMore: 'Add more',
+    priceNote: 'Prices are not yet published on the site. After you send the order, a specialist will tell you the price of each product, availability and the total.',
+    formH: 'Checkout', name: 'Your name', nameErr: 'Enter your name', phone: 'Phone', phoneErr: 'Enter the number as +7 7XX XXX XX XX',
+    delivery: 'How to receive', deliveries: [['pickup', 'Pick up at the center', ''], ['city', 'Delivery in Kyzylorda', 'Terms and cost to be confirmed'], ['other', 'Shipping to another city', 'Method and cost to be confirmed']],
+    address: 'Address', addrPh: 'City, street, building', addrErr: 'Enter your address', note: 'Comment', optional: '(optional)',
+    agree: 'I agree to share my data so the order can be processed.', agreeErr: 'Please tick the consent box', submit: 'Prepare order',
+    doneH: ['Order', 'is ready'], doneText: 'The order has not been sent yet. Copy the text and send it to the center via WhatsApp. A specialist will tell you the price and pickup time.',
+    copy: 'Copy text', sendWa: 'Send via WhatsApp', pasteHint: 'When WhatsApp opens, paste the copied text into the message.', orCall: 'Or call us:', clear: 'Clear cart',
+    hello: 'Hello! PodiaFarm product order', nameL: 'Name', bye: 'Please confirm the price and availability.', copied: 'Text copied',
+  },
+})[lang];
+const CT = {
+  art: T.art, hello: T.hello, name: T.nameL, phone: T.phone, delivery: T.delivery, address: T.address, note: T.note, bye: T.bye, copied: T.copied, sum: T.sum, sumPart: T.sumPart,
+  deliveries: Object.fromEntries(T.deliveries.map(([id, label]) => [id, label])),
+};
+---
+<Base title={T.title} path="/cart" description={T.desc}>
+  <PageHero eyebrow={T.eyebrow} title={T.title} crumbs={[{ href: '/shop', label: T.products }, { href: '/cart', label: T.title }]} />
+
+  <section class="section" style="padding-top: 24px;">
+    <div class="wrap">
+      <div class="empty" id="cart-empty">
+        <Icon name="cart" />
+        <strong>{T.emptyT}</strong>
+        <span>{T.emptyD}</span>
+        <a class="btn btn--primary" href={u('/shop')}><Icon name="bag" />{T.toCatalog}</a>
+      </div>
+
+      <div class="co" id="cart-full" hidden>
+        <div class="co__list">
+          <ul class="cl" id="cl">
+            {rows.map(({ p, v }) => (
+              <li class="cl__row" data-slug={p.slug} data-size={v.size} data-size-label={sizeFor(lang, v.size)} data-name={p.name} data-art={v.art} hidden>
+                <a class="cl__img" href={u(`/shop/${p.slug}`)} tabindex="-1" aria-hidden="true"><img src={productThumb(p)} alt="" width="96" height="96" loading="lazy" /></a>
+                <div class="cl__info">
+                  <a class="cl__name" href={u(`/shop/${p.slug}`)}>{p.name}</a>
+                  <span class="muted small">{sizeFor(lang, v.size)} · {T.art} {v.art}</span>
+                  <span class="cl__price small">{t.priceLater}</span>
+                </div>
+                <div class="cl__ctl">
+                  <div class="qty">
+                    <button type="button" data-d="-1" aria-label={T.dec}><Icon name="minus" /></button>
+                    <output class="cl__q">1</output>
+                    <button type="button" data-d="1" aria-label={T.inc}><Icon name="plus" /></button>
+                  </div>
+                  <button class="cl__rm" type="button" data-rm aria-label={T.rm}><Icon name="trash" /></button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div class="cl__foot">
+            <span><b id="cart-total">0</b> {T.items}<span id="cart-sum-w" hidden> · {T.sum}: <b id="cart-sum"></b></span></span>
+            <a href={u('/shop')} class="card__more">{T.addMore}<Icon name="arrow" /></a>
+          </div>
+          <p class="notice"><Icon name="info" /><span>{T.priceNote}</span></p>
+        </div>
+
+        <form class="co__form card form" id="order" novalidate>
+          <h2>{T.formH}</h2>
+          <div class="field">
+            <label for="o-name">{T.name}</label>
+            <input id="o-name" name="name" autocomplete="name" required maxlength="80" />
+            <span class="err" hidden>{T.nameErr}</span>
+          </div>
+          <div class="field">
+            <label for="o-phone">{T.phone}</label>
+            <input id="o-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 7__ ___ __ __" required maxlength="20" />
+            <span class="err" hidden>{T.phoneErr}</span>
+          </div>
+          <fieldset class="field co__del">
+            <legend>{T.delivery}</legend>
+            {T.deliveries.map(([id, label, sub], i) => (
+              <label><input type="radio" name="delivery" value={id} checked={i === 0} /> <span><b>{label}</b><small class="muted">{sub || site.address}</small></span></label>
+            ))}
+          </fieldset>
+          <div class="field" id="addr-f" hidden>
+            <label for="o-addr">{T.address}</label>
+            <input id="o-addr" name="address" autocomplete="street-address" maxlength="160" placeholder={T.addrPh} />
+            <span class="err" hidden>{T.addrErr}</span>
+          </div>
+          <div class="field">
+            <label for="o-note">{T.note} <span class="muted">{T.optional}</span></label>
+            <textarea id="o-note" name="note" rows="3" maxlength="500"></textarea>
+          </div>
+          <label class="co__agree small"><input type="checkbox" id="o-agree" required /> <span>{T.agree} <a href={u('/privacy')}>{t.privacy}</a></span></label>
+          <span class="err small" id="agree-err" hidden>{T.agreeErr}</span>
+          <button class="btn btn--primary btn--block" type="submit"><Icon name="check" />{T.submit}</button>
+        </form>
+      </div>
+
+      <div class="done card" id="done" hidden tabindex="-1">
+        <div class="icon-badge"><Icon name="check" /></div>
+        <h2>{T.doneH[0]} <span id="d-no"></span> {T.doneH[1]}</h2>
+        <p class="muted">{T.doneText}</p>
+        <pre class="done__text" id="d-text"></pre>
+        <div class="btn-row">
+          <button class="btn btn--ghost" type="button" id="d-copy"><Icon name="copy" />{T.copy}</button>
+          <a class="btn btn--wa" id="d-wa" href={`https://wa.me/${ordersWhatsapp}`} data-num={ordersWhatsapp} target="_blank" rel="noopener"><Icon name="whatsapp" />{T.sendWa}</a>
+        </div>
+        <p class="small muted">{T.orCall} <a href={`tel:+${ordersWhatsapp}`}>{ordersPhoneDisplay}</a></p>
+        <button class="btn btn--ghost" type="button" id="d-new">{T.clear}</button>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script is:inline define:vars={{ CT }}>
+  (() => {
+    const cart = window.podoCart;
+    const $ = (id) => document.getElementById(id);
+    const rows = [...document.querySelectorAll('.cl__row')];
+    const rowOf = (slug, size) => rows.find((r) => r.dataset.slug === slug && r.dataset.size === size);
+    const render = () => {
+      const items = cart.get().filter((i) => rowOf(i.slug, i.size));
+      rows.forEach((r) => { r.hidden = true; });
+      items.forEach((i) => { const r = rowOf(i.slug, i.size); r.hidden = false; r.querySelector('.cl__q').textContent = i.qty; $('cl').appendChild(r); });
+      const n = items.reduce((s, i) => s + i.qty, 0);
+      $('cart-total').textContent = n;
+      // Бағаны әкімші бөлімінде енгізсе, сервер береді (window.podoPrice, Base.astro)
+      let sum = 0, known = 0;
+      items.forEach((i) => {
+        const p = window.podoPrice?.(i.slug, i.size);
+        const el = rowOf(i.slug, i.size).querySelector('.cl__price');
+        if (p) { el.textContent = window.podoMoney(p) + (i.qty > 1 ? ` × ${i.qty}` : ''); sum += p * i.qty; known += 1; }
+      });
+      $('cart-sum-w').hidden = known === 0;
+      if (known) $('cart-sum').textContent = window.podoMoney(sum) + (known < items.length ? ` (${CT.sumPart})` : '');
+      if ($('done').hidden) { $('cart-empty').hidden = n > 0; $('cart-full').hidden = n === 0; }
+      return items;
+    };
+    $('cl').addEventListener('click', (e) => {
+      const r = e.target.closest('.cl__row'); if (!r) return;
+      const it = cart.get().find((i) => i.slug === r.dataset.slug && i.size === r.dataset.size); if (!it) return;
+      const d = e.target.closest('[data-d]');
+      if (d) cart.set(it.slug, it.size, Math.min(99, it.qty + Number(d.dataset.d)));
+      if (e.target.closest('[data-rm]')) cart.set(it.slug, it.size, 0);
+    });
+    document.addEventListener('cart:change', render);
+    document.addEventListener('content:ready', render);
+
+    const form = $('order');
+    const addrF = $('addr-f');
+    form.addEventListener('change', (e) => { if (e.target.name === 'delivery') addrF.hidden = e.target.value === 'pickup'; });
+    const normPhone = (v) => {
+      let d = v.replace(/\D/g, '');
+      if (d.length === 11 && d[0] === '8') d = '7' + d.slice(1);
+      if (d.length === 10 && d[0] === '7') d = '7' + d;
+      return /^77\d{9}$/.test(d) ? `+${d[0]} ${d.slice(1, 4)} ${d.slice(4, 7)} ${d.slice(7, 9)} ${d.slice(9)}` : null;
+    };
+    const mark = (input, bad) => { input.setAttribute('aria-invalid', String(bad)); input.parentElement.querySelector('.err').hidden = !bad; return bad; };
+    const orderNo = () => {
+      const t = new Date(); const p = (n) => String(n).padStart(2, '0');
+      return `PF-${String(t.getFullYear()).slice(2)}${p(t.getMonth() + 1)}${p(t.getDate())}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+    };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const f = new FormData(form);
+      const phone = normPhone(String(f.get('phone') || ''));
+      const delivery = String(f.get('delivery'));
+      const needAddr = delivery !== 'pickup';
+      const bad = [
+        mark($('o-name'), !String(f.get('name')).trim()),
+        mark($('o-phone'), !phone),
+        needAddr && mark($('o-addr'), !String(f.get('address')).trim()),
+      ];
+      if (!needAddr) mark($('o-addr'), false);
+      $('agree-err').hidden = $('o-agree').checked;
+      if (bad.some(Boolean) || !$('o-agree').checked) { form.querySelector('[aria-invalid="true"], #o-agree:not(:checked)')?.focus(); return; }
+      const items = render();
+      const no = orderNo();
+      const lines = items.map((i, k) => { const r = rowOf(i.slug, i.size); const p = window.podoPrice?.(i.slug, i.size); return `${k + 1}. ${r.dataset.name}, ${r.dataset.sizeLabel} (${CT.art} ${r.dataset.art}) × ${i.qty}${p ? ` = ${window.podoMoney(p * i.qty)}` : ''}`; });
+      const sumLine = $('cart-sum-w').hidden ? [] : [`${CT.sum}: ${$('cart-sum').textContent}`];
+      const text = [
+        `${CT.hello} ${no}`,
+        '', ...lines, ...sumLine, '',
+        `${CT.name}: ${String(f.get('name')).trim()}`,
+        `${CT.phone}: ${phone}`,
+        `${CT.delivery}: ${CT.deliveries[delivery]}`,
+        ...(needAddr ? [`${CT.address}: ${String(f.get('address')).trim()}`] : []),
+        ...(String(f.get('note')).trim() ? [`${CT.note}: ${String(f.get('note')).trim()}`] : []),
+        '', CT.bye,
+      ].join('\n');
+      // Тапсырыс әкімші бөліміне де сақталады (сервер болса). WhatsApp арқылы жіберу бұрынғыдай қалады.
+      fetch('/api/orders', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
+        no, name: String(f.get('name')).trim(), phone, delivery, address: needAddr ? String(f.get('address')).trim() : '', note: String(f.get('note') || '').trim(),
+        items: items.map((i) => { const r = rowOf(i.slug, i.size); return { slug: i.slug, size: i.size, qty: i.qty, title: r.dataset.name, art: r.dataset.art }; }),
+      }) }).catch(() => {});
+      $('d-no').textContent = no;
+      $('d-text').textContent = text;
+      const wa = $('d-wa');
+      if (wa && wa.dataset.num) wa.href = `https://wa.me/${wa.dataset.num}?text=${encodeURIComponent(text)}`;
+      $('cart-full').hidden = true; $('cart-empty').hidden = true; $('done').hidden = false; $('done').focus();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    const copy = async () => {
+      const text = $('d-text').textContent;
+      try { await navigator.clipboard.writeText(text); }
+      catch {
+        const r = document.createRange(); r.selectNodeContents($('d-text'));
+        const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+        try { document.execCommand('copy'); } catch {}
+      }
+      cart.toast(CT.copied);
+    };
+    $('d-copy').addEventListener('click', copy);
+    $('d-wa')?.addEventListener('click', () => { if (!$('d-wa').dataset.num) copy(); });
+    $('d-new').addEventListener('click', () => { cart.clear(); $('done').hidden = true; form.reset(); addrF.hidden = true; render(); });
+    render();
+  })();
+</script>
+
+<style>
+  .co { display: grid; gap: 28px; align-items: start; }
+  @media (min-width: 960px) { .co { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); } .co__form { position: sticky; top: calc(var(--header-h) + 20px); } }
+  .co__list { display: grid; gap: 16px; min-width: 0; }
+  .cl { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .cl__row {
+    display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 14px; align-items: center;
+    padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+  }
+  .cl__img { display: block; width: 76px; height: 76px; border-radius: 12px; background: #CEE5DC; border: 1px solid var(--line); overflow: hidden; }
+  .cl__img img { width: 100%; height: 100%; object-fit: cover; }
+  .cl__info { display: grid; gap: 2px; min-width: 0; }
+  .cl__name { color: var(--navy); font-weight: 600; text-decoration: none; line-height: 1.3; }
+  .cl__name:hover { color: var(--green); }
+  .cl__price { color: var(--navy); font-weight: 600; }
+  .cl__ctl { display: flex; align-items: center; gap: 6px; }
+  .cl__rm { width: 40px; height: 40px; border-radius: 10px; border: 0; background: none; color: var(--muted); cursor: pointer; display: grid; place-items: center; }
+  .cl__rm:hover { color: #B42318; background: color-mix(in srgb, #B42318 10%, transparent); }
+  .cl__rm :global(svg) { width: 20px; height: 20px; }
+  .cl__foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0 4px; }
+  .qty { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 999px; background: var(--bg); }
+  .qty button { width: 38px; height: 40px; border: 0; background: none; color: var(--navy); cursor: pointer; display: grid; place-items: center; }
+  .qty button :global(svg) { width: 16px; height: 16px; }
+  .qty output { min-width: 24px; text-align: center; font-weight: 600; }
+  @media (max-width: 560px) {
+    .cl__row { grid-template-columns: 64px minmax(0, 1fr); }
+    .cl__img { width: 64px; height: 64px; }
+    .cl__ctl { grid-column: 1 / -1; justify-content: space-between; }
+  }
+  .co__form h2 { font-size: var(--fs-lg); }
+  .co__del { border: 0; margin: 0; padding: 0; gap: 8px; }
+  .co__del legend { font-weight: 600; font-size: var(--fs-sm); color: var(--navy); margin-bottom: 6px; padding: 0; }
+  .co__del label, .co__agree { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+  .co__del label { padding: 12px 14px; border: 1.5px solid var(--line); border-radius: var(--r-sm); }
+  .co__del label:has(input:checked) { border-color: var(--green); background: var(--mint); }
+  .co__del span { display: grid; gap: 2px; }
+  .co__del small { font-size: var(--fs-xs); }
+  .co__del input, .co__agree input { margin-top: 4px; accent-color: var(--green); width: 18px; height: 18px; flex: none; }
+  #agree-err { color: #B42318; font-weight: 600; margin-top: -10px; }
+  .done { max-width: 720px; }
+  .done:focus { outline: none; }
+  .done__text {
+    margin: 0; white-space: pre-wrap; font: var(--fs-sm)/1.6 var(--font); background: var(--bg); color: var(--text);
+    border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px; max-height: 360px; overflow: auto;
+  }
+</style>
