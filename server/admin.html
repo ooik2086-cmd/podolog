@@ -337,7 +337,7 @@ const fmtD = (d) => new Date(d).toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU'
 const money = (n) => `${Number(n).toLocaleString('ru-RU').replace(/\s/g, ' ')} ₸`;
 const L3 = (v) => ({ kk: v?.kk || '', ru: v?.ru || '', en: v?.en || '' });
 const catN = (kind, c) => { if (lang === 'kk') return c; const list = kind === 'g' ? D.defs.galleryCategories : D.defs.certCategories; const i = list.indexOf(c); return (i >= 0 && D.defs.catNames?.[kind === 'g' ? 'gallery' : 'cert']?.ru?.[i]) || c; };
-const pick = (v) => (v && (v[lang] || v.ru || v.kk)) || '';
+const pick = (v) => (typeof v === 'string' ? v : v && (v[lang] || v.ru || v.kk)) || '';
 let tt;
 const toast = (m) => { let el = $('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; document.body.append(el); } el.textContent = m; el.hidden = false; clearTimeout(tt); tt = setTimeout(() => { el.hidden = true; }, 2600); };
 const I = {
@@ -373,7 +373,7 @@ async function loadAll() {
   D.orders = o.ok ? (await o.json()).orders : [];
   if (c.ok) { const j = await c.json(); D.cms = j.cms || {}; D.texts = j.texts || {}; D.build = j.build || {}; D.canBuild = j.canBuild; }
   if (!D.defs) {
-    const [d, k, p] = await Promise.all([fetch('/cms-defaults.json'), fetch('/catalog.json'), fetch('/api/content')]);
+    const [d, k, p] = await Promise.all(['/cms-defaults.json', '/catalog.json', '/api/content'].map((u) => fetch(u, { cache: 'no-store' })));
     D.defs = d.ok ? await d.json() : { gallery: [], galleryCategories: [], certificates: [], certCategories: [], videoGroups: [], contacts: {} };
     D.catalog = k.ok ? await k.json() : { prices: [], products: [] };
     D.content = p.ok ? await p.json() : { prices: {}, products: {} };

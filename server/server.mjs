@@ -215,7 +215,7 @@ async function serveStatic(req, res, path) {
       const s = await stat(f);
       if (!s.isFile()) continue;
       const ext = extname(f);
-      const cache = ext === '.html' ? 'no-cache' : f.includes('/assets/') ? 'public, max-age=31536000, immutable' : 'public, max-age=86400';
+      const cache = ext === '.html' || ext === '.json' || ext === '.xml' || ext === '.txt' ? 'no-cache' : f.includes('/assets/') ? 'public, max-age=31536000, immutable' : 'public, max-age=86400';
       return await sendFile(req, res, f, cache);
     } catch {}
   }
