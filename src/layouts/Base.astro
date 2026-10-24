@@ -37,6 +37,8 @@ const ld: Record<string, unknown> = {
   '@type': 'MedicalBusiness',
   name: site.fullName,
   url: Astro.site?.href,
+  logo: new URL('/icon-512.png', Astro.site).href,
+  image: new URL('/icon-512.png', Astro.site).href,
   address: { '@type': 'PostalAddress', addressLocality: site.city, addressCountry: 'KZ', ...(site.address ? { streetAddress: site.address } : {}) },
   ...(site.phones[0] ? { telephone: site.phones[0].number } : {}),
   openingHours: ['Mo-Sa 10:00-18:00', 'Su 12:00-17:00'],
@@ -47,6 +49,9 @@ const ld: Record<string, unknown> = {
 <html lang={langInfo[lang].html}>
 <head>
   <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/png" href="/favicon-96.png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <script is:inline>try { var th = localStorage.getItem('pd_theme'); if (th === 'dark' || th === 'light') document.documentElement.dataset.theme = th; } catch (e) {}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>{fullTitle}</title>
