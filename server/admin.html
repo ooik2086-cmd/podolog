@@ -12,6 +12,9 @@
 <meta name="apple-mobile-web-app-title" content="Подолог әкімші">
 <meta name="robots" content="noindex, nofollow">
 <title>Әкімші бөлімі</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root { --bg: #F4F7FA; --navy: #173B57; --navy2: #0F2C42; --green: #258477; --mint: #EAF5F1; --text: #28343D; --muted: #5F6F7B; --line: #DCE5EB; --red: #B42318; --amber: #B54708; --r: 14px; }
   * { box-sizing: border-box; }
@@ -107,8 +110,15 @@
   .live { display: grid; gap: 10px; }
   .live .bar2 { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .live .bar2 select { width: auto; min-width: 200px; }
-  .live iframe { width: 100%; height: calc(100vh - 210px); min-height: 70vh; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
-  @media (max-width: 900px) { .live iframe { height: calc(100vh - 230px); } }
+  .live iframe { width: 100%; height: calc(100vh - 150px); min-height: 75vh; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+  @media (max-width: 900px) { .live iframe { height: calc(100vh - 150px); } }
+  .live .help { font-size: .82rem; padding-top: 7px; padding-bottom: 7px; }
+  .live .help::before { top: 7px; }
+  /* Толық экран: мәзір мен тақырып жасырылып, сайт бүкіл экранды алады */
+  .app.full { grid-template-columns: 1fr; }
+  .app.full .side, .app.full .top, .app.full .live .help { display: none; }
+  .app.full .main { padding: 8px; }
+  .app.full .live iframe { height: calc(100vh - 64px); border-radius: 10px; }
   .empty { text-align: center; padding: 40px 16px; color: var(--muted); }
 
   /* Медиа торы */
@@ -156,6 +166,71 @@
   .login { max-width: 380px; margin: 14vh auto 0; display: grid; gap: 14px; padding: 24px; }
   .login h1 { margin: 0; color: var(--navy); }
   @media (max-width: 600px) { .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; } .chip { flex: none; } #bpill .pill { font-size: 0; gap: 0; padding: 8px; } #back .bk { display: none; } .tiles { grid-template-columns: 1fr 1fr; gap: 10px; } .tile { padding: 12px; } .top { gap: 8px; } .top h1 { font-size: 1.1rem; } }
+
+  /* ---------- Дизайн ---------- */
+  :root { --sh: 0 1px 2px rgb(16 40 60 / .05), 0 6px 20px rgb(16 40 60 / .06); --sh2: 0 2px 4px rgb(16 40 60 / .06), 0 12px 32px rgb(16 40 60 / .10); --lime: #7ED43D; }
+  body { background: radial-gradient(1200px 600px at 100% -10%, #E3F1EC 0%, transparent 60%), var(--bg); background-attachment: fixed; -webkit-font-smoothing: antialiased; }
+  .side { background: linear-gradient(180deg, #1B4767 0%, #133650 55%, #0F2C42 100%); box-shadow: 4px 0 24px rgb(15 44 66 / .12); padding: 22px 14px; }
+  .brand { padding: 2px 8px 22px; }
+  .brand img { width: 42px; height: 42px; border-radius: 12px; box-shadow: 0 0 0 2px rgb(255 255 255 / .12); }
+  .brand div { line-height: 1.2; font-size: 1.1rem; letter-spacing: .01em; }
+  .brand small { margin-top: 3px; color: var(--lime); opacity: 1; font-weight: 600; }
+  .nav { padding: 10px 12px; border-radius: 12px; transition: background .15s, color .15s; position: relative; }
+  .nav svg { opacity: .85; }
+  .nav.on { background: rgb(255 255 255 / .12); color: #fff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .08); }
+  .nav.on::before { content: ''; position: absolute; left: -14px; top: 9px; bottom: 9px; width: 4px; border-radius: 0 4px 4px 0; background: var(--lime); }
+  .nav.on svg { opacity: 1; color: var(--lime); }
+  .side .sep { margin: 8px 6px; background: rgb(255 255 255 / .08); }
+  .side .foot .btn.sm:not(.primary) { background: rgb(255 255 255 / .08); border-color: transparent; color: #fff; }
+  .top h1 { font-size: 1.65rem; font-weight: 800; letter-spacing: -.01em; }
+  .card, .tile, .mi, .pr, .tx, .help, .add { border: 1px solid rgb(220 229 235 / .7); box-shadow: var(--sh); border-radius: 16px; }
+  .card, .tile, .mi { transition: transform .15s ease, box-shadow .15s ease; }
+  .tile:hover, .mi:hover { transform: translateY(-2px); box-shadow: var(--sh2); border-color: rgb(37 132 119 / .35); }
+  .btn { border-radius: 12px; transition: transform .1s, box-shadow .15s, background .15s; }
+  .btn.primary { background: linear-gradient(135deg, #2A9585, #1F7468); border-color: transparent; box-shadow: 0 4px 12px rgb(37 132 119 / .28); }
+  .btn.primary:hover { box-shadow: 0 6px 18px rgb(37 132 119 / .36); }
+  .btn:active { transform: scale(.98); }
+  .chip { padding: 6px 14px; border-color: transparent; background: #fff; box-shadow: var(--sh); }
+  .chip.on { background: var(--navy); }
+  h2.sec { font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  h2.sec::before { content: ''; width: 4px; height: 18px; border-radius: 4px; background: var(--green); }
+  .help { background: linear-gradient(90deg, #fff, #F7FBF9); border-left: 0; position: relative; padding-left: 44px; }
+  .help::before { content: 'i'; position: absolute; left: 14px; top: 11px; width: 20px; height: 20px; border-radius: 50%; background: var(--mint); color: var(--green); font: 700 .8rem/20px Georgia, serif; text-align: center; }
+  .dlg { border-radius: 22px; box-shadow: 0 24px 64px rgb(15 44 66 / .3); }
+  .modal { backdrop-filter: blur(3px); }
+  .pill { padding: 5px 12px; box-shadow: var(--sh); background: #fff; }
+  .lsw { box-shadow: var(--sh); border-color: transparent; }
+  .mi .ph { border-radius: 0; }
+  .mi .cap b { font-size: .9rem; }
+  .bar { background: rgb(244 247 250 / .85); }
+
+  /* Басты бет */
+  .hello { display: flex; align-items: center; gap: 16px; padding: 22px 24px; border-radius: 20px; color: #fff; background: linear-gradient(120deg, #1B4767, #258477); box-shadow: var(--sh2); margin-bottom: 18px; position: relative; overflow: hidden; }
+  .hello::after { content: ''; position: absolute; right: -40px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgb(126 212 61 / .35), transparent 70%); }
+  .hello h2 { margin: 0; font-size: 1.35rem; font-weight: 800; }
+  .hello p { margin: 4px 0 0; opacity: .85; font-size: .92rem; }
+  .hello .btn { margin-left: auto; position: relative; z-index: 1; background: #fff; color: var(--navy); border: 0; }
+  .stat { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: center; }
+  .stat .ico { grid-row: span 2; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--mint); color: var(--green); }
+  .stat .ico svg { width: 24px; height: 24px; }
+  .stat.hot .ico { background: #FEE4E2; color: #D92D20; }
+  .stat b { font-size: 1.6rem; }
+  .act { display: grid; gap: 8px; justify-items: start; align-content: start; }
+  .act .ico { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: linear-gradient(135deg, var(--mint), #D7EEE6); color: var(--green); }
+  .act .ico svg { width: 24px; height: 24px; }
+  .act b { color: var(--navy); font-size: 1rem; }
+  .act span { color: var(--muted); font-size: .85rem; line-height: 1.35; }
+  @media (max-width: 600px) { .top h1 { font-size: 1.15rem; } .tile { padding: 14px; } }
+  @media (max-width: 600px) { .hello { padding: 18px; flex-wrap: wrap; } .hello .btn { margin-left: 0; width: 100%; } .stat { grid-template-columns: 1fr; } .stat .ico { grid-row: auto; width: 38px; height: 38px; } }
+
+  /* Кіру беті */
+  .lg-wrap { min-height: 100vh; display: grid; place-items: center; padding: 20px; background: radial-gradient(900px 500px at 20% 0%, #2A6E8F 0%, transparent 60%), linear-gradient(160deg, #173B57, #0F2C42); }
+  .login { margin: 0; width: min(400px, 100%); background: #fff; border-radius: 24px; padding: 32px 28px; box-shadow: 0 30px 80px rgb(0 0 0 / .35); text-align: center; }
+  .login img { width: 72px; height: 72px; border-radius: 20px; margin: 0 auto 4px; display: block; box-shadow: var(--sh2); }
+  .login h1 { font-size: 1.4rem; font-weight: 800; }
+  .login p { margin: -6px 0 6px; color: var(--muted); font-size: .9rem; }
+  .login .btn { min-height: 48px; font-size: 1rem; }
+  .login input { min-height: 48px; text-align: center; }
 </style>
 </head>
 <body>
@@ -165,14 +240,14 @@
 const L = {
   kk: {
     admin: 'Әкімші бөлімі', back: 'Артқа', install: '📲 Телефонға орнату', instH: 'Телефонға орнату', instIos: 'iPhone: Safari-де осы бетті ашып, төмендегі «Бөлісу» (□↑) батырмасын басыңыз, сосын «На экран «Домой»» таңдаңыз.', instAnd: 'Android: Chrome-да жоғарғы оң жақтағы ⋮ батырмасын басып, «Добавить на гл. экран» немесе «Установить приложение» таңдаңыз.', instDone: 'Телефон экранында «Подолог әкімші» белгісі пайда болады. Сонымен ашсаңыз, әкімші бөлімі қосымша сияқты бірден ашылады.',
-    nLive: 'Сайтты көріп өзгерту', lvPage: 'Бет', lvLang: 'Сайт тілі', lvHint: 'Сайт дәл қазіргідей көрінеді. Жасыл сызықпен белгіленген мәтінді басыңыз, сол жерде өзгертіп сақтайсыз. Сілтемелерді басып, басқа беттерге де өте аласыз.', lvEdit: 'Мәтінді өзгерту', lvOther: 'Бұл мәтін сайттың басқа беттерінде де өзгереді.', lvPhoto: 'Фото мен видео «Фотолар», «Видеолар» бөлімдерінде өзгертіледі.',
+    nLive: 'Сайтты көріп өзгерту', lvPage: 'Бет', lvLang: 'Сайт тілі', lvHint: 'Сайт дәл қазіргідей көрінеді. Жасыл сызықпен белгіленген мәтінді басыңыз, сол жерде өзгертіп сақтайсыз. Сілтемелерді басып, басқа беттерге де өте аласыз.', lvEdit: 'Мәтінді өзгерту', lvFull: '⛶ Толық экран', lvExit: '✕ Толық экраннан шығу', lvOther: 'Бұл мәтін сайттың басқа беттерінде де өзгереді.', lvPhoto: 'Фото мен видео «Фотолар», «Видеолар» бөлімдерінде өзгертіледі.',
     nServices: 'Қызметтер', nProducts: 'Тауарлар', fTitle: 'Атауы', fShort: 'Қысқаша (карточкада)', fAbout: 'Сипаттама, {n}-абзац', fStep: 'Қабылдау қадамы {n}', fUse: 'Қолдану тәсілі', fIngr: 'Құрамы', fName: 'Тауар атауы', fDesc: 'Сипаттама',
     svHint: 'Қызметтер бетіндегі карточкалар мен әр қызметтің жеке беті. Басып, мәтінін, суретін өзгертіңіз немесе уақытша жасырыңыз. Бағасы «Бағалар» бөлімінде.',
     prHint: 'Дүкендегі PodiaFarm тауарлары. Басып, атын, сипаттамасын, суретін өзгертіңіз немесе жасырыңыз. Бағасы мен қоймадағы бары «Бағалар» бөлімінде.',
     noTexts: 'Мәтіндер сайт жаңартылғаннан кейін шығады. 1–2 минуттан соң бетті жаңартыңыз.',
     lvTitle: 'Өзгерістер сақталмады', lvText: 'Осы бетте өзгерткен нәрселеріңіз әлі сақталған жоқ.', lvSave: 'Сақтау', lvDrop: 'Сақтамай шығу', lvStay: 'Осында қалу',
     help: {
-      home: 'Мұнда соңғы жаңалықтар мен жиі қолданылатын әрекеттер. Сол жақтағы мәзірден керек бөлімді таңдаңыз.',
+      home: '',
       reviews: 'Сайттағы клиент пікірлері. Пікірге орталық атынан жауап беруге, оны жасыруға немесе өшіруге болады. Жауап сайтта пікірдің астында шығады.',
       sugs: 'Сайттағы «Ұсыныстар» формасынан келген хаттар. Бұлар сайтта жарияланбайды, тек сізге көрінеді.',
       orders: 'Дүкен себетінен жіберілген тапсырыстар. Клиентке WhatsApp арқылы хабарласып, орындалғанда белгілеңіз.',
@@ -188,7 +263,7 @@ const L = {
     login: 'Кіру', pass: 'Құпия сөз', logout: 'Шығу', site: 'Сайтты ашу', err: 'Қате. Қайталап көріңіз.', saved: 'Сақталды', save: 'Сақтау', cancel: 'Болдырмау', close: 'Жабу', del: 'Өшіру', hide: 'Жасыру', show: 'Көрсету', up: 'Жоғары', down: 'Төмен', edit: 'Өзгерту', add: 'Қосу', all: 'Барлығы', search: 'Іздеу',
     nHome: 'Басты', nReviews: 'Пікірлер', nSugs: 'Ұсыныстар', nOrders: 'Тапсырыстар', nPhotos: 'Фотолар', nCerts: 'Сертификаттар', nVideos: 'Видеолар', nPrices: 'Бағалар', nContacts: 'Байланыс', nTexts: 'Барлық мәтіндер тізімі', nSettings: 'Баптаулар',
     bOk: 'Сайт жаңа', bBusy: 'Сайт жаңартылуда…', bErr: 'Жаңарту қатесі', bNo: 'Жинау қолжетімсіз', bHint: 'Өзгерістер 1–2 минутта сайтқа шығады',
-    hiNew: 'жаңа пікір (7 күн)', hiSugs: 'оқылмаған ұсыныс', hiOrders: 'жаңа тапсырыс', hiAvg: 'орташа баға', quick: 'Жылдам әрекеттер', qPhoto: 'Фото қосу', qPrice: 'Бағаны өзгерту', qContacts: 'Телефон мен әлеуметтік желі', qTexts: 'Мәтінді өзгерту',
+    hiNew: 'жаңа пікір (7 күн)', hiSugs: 'оқылмаған ұсыныс', hiOrders: 'жаңа тапсырыс', hiAvg: 'орташа баға', quick: 'Жылдам әрекеттер', qPhoto: 'Фото қосу', qLiveSub: 'Сайттағы мәтінді басып өзгерту', qPhotoSub: 'Галереяға жаңа сурет', qPriceSub: 'Прайс пен дүкен бағасы', qContactsSub: 'Телефон, WhatsApp, Instagram', qSvcSub: 'Қызмет мәтіні мен суреті', qVidSub: 'Видео қосу, ауыстыру', qPrice: 'Бағаны өзгерту', qContacts: 'Телефон мен әлеуметтік желі', qTexts: 'Мәтінді өзгерту',
     rEmpty: 'Пікір жоқ', rReply: 'Жауап беру', rReplyEdit: 'Жауапты өзгерту', rReplyPh: 'Орталық атынан жауап жазыңыз', rReplyDel: 'Жауапты өшіру', rOur: 'Орталықтың жауабы', rConfirm: 'Бұл пікірді біржола өшіру керек пе?', fAll: 'Барлығы', fHidden: 'Жасырылған', fNoReply: 'Жауапсыз', hiddenB: 'Жасырылған',
     sEmpty: 'Ұсыныс жоқ', sRead: 'Оқылды', sUnread: 'Оқылмаған деп белгілеу', sNew: 'Жаңа', sConfirm: 'Бұл ұсынысты біржола өшіру керек пе?', phone: 'Телефон', sWait: 'Жауап күтеді', anon: 'Аты жазылмаған',
     oEmpty: 'Тапсырыс әлі жоқ. Сайт себетінен жіберілген тапсырыстар осында шығады.', oNew: 'Жаңа', oDone: 'Орындалды', oCancel: 'Бас тартылды', oTotal: 'Жиыны', oConfirm: 'Бұл тапсырысты өшіру керек пе?', oDel: { pickup: 'Орталықтан алып кету', city: 'Қызылорда бойынша жеткізу', other: 'Басқа қалаға' }, oAddr: 'Мекенжай', oNote: 'Ескерту',
@@ -203,14 +278,14 @@ const L = {
   },
   ru: {
     admin: 'Админ-панель', back: 'Назад', install: '📲 Установить на телефон', instH: 'Установить на телефон', instIos: 'iPhone: откройте эту страницу в Safari, нажмите «Поделиться» (□↑) внизу и выберите «На экран «Домой»».', instAnd: 'Android: в Chrome нажмите ⋮ вверху справа и выберите «Добавить на гл. экран» или «Установить приложение».', instDone: 'На экране телефона появится значок «Подолог әкімші». Через него админ-панель открывается сразу, как приложение.',
-    nLive: 'Редактировать на сайте', lvPage: 'Страница', lvLang: 'Язык сайта', lvHint: 'Сайт выглядит как сейчас. Нажмите на текст, обведённый зелёной линией, и измените его прямо здесь. По ссылкам можно переходить на другие страницы.', lvEdit: 'Изменить текст', lvOther: 'Этот текст изменится и на других страницах сайта.', lvPhoto: 'Фото и видео меняются в разделах «Фото» и «Видео».',
+    nLive: 'Редактировать на сайте', lvPage: 'Страница', lvLang: 'Язык сайта', lvHint: 'Сайт выглядит как сейчас. Нажмите на текст, обведённый зелёной линией, и измените его прямо здесь. По ссылкам можно переходить на другие страницы.', lvEdit: 'Изменить текст', lvFull: '⛶ На весь экран', lvExit: '✕ Выйти из полного экрана', lvOther: 'Этот текст изменится и на других страницах сайта.', lvPhoto: 'Фото и видео меняются в разделах «Фото» и «Видео».',
     nServices: 'Услуги', nProducts: 'Товары', fTitle: 'Название', fShort: 'Кратко (в карточке)', fAbout: 'Описание, абзац {n}', fStep: 'Шаг приёма {n}', fUse: 'Способ применения', fIngr: 'Состав', fName: 'Название товара', fDesc: 'Описание',
     svHint: 'Карточки на странице «Услуги» и отдельная страница каждой услуги. Нажмите, чтобы изменить текст, фото или временно скрыть. Цена — в разделе «Цены».',
     prHint: 'Товары PodiaFarm в магазине. Нажмите, чтобы изменить название, описание, фото или скрыть. Цена и наличие — в разделе «Цены».',
     noTexts: 'Тексты появятся после обновления сайта. Обновите страницу через 1–2 минуты.',
     lvTitle: 'Изменения не сохранены', lvText: 'Вы изменили что-то на этой странице, но ещё не сохранили.', lvSave: 'Сохранить', lvDrop: 'Выйти без сохранения', lvStay: 'Остаться',
     help: {
-      home: 'Здесь последние новости и частые действия. Выберите нужный раздел в меню слева.',
+      home: '',
       reviews: 'Отзывы клиентов на сайте. Можно ответить от имени центра, скрыть или удалить отзыв. Ответ показывается на сайте под отзывом.',
       sugs: 'Письма из формы «Предложения». Они не публикуются, их видите только вы.',
       orders: 'Заказы из корзины магазина. Свяжитесь с клиентом в WhatsApp и отметьте, когда заказ выполнен.',
@@ -226,7 +301,7 @@ const L = {
     login: 'Войти', pass: 'Пароль', logout: 'Выйти', site: 'Открыть сайт', err: 'Ошибка. Попробуйте ещё раз.', saved: 'Сохранено', save: 'Сохранить', cancel: 'Отмена', close: 'Закрыть', del: 'Удалить', hide: 'Скрыть', show: 'Показать', up: 'Выше', down: 'Ниже', edit: 'Изменить', add: 'Добавить', all: 'Все', search: 'Поиск',
     nHome: 'Главная', nReviews: 'Отзывы', nSugs: 'Предложения', nOrders: 'Заказы', nPhotos: 'Фото', nCerts: 'Сертификаты', nVideos: 'Видео', nPrices: 'Цены', nContacts: 'Контакты', nTexts: 'Список всех текстов', nSettings: 'Настройки',
     bOk: 'Сайт обновлён', bBusy: 'Сайт обновляется…', bErr: 'Ошибка обновления', bNo: 'Сборка недоступна', bHint: 'Изменения появятся на сайте через 1–2 минуты',
-    hiNew: 'новых отзывов (7 дней)', hiSugs: 'непрочитанных предложений', hiOrders: 'новых заказов', hiAvg: 'средняя оценка', quick: 'Быстрые действия', qPhoto: 'Добавить фото', qPrice: 'Изменить цены', qContacts: 'Телефоны и соцсети', qTexts: 'Изменить тексты',
+    hiNew: 'новых отзывов (7 дней)', hiSugs: 'непрочитанных предложений', hiOrders: 'новых заказов', hiAvg: 'средняя оценка', quick: 'Быстрые действия', qPhoto: 'Добавить фото', qLiveSub: 'Нажать на текст на сайте и изменить', qPhotoSub: 'Новое фото в галерею', qPriceSub: 'Прайс и цены магазина', qContactsSub: 'Телефон, WhatsApp, Instagram', qSvcSub: 'Текст и фото услуг', qVidSub: 'Добавить, заменить видео', qPrice: 'Изменить цены', qContacts: 'Телефоны и соцсети', qTexts: 'Изменить тексты',
     rEmpty: 'Отзывов нет', rReply: 'Ответить', rReplyEdit: 'Изменить ответ', rReplyPh: 'Напишите ответ от имени центра', rReplyDel: 'Удалить ответ', rOur: 'Ответ центра', rConfirm: 'Удалить этот отзыв навсегда?', fAll: 'Все', fHidden: 'Скрытые', fNoReply: 'Без ответа', hiddenB: 'Скрыт',
     sEmpty: 'Предложений нет', sRead: 'Прочитано', sUnread: 'Отметить непрочитанным', sNew: 'Новое', sConfirm: 'Удалить это предложение навсегда?', phone: 'Телефон', sWait: 'Ждёт ответа', anon: 'Без имени',
     oEmpty: 'Заказов пока нет. Заказы из корзины сайта появятся здесь.', oNew: 'Новый', oDone: 'Выполнен', oCancel: 'Отменён', oTotal: 'Итого', oConfirm: 'Удалить этот заказ?', oDel: { pickup: 'Самовывоз из центра', city: 'Доставка по Кызылорде', other: 'В другой город' }, oAddr: 'Адрес', oNote: 'Комментарий',
@@ -240,9 +315,11 @@ const L = {
     pages: { common: 'Общее: меню, кнопки, подвал', index: 'Главная', about: 'О нас', services: 'Услуги', 'services-item': 'Страница услуги (общие надписи)', insoles: 'Стельки', prices: 'Страница цен', shop: 'Магазин', 'shop-item': 'Страница товара', cart: 'Корзина', courses: 'Обучение', clinics: 'Для клиник', certificates: 'Страница сертификатов', gallery: 'Страница галереи', reviews: 'Страница отзывов', 'c-Reviews': 'Блок отзывов', feedback: 'Страница предложений', contacts: 'Страница контактов', booking: 'Страница записи', mission: 'Миссия', privacy: 'Политика конфиденциальности' },
   },
 };
+var liveLang;
 let lang = (() => { try { return localStorage.getItem('pd_admin_lang2') || 'kk'; } catch { return 'kk'; } })();
 if (!L[lang]) lang = 'kk';
 let t = L[lang];
+liveLang = lang;
 
 // ---------- Көмекшілер ----------
 const root = document.getElementById('root');
@@ -306,7 +383,7 @@ async function loadAll() {
 // ---------- Кіру ----------
 function showLogin(msg = '') {
   document.documentElement.lang = lang;
-  root.innerHTML = `<form class="login card"><h1>${t.admin}</h1>${langSel()}<input type="password" name="p" placeholder="${t.pass}" autocomplete="current-password" required autofocus><button class="btn primary">${t.login}</button><div class="err">${esc(msg)}</div></form>`;
+  root.innerHTML = `<div class="lg-wrap"><form class="login"><img src="/admin-icon-192.png" alt=""><h1>Подолог</h1><p>${t.admin}</p>${langSel()}<input type="password" name="p" placeholder="${t.pass}" autocomplete="current-password" required autofocus><button class="btn primary">${t.login}</button><div class="err">${esc(msg)}</div></form></div>`;
   bindLang();
   $('form').onsubmit = async (e) => {
     e.preventDefault();
@@ -317,7 +394,13 @@ function showLogin(msg = '') {
   };
 }
 const langSel = () => `<select id="lang" aria-label="Тіл / Язык"><option value="kk" ${lang === 'kk' ? 'selected' : ''}>Қазақша</option><option value="ru" ${lang === 'ru' ? 'selected' : ''}>Русский</option></select>`;
-const bindLang = () => { const s = $('#lang'); if (s) s.onchange = (e) => { lang = e.target.value; t = L[lang]; try { localStorage.setItem('pd_admin_lang2', lang); } catch {} if ($('.app')) shell(); else showLogin(); }; };
+// Тіл ауысқанда әкімші бөлімі де, «Сайтты көріп өзгерту» ішіндегі сайт та бірге ауысады
+function setLang(l) {
+  if (!L[l]) return; lang = l; t = L[lang]; liveLang = l;
+  try { localStorage.setItem('pd_admin_lang2', lang); } catch {}
+  if ($('.app')) shell(); else showLogin();
+}
+const bindLang = () => { const s = $('#lang'); if (s) s.onchange = (e) => setLang(e.target.value); };
 
 // ---------- Каркас ----------
 function counts() {
@@ -342,7 +425,7 @@ function shell() {
   document.title = (c.sugs + c.orders ? `(${c.sugs + c.orders}) ` : '') + t.admin;
   root.innerHTML = `<div class="app">
     <aside class="side">
-      <div class="brand"><i>П</i><div>Подолог<small>${t.admin}</small></div></div>
+      <div class="brand"><img src="/admin-icon-192.png" alt=""><div>Подолог<small>${t.admin}</small></div></div>
       ${n('home', 'home', t.nHome)}${n('live', 'edit', t.nLive)}
       <div class="sep"></div>
       ${n('reviews', 'star', t.nReviews)}${n('sugs', 'msg', t.nSugs, c.sugs)}${n('orders', 'bag', t.nOrders, c.orders)}
@@ -357,7 +440,7 @@ function shell() {
     <main class="main"><div class="top"><button class="btn sm burger" id="burger" aria-label="Menu">${ic('menu')}</button><button class="btn sm" id="back" ${view === 'home' ? 'hidden' : ''} aria-label="${t.back}">← <span class="bk">${t.back}</span></button><h1 id="h1"></h1><span id="bpill">${buildPill()}</span><span class="lsw"><button data-lg="kk" class="${lang === 'kk' ? 'on' : ''}">ҚАЗ</button><button data-lg="ru" class="${lang === 'ru' ? 'on' : ''}">РУС</button></span></div><div id="v"></div></main>
   </div>`;
   bindLang();
-  $$('[data-lg]').forEach((b) => b.onclick = () => { lang = b.dataset.lg; t = L[lang]; try { localStorage.setItem('pd_admin_lang2', lang); } catch {} shell(); });
+  $$('[data-lg]').forEach((b) => b.onclick = () => setLang(b.dataset.lg));
   $$('.nav').forEach((b) => b.onclick = () => go(b.dataset.v));
   $('#out').onclick = async () => { await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' }); showLogin(); };
   $('#inst').onclick = installApp;
@@ -371,7 +454,7 @@ function shell() {
 function go(v, push = true) {
   if (v === view && push) return;
   if (dirty) { if (!push) history.pushState({ v: view }, '', `#${view}`); return askLeave(() => go(v)); }
-  dirty = false; view = v;
+  dirty = false; view = v; if (v !== 'live') $('.app')?.classList.remove('full');
   if (push) history.pushState({ v }, '', `#${v}`);
   $$('.nav').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
   $('#back').hidden = v === 'home';
@@ -502,21 +585,22 @@ V.home = (el) => {
   const c = counts();
   const vis = D.reviews.filter((r) => !r.hidden);
   const avg = vis.length ? (vis.reduce((s, r) => s + r.rating, 0) / vis.length).toFixed(1) : '–';
-  el.innerHTML = `${standalone ? '' : `<button class="btn primary" data-go="install" style="width:100%;margin-bottom:14px;min-height:48px">${t.install}</button>`}<div class="tiles">
-    <button class="tile ${c.reviews ? 'hot' : ''}" data-go="reviews"><b>${c.reviews}</b><span>${t.hiNew}</span></button>
-    <button class="tile ${c.sugs ? 'hot' : ''}" data-go="sugs"><b>${c.sugs}</b><span>${t.hiSugs}</span></button>
-    <button class="tile ${c.orders ? 'hot' : ''}" data-go="orders"><b>${c.orders}</b><span>${t.hiOrders}</span></button>
-    <button class="tile" data-go="reviews"><b>${avg}</b><span>${t.hiAvg} · ${vis.length}</span></button>
+  const hr = new Date().getHours();
+  const hi = lang === 'kk' ? (hr < 12 ? 'Қайырлы таң!' : hr < 18 ? 'Қайырлы күн!' : 'Қайырлы кеш!') : (hr < 12 ? 'Доброе утро!' : hr < 18 ? 'Добрый день!' : 'Добрый вечер!');
+  const d0 = new Date();
+  const today = lang === 'kk'
+    ? `${d0.getDate()} ${['қаңтар', 'ақпан', 'наурыз', 'сәуір', 'мамыр', 'маусым', 'шілде', 'тамыз', 'қыркүйек', 'қазан', 'қараша', 'желтоқсан'][d0.getMonth()]}, ${['жексенбі', 'дүйсенбі', 'сейсенбі', 'сәрсенбі', 'бейсенбі', 'жұма', 'сенбі'][d0.getDay()]}`
+    : d0.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
+  const stat = (go, icon, n, label, hot) => `<button class="tile stat ${hot ? 'hot' : ''}" data-go="${go}"><span class="ico">${ic(icon)}</span><b>${n}</b><span>${label}</span></button>`;
+  const act = (go, icon, title, sub) => `<button class="tile act" data-go="${go}"><span class="ico">${ic(icon)}</span><b>${title}</b>${sub ? `<span>${sub}</span>` : ''}</button>`;
+  el.innerHTML = `<div class="hello"><div><h2>${hi}</h2><p>${today} · ${t.bHint}</p></div>${standalone ? '' : `<button class="btn" data-go="install">${t.install}</button>`}</div>
+  <div class="tiles">
+    ${stat('reviews', 'star', c.reviews, t.hiNew, c.reviews)}${stat('sugs', 'msg', c.sugs, t.hiSugs, c.sugs)}${stat('orders', 'bag', c.orders, t.hiOrders, c.orders)}${stat('reviews', 'star', avg, `${t.hiAvg} · ${vis.length}`)}
   </div>
   <h2 class="sec">${t.quick}</h2>
   <div class="tiles">
-    <button class="tile" data-go="live">${ic('edit').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.nLive}</b></span></button>
-    <button class="tile" data-go="photos">${ic('img').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qPhoto}</b></span></button>
-    <button class="tile" data-go="prices">${ic('tag').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qPrice}</b></span></button>
-    <button class="tile" data-go="contacts">${ic('phone').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qContacts}</b></span></button>
-    <button class="tile" data-go="live">${ic('text').replace('<svg', '<svg width="26" height="26"')}<span><b style="font-size:1rem">${t.qTexts}</b></span></button>
-  </div>
-  <p class="muted small">${t.bHint}.</p>`;
+    ${act('live', 'edit', t.nLive, t.qLiveSub)}${act('photos', 'img', t.qPhoto, t.qPhotoSub)}${act('prices', 'tag', t.qPrice, t.qPriceSub)}${act('contacts', 'phone', t.qContacts, t.qContactsSub)}${act('services', 'list', t.nServices, t.qSvcSub)}${act('videos', 'video', t.nVideos, t.qVidSub)}
+  </div>`;
   $$('[data-go]', el).forEach((b) => b.onclick = () => (b.dataset.go === 'install' ? installApp() : go(b.dataset.go)));
 };
 
@@ -756,7 +840,7 @@ function editCert(id, done) {
 // Сайт iframe ішінде ашылады. Беттегі мәтін әкімші тізіміндегі мәтінмен (D.texts) сәйкес келсе, оны басып өзгертуге болады.
 const LIVE_PAGES = ['/', '/about', '/services', '/insoles', '/prices', '/shop', '/courses', '/clinics', '/certificates', '/gallery', '/reviews', '/feedback', '/contacts', '/booking', '/mission', '/privacy', '/cart'];
 const routeKey = { '/': 'index', '/cart': 'cart' };
-let livePath = '/', liveLang = 'ru';
+let livePath = '/';
 const sitePath = (l, p) => l === 'ru' ? p : p === '/' ? `/${l}` : `/${l}${p}`;
 // Мәтін → (бет, жол) тізімі. Беттің өз мәтіндері бірінші, сосын жалпы мәтіндер.
 function textIndex(l, path) {
@@ -778,14 +862,14 @@ function liveMark(fr) {
   const doc = fr.contentDocument; if (!doc?.body) return;
   const p = decodeURIComponent(new URL(fr.contentWindow.location.href).pathname).replace(/\.html$/, '').replace(/\/index$/, '') || '/';
   const m = p.match(/^\/(kk|en)(\/.*)?$/); const l = m ? m[1] : 'ru'; const path = m ? (m[2] || '/') : p;
-  liveLang = l; livePath = path; const ls = $('#lvl'); if (ls) ls.value = l; const ps = $('#lvp'); if (ps && LIVE_PAGES.includes(path)) ps.value = path;
+  livePath = path; if (L[l] && l !== lang) { setLang(l); return; } liveLang = l; const ls = $('#lvl'); if (ls) ls.value = l; const ps = $('#lvp'); if (ps && LIVE_PAGES.includes(path)) ps.value = path;
   const idx = textIndex(l, path);
   const st = doc.createElement('style');
   st.textContent = '[data-pd-edit]{outline:2px dashed rgb(37 132 119 / .55);outline-offset:2px;cursor:text!important;border-radius:3px}[data-pd-edit]:hover{outline:2px solid #258477;background:rgb(234 245 241 / .6)}';
   doc.head.append(st);
   const els = doc.body.querySelectorAll('h1,h2,h3,h4,h5,p,li,a,span,b,strong,em,small,button,label,dt,dd,td,th,figcaption,blockquote,summary,div');
   for (const e of els) {
-    if (e.closest('[data-pd-edit]') || e.closest('script,style,svg,noscript,.sr') || e.querySelector('.sr')) continue; // .sr: тек экран оқитын бағдарламаға арналған жазу
+    if (e.closest('[data-pd-edit]') || e.closest('script,style,svg,noscript,.sr') || e.querySelector('.sr') || e.closest('header a, nav a, footer a, .drawer a, .bnav a')) continue; // мәзір сілтемелері басқанда басқа бетке өтеді // .sr: тек экран оқитын бағдарламаға арналған жазу
     const txt = e.textContent.replace(/\s+/g, ' ').trim(); if (!txt) continue;
     const hit = idx.get(txt); if (!hit) continue;
     // Ішінде басқа белгіленетін мәтін бар үлкен блоктарды өткізіп жібереміз
@@ -823,13 +907,14 @@ V.live = (el) => {
   el.innerHTML = `<div class="live"><p class="help" style="margin:0">${t.lvHint} ${t.lvPhoto}</p>
     <div class="bar2"><select id="lvp" aria-label="${t.lvPage}">${LIVE_PAGES.map((p) => `<option value="${p}" ${p === livePath ? 'selected' : ''}>${esc(t.pages[routeKey[p] || p.slice(1)] || p)}</option>`).join('')}</select>
     <select id="lvl" aria-label="${t.lvLang}"><option value="kk">Қазақша</option><option value="ru">Русский</option><option value="en">English</option></select>
-    <a class="btn sm" id="lvopen" target="_blank" rel="noopener">${t.site} ↗</a></div>
+    <button class="btn sm primary" id="lvfull">${$('.app.full') ? t.lvExit : t.lvFull}</button><a class="btn sm" id="lvopen" target="_blank" rel="noopener">${t.site} ↗</a></div>
     <iframe id="lvf" title="${t.nLive}"></iframe></div>`;
   const fr = $('#lvf', el); const load = () => { const u = sitePath(liveLang, livePath); fr.src = u; $('#lvopen', el).href = u; };
   $('#lvl', el).value = liveLang;
   fr.addEventListener('load', () => { try { liveMark(fr); $('#lvopen', el).href = fr.contentWindow.location.pathname; } catch {} });
+  $('#lvfull', el).onclick = (e) => { const on = $('.app').classList.toggle('full'); e.currentTarget.textContent = on ? t.lvExit : t.lvFull; };
   $('#lvp', el).onchange = (e) => { livePath = e.target.value; load(); };
-  $('#lvl', el).onchange = (e) => { liveLang = e.target.value; load(); };
+  $('#lvl', el).onchange = (e) => { const v = e.target.value; if (L[v] && v !== lang) setLang(v); else { liveLang = v; load(); } };
   load();
 };
 
