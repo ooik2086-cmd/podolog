@@ -5,7 +5,7 @@ import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import Icon from '../../components/Icon.astro';
 import CtaBand from '../../components/CtaBand.astro';
-import { priceGroups, fmtRange, priceId } from '../../data/prices';
+import { priceGroups, fmtRange, priceId, priceNames } from '../../data/prices';
 import { getLang, localize, langPaths } from '../../i18n';
 export function getStaticPaths() {
   return langPaths();
@@ -29,16 +29,17 @@ const T = pageText('prices', {
     note: 'Follow-up visits are sometimes cheaper. Prices as of October 2026.', services: 'About the services',
   },
 })[lang];
+const names = priceNames()[lang];
 ---
 <Base title={T.title} path="/prices" description={T.desc}>
   <PageHero eyebrow={T.title} title={T.title} lead={T.lead} crumbs={[{ href: '/services', label: lang === 'kk' ? 'Қызметтер' : lang === 'ru' ? 'Услуги' : 'Services' }, { href: '/prices', label: T.title }]} />
   <section class="section" style="padding-top: 32px;">
     <div class="wrap stack-lg prices">
-      {priceGroups.map((g) => (
+      {priceGroups.map((g, gi) => (
         <div class="card pg">
-          <h2>{g.title[lang]}</h2>
+          <h2>{names[gi].title}</h2>
           <ul>
-            {g.rows.map((r) => <li><span>{r.name[lang]}</span><b data-pr={priceId(g, r)}>{fmtRange(r.min, r.max)}</b></li>)}
+            {g.rows.map((r, ri) => <li><span>{names[gi].rows[ri]}</span><b data-pr={priceId(g, r)}>{fmtRange(r.min, r.max)}</b></li>)}
           </ul>
         </div>
       ))}

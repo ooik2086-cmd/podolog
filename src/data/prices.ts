@@ -2,6 +2,7 @@
 // Прайста баға маманның санатына қарай екі бағанда тұр, сайтта ең төменгі мен ең жоғарғысы көрсетіледі.
 // Күмәнді жолдар («Разгрузки (колечки)» 5000/1500, «С чисткой кутикулы») орталық растағанша қосылмады.
 import type { Lang } from '../i18n';
+import { pageText } from './cms';
 
 type Name = Record<Lang, string>;
 export interface PriceRow { name: Name; min: number; max: number }
@@ -53,3 +54,7 @@ const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
 export const fmtRange = (min: number, max: number) => (min === max ? `${num(min)} ₸` : `${num(min)} – ${num(max)} ₸`);
 export const fmtFrom = (lang: Lang, n: number) =>
   ({ kk: `${num(n)} ₸-ден`, ru: `от ${num(n)} ₸`, en: `from ${num(n)} ₸` })[lang];
+
+// Прайс жолдарының аттарын әкімші өзгерте алады (pricelist). Баға кілті (priceId) бастапқы орысша атпен қалады.
+const namesIn = (l: Lang) => priceGroups.map((g) => ({ title: g.title[l], rows: g.rows.map((r) => r.name[l]) }));
+export const priceNames = () => pageText('pricelist', { kk: namesIn('kk'), ru: namesIn('ru'), en: namesIn('en') });
