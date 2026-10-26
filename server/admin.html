@@ -276,6 +276,8 @@ const L = {
     pHint: 'Бір баға болса, екі жолға да сол санды жазыңыз. Дүкенде баға бос болса, «Бағасы нақтыланады» деп тұрады.', pList: 'Прайс-лист', pShop: 'Дүкен', pMin: 'Бастап', pMax: 'Дейін', pPrice: 'Бағасы, ₸', pStock: 'Қоймада', pU: 'Белгісіз', pY: 'Бар', pN: 'Жоқ', pBad: 'Бағаны тек санмен жазыңыз', pSaved: 'Сақталды. Сайтта бағалар бірден ауысты.', unsaved: 'Сақталмаған өзгеріс бар', leave: 'Сақталмаған өзгерістер жоғалады. Шыға берейік пе?',
     kPhones: 'Телефондар', kNum: 'Нөмір', kAddPhone: '+ Телефон қосу', kWa: 'Негізгі WhatsApp нөмірі', kWaHint: 'Тек сандар, мысалы 77001234567. Толтырсаңыз, сайттағы WhatsApp батырмалары дайын мәтінмен осы нөмірге жазады.', kWaLink: 'WhatsApp бизнес-сілтемесі (нөмір жоқ болса)', kOrders: 'Дүкен тапсырыстары келетін WhatsApp', kFeedback: 'Ұсыныстар келетін WhatsApp', kSocial: 'Әлеуметтік желілер мен сілтемелер', kBooking: 'Онлайн жазылу сілтемесі (Altegio)', k2gis: '2GIS карточкасы', kAddr: 'Мекенжай', kAddrNote: 'Қалай табуға болады', kHours: 'Жұмыс уақыты', kDays: 'Күндер', kTime: 'Уақыты', kAddHours: '+ Жол қосу', kBadUrl: 'Сілтеме https:// деп басталуы керек',
     tPage: 'Бет', tHint: 'Мәтінді өзгертіп, «Сақтау» басыңыз. Бастапқы мәтінге қайту үшін ↺ басыңыз.', tNone: 'Мәтіндер тізімі сайт серверде алғаш жиналғаннан кейін пайда болады.', tReset: 'Бастапқы мәтінге қайтару', tChanged: 'өзгертілген',
+    pwH: 'Әкімші құпия сөзін өзгерту', pwCur: 'Қазіргі құпия сөз', pwNew: 'Жаңа құпия сөз (кемінде 10 таңба)', pwNew2: 'Жаңа құпия сөзді қайталаңыз', pwSave: 'Құпия сөзді өзгерту', pwOk: 'Құпия сөз өзгерді. Басқа телефон мен компьютерлердегі кірулер жабылды.', pwMismatch: 'Жаңа құпия сөздер сәйкес емес', pwShort: 'Жаңа құпия сөз кемінде 10 таңба болуы керек', pwCurBad: 'Қазіргі құпия сөз қате', pwShow: 'Көрсету', pwTip: 'Құпия сөзді ешкімге жібермеңіз, суретке түсірмеңіз.',
+    fgLink: 'Құпия сөзді ұмыттым', fgH: 'Құпия сөзді қалпына келтіру', fgSend: 'Код жіберу', fgSent: 'Код жіберілді: {ch}. 10 минут жарамды.', fgCode: '6 таңбалы код', fgNo: 'Код жіберетін арна (WhatsApp не Telegram) әлі қосылмаған. Құпия сөзді серверде ауыстыруға болады, Claude-тан сұраңыз.', fgWait: 'Бір минуттан кейін қайта жіберіңіз', fgBad: 'Код қате', fgExp: 'Кодтың мерзімі өтті, жаңасын жіберіңіз', fgDone: 'Құпия сөз өзгерді. Енді жаңа құпия сөзбен кіріңіз.', fgBack: 'Кіруге оралу', chNames: { whatsapp: 'WhatsApp', telegram: 'Telegram' },
     stSeo: 'Google мен Яндекске ашу', stSeoHint: 'Қосылса, іздеу жүйелері сайтты көріп, нәтижелерде көрсете бастайды.', stRebuild: 'Сайтты қазір қайта жинау', stInfo: 'Соңғы жаңарту',
     pages: { common: 'Жалпы: мәзір, батырмалар, төменгі бөлік', index: 'Басты бет', about: 'Біз туралы', services: 'Қызметтер', 'services-item': 'Қызмет беті (жалпы жазулар)', insoles: 'Ұлтарақтар', prices: 'Бағалар беті', pricelist: 'Прайс-лист жолдарының аттары', shop: 'Дүкен', 'shop-item': 'Тауар беті', cart: 'Себет', courses: 'Оқу', clinics: 'Клиникаларға', certificates: 'Сертификаттар беті', gallery: 'Галерея беті', reviews: 'Пікірлер беті', 'c-Reviews': 'Пікірлер блогы', feedback: 'Ұсыныстар беті', contacts: 'Байланыс беті', booking: 'Жазылу беті', mission: 'Миссия', privacy: 'Құпиялық саясаты' },
   },
@@ -314,6 +316,8 @@ const L = {
     pHint: 'Если цена одна, впишите одно и то же число в оба поля. Пустая цена в магазине: на сайте будет «Цена уточняется».', pList: 'Прайс-лист', pShop: 'Магазин', pMin: 'От', pMax: 'До', pPrice: 'Цена, ₸', pStock: 'Наличие', pU: 'Неизвестно', pY: 'Есть', pN: 'Нет', pBad: 'Цену пишите только цифрами', pSaved: 'Сохранено. Цены на сайте обновились сразу.', unsaved: 'Есть несохранённые изменения', leave: 'Несохранённые изменения пропадут. Выйти?',
     kPhones: 'Телефоны', kNum: 'Номер', kAddPhone: '+ Добавить телефон', kWa: 'Основной номер WhatsApp', kWaHint: 'Только цифры, например 77001234567. Если заполнить, кнопки WhatsApp на сайте будут писать на этот номер с готовым текстом.', kWaLink: 'Бизнес-ссылка WhatsApp (если нет номера)', kOrders: 'WhatsApp для заказов магазина', kFeedback: 'WhatsApp для предложений', kSocial: 'Соцсети и ссылки', kBooking: 'Ссылка онлайн-записи (Altegio)', k2gis: 'Карточка 2GIS', kAddr: 'Адрес', kAddrNote: 'Как найти', kHours: 'Режим работы', kDays: 'Дни', kTime: 'Время', kAddHours: '+ Добавить строку', kBadUrl: 'Ссылка должна начинаться с https://',
     tPage: 'Страница', tHint: 'Измените текст и нажмите «Сохранить». Чтобы вернуть исходный текст, нажмите ↺.', tNone: 'Список текстов появится после первой сборки сайта на сервере.', tReset: 'Вернуть исходный текст', tChanged: 'изменено',
+    pwH: 'Сменить пароль администратора', pwCur: 'Текущий пароль', pwNew: 'Новый пароль (не менее 10 символов)', pwNew2: 'Повторите новый пароль', pwSave: 'Сменить пароль', pwOk: 'Пароль изменён. Входы на других телефонах и компьютерах закрыты.', pwMismatch: 'Новые пароли не совпадают', pwShort: 'Новый пароль должен быть не короче 10 символов', pwCurBad: 'Текущий пароль неверный', pwShow: 'Показать', pwTip: 'Никому не отправляйте пароль и не фотографируйте его.',
+    fgLink: 'Забыли пароль?', fgH: 'Восстановление пароля', fgSend: 'Отправить код', fgSent: 'Код отправлен: {ch}. Действует 10 минут.', fgCode: 'Код из 6 цифр', fgNo: 'Канал для кода (WhatsApp или Telegram) ещё не подключён. Пароль можно сменить на сервере, спросите Claude.', fgWait: 'Отправить снова можно через минуту', fgBad: 'Неверный код', fgExp: 'Срок кода истёк, отправьте новый', fgDone: 'Пароль изменён. Войдите с новым паролем.', fgBack: 'Вернуться ко входу', chNames: { whatsapp: 'WhatsApp', telegram: 'Telegram' },
     stSeo: 'Открыть для Google и Яндекса', stSeoHint: 'Если включить, поисковики начнут видеть сайт и показывать его в результатах.', stRebuild: 'Пересобрать сайт сейчас', stInfo: 'Последнее обновление',
     pages: { common: 'Общее: меню, кнопки, подвал', index: 'Главная', about: 'О нас', services: 'Услуги', 'services-item': 'Страница услуги (общие надписи)', insoles: 'Стельки', prices: 'Страница цен', pricelist: 'Названия строк прайс-листа', shop: 'Магазин', 'shop-item': 'Страница товара', cart: 'Корзина', courses: 'Обучение', clinics: 'Для клиник', certificates: 'Страница сертификатов', gallery: 'Страница галереи', reviews: 'Страница отзывов', 'c-Reviews': 'Блок отзывов', feedback: 'Страница предложений', contacts: 'Страница контактов', booking: 'Страница записи', mission: 'Миссия', privacy: 'Политика конфиденциальности' },
   },
@@ -386,14 +390,43 @@ async function loadAll() {
 // ---------- Кіру ----------
 function showLogin(msg = '') {
   document.documentElement.lang = lang;
-  root.innerHTML = `<div class="lg-wrap"><form class="login"><img src="/admin-icon-192.png" alt=""><h1>Подолог</h1><p>${t.admin}</p>${langSel()}<input type="password" name="p" placeholder="${t.pass}" autocomplete="current-password" required autofocus><button class="btn primary">${t.login}</button><div class="err">${esc(msg)}</div></form></div>`;
+  root.innerHTML = `<div class="lg-wrap"><form class="login"><img src="/admin-icon-192.png" alt=""><h1>Подолог</h1><p>${t.admin}</p>${langSel()}<input type="password" name="p" placeholder="${t.pass}" autocomplete="current-password" required autofocus><button class="btn primary">${t.login}</button><div class="err">${esc(msg)}</div><a href="#" id="fg" class="small" style="color:var(--green)">${t.fgLink}</a></form></div>`;
   bindLang();
+  $('#fg').onclick = (e) => { e.preventDefault(); showForgot(); };
   $('form').onsubmit = async (e) => {
     e.preventDefault();
     const r = await fetch('/api/admin/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password: e.target.p.value }) });
     if (r.ok) return start();
     const d = await r.json().catch(() => ({}));
     showLogin(d.error || t.err);
+  };
+}
+// Құпия сөзді ұмытса: код иесінің WhatsApp/Telegram-ына барады (сервердегі хабарлама арнасы)
+async function showForgot() {
+  const info = await fetch('/api/admin/reset-info', { cache: 'no-store' }).then((r) => r.json()).catch(() => ({ channels: [] }));
+  const chs = (info.channels || []).map((c) => t.chNames[c] || c).join(', ');
+  root.innerHTML = `<div class="lg-wrap"><form class="login"><img src="/admin-icon-192.png" alt=""><h1>${t.fgH}</h1>
+    ${chs ? `<button type="button" class="btn" id="fsend">${t.fgSend} (${esc(chs)})</button>
+    <input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="${t.fgCode}" required>
+    <input type="password" name="n1" placeholder="${t.pwNew}" autocomplete="new-password" minlength="10" required>
+    <input type="password" name="n2" placeholder="${t.pwNew2}" autocomplete="new-password" minlength="10" required>
+    <button class="btn primary">${t.pwSave}</button>` : `<p style="margin:0">${t.fgNo}</p>`}
+    <div class="err"></div><a href="#" id="fback" class="small" style="color:var(--green)">${t.fgBack}</a></form></div>`;
+  const f = $('form'); const er = $('.err', f); const say = (m, ok) => { er.textContent = m; er.style.color = ok ? 'var(--green)' : ''; };
+  $('#fback').onclick = (e) => { e.preventDefault(); showLogin(); };
+  if (!chs) return;
+  $('#fsend').onclick = async () => {
+    const r = await fetch('/api/admin/reset-request', { method: 'POST' }); const d = await r.json().catch(() => ({}));
+    say(r.ok ? t.fgSent.replace('{ch}', chs) : d.error === 'wait' ? t.fgWait : d.error === 'nochannel' ? t.fgNo : t.err, r.ok);
+  };
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    if (f.n1.value.length < 10) return say(t.pwShort);
+    if (f.n1.value !== f.n2.value) return say(t.pwMismatch);
+    const r = await fetch('/api/admin/reset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ code: f.code.value, password: f.n1.value }) });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok) return showLogin(t.fgDone);
+    say(d.error === 'code' ? t.fgBad : d.error === 'expired' ? t.fgExp : d.error === 'short' ? t.pwShort : t.err);
   };
 }
 const langSel = () => `<select id="lang" aria-label="Тіл / Язык"><option value="kk" ${lang === 'kk' ? 'selected' : ''}>Қазақша</option><option value="ru" ${lang === 'ru' ? 'selected' : ''}>Русский</option></select>`;
@@ -1159,9 +1192,28 @@ V.settings = (el) => {
   el.innerHTML = `<div class="list">
     <div class="card"><label class="chk" style="font-size:1rem;color:var(--text);font-weight:600"><input type="checkbox" id="seo" ${open ? 'checked' : ''}> ${t.stSeo}</label><p class="muted small" style="margin:6px 0 0">${t.stSeoHint}</p></div>
     <div class="card"><div class="row"><span>${t.stInfo}: <b>${b.finishedAt ? fmtD(b.finishedAt) : '–'}</b>${b.ms ? ` <span class="muted small">(${Math.round(b.ms / 1000)} с)</span>` : ''}</span><span class="sp"></span><button class="btn sm" id="rb" ${D.canBuild ? '' : 'disabled'}>${t.stRebuild}</button></div>${b.state === 'error' ? `<pre class="small" style="white-space:pre-wrap;color:var(--red)">${esc(b.error)}</pre>` : ''}</div>
+    <form class="card" id="pw" style="display:grid;gap:10px"><b style="color:var(--navy);font-size:1rem">🔒 ${t.pwH}</b>
+      <input type="password" name="cur" placeholder="${t.pwCur}" autocomplete="current-password" required>
+      <input type="password" name="n1" placeholder="${t.pwNew}" autocomplete="new-password" minlength="10" required>
+      <input type="password" name="n2" placeholder="${t.pwNew2}" autocomplete="new-password" minlength="10" required>
+      <label class="chk small"><input type="checkbox" id="pwsh"> ${t.pwShow}</label>
+      <p class="muted small" style="margin:0">${t.pwTip}</p>
+      <div class="row"><span class="small" id="pwmsg"></span><span class="sp"></span><button class="btn primary sm">${t.pwSave}</button></div></form>
   </div>`;
   $('#seo', el).onchange = async (e) => { if (!await saveCms('seo', { open: e.target.checked })) e.target.checked = !e.target.checked; };
   $('#rb', el).onclick = async () => { await saveCms('seo', { open: D.cms.seo?.open !== false }); V.settings(el); };
+  const f = $('#pw', el); const msg = $('#pwmsg', el);
+  const say = (m, ok) => { msg.textContent = m; msg.style.color = ok ? 'var(--green)' : 'var(--red)'; };
+  $('#pwsh', el).onchange = (e) => $$('input[type=password], input[data-pw]', f).forEach((i) => { i.dataset.pw = 1; i.type = e.target.checked ? 'text' : 'password'; });
+  f.onsubmit = async (e) => {
+    e.preventDefault(); e.stopPropagation();
+    if (f.n1.value.length < 10) return say(t.pwShort);
+    if (f.n1.value !== f.n2.value) return say(t.pwMismatch);
+    const r = await fetch('/api/admin/password', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ current: f.cur.value, password: f.n1.value }) });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok) { f.reset(); return say(t.pwOk, true); }
+    say(d.error === 'current' ? t.pwCurBad : d.error === 'short' ? t.pwShort : t.err);
+  };
 };
 
 // ---------- Іске қосу ----------

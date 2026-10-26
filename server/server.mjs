@@ -15,7 +15,7 @@ import { existsSync, readFileSync, createReadStream, createWriteStream, mkdirSyn
 import { spawnSync } from 'node:child_process';
 import { createBuilder } from './build.mjs';
 import { join, normalize, extname, dirname } from 'node:path';
-import { randomBytes, randomUUID, timingSafeEqual, createHash } from 'node:crypto';
+import { randomBytes, randomUUID, timingSafeEqual, createHash, scryptSync, randomInt } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -157,7 +157,25 @@ setInterval(() => { const now = Date.now(); for (const [k, v] of hits) if (!v.so
 const sessions = new Map(); // token → expires
 const loginFails = new Map(); // ip → [times]
 const sha = (s) => createHash('sha256').update(s).digest();
-const passOk = (p) => ADMIN_PASSWORD.length >= 10 && timingSafeEqual(sha(String(p)), sha(ADMIN_PASSWORD));
+// Әкімші панелден ауыстырған құпия сөз DATA/admin-pass.json ішінде (scrypt хэші) сақталады және ADMIN_PASSWORD-тан басым.
+const PFILE = join(DATA, 'admin-pass.json');
+let passRec = null;
+try { passRec = JSON.parse(readFileSync(PFILE, 'utf8')); } catch {}
+const hashPass = (p, salt) => scryptSync(String(p), Buffer.from(salt, 'hex'), 32);
+const passOk = (p) => {
+  if (passRec?.salt && passRec?.hash) return timingSafeEqual(hashPass(p, passRec.salt), Buffer.from(passRec.hash, 'hex'));
+  return ADMIN_PASSWORD.length >= 10 && timingSafeEqual(sha(String(p)), sha(ADMIN_PASSWORD));
+};
+const passValid = (p) => typeof p === 'string' && p.length >= 10 && p.length <= 200;
+async function setPass(p) {
+  const salt = randomBytes(16).toString('hex');
+  const rec = { salt, hash: hashPass(p, salt).toString('hex'), changedAt: new Date().toISOString() };
+  await mkdir(DATA, { recursive: true });
+  await writeFile(`${PFILE}.tmp`, JSON.stringify(rec), { mode: 0o600 }); await rename(`${PFILE}.tmp`, PFILE);
+  passRec = rec;
+}
+const resetCode = { code: '', exp: 0, tries: 0, last: 0 }; // құпия сөзді қалпына келтіру коды (WhatsApp/Telegram-ға жіберіледі)
+const channels = () => { const e = process.env; return [e.TG_BOT_TOKEN && e.TG_CHAT_ID ? 'telegram' : '', e.WA_PHONE && e.WA_APIKEY ? 'whatsapp' : ''].filter(Boolean); };
 const cookie = (req, k) => (req.headers.cookie || '').split(/;\s*/).map((c) => c.split('=')).find(([n]) => n === k)?.[1];
 const isAdmin = (req) => { const t = cookie(req, 'pd_admin'); const e = t && sessions.get(t); return !!e && e > Date.now(); };
 
@@ -355,9 +373,37 @@ const server = createServer(async (req, res) => {
       const secure = req.headers['x-forwarded-proto'] === 'https' || process.env.COOKIE_SECURE === '1' ? '; Secure' : '';
       return json(res, 200, { ok: true }, { 'set-cookie': `pd_admin=${t}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${secure}` });
     }
+    if (path === '/api/admin/reset-info' && req.method === 'GET') return json(res, 200, { channels: channels() });
+    if (path === '/api/admin/reset-request' && req.method === 'POST') {
+      if (!sameOrigin(req)) return json(res, 403, { error: 'origin' });
+      if (!channels().length) return json(res, 400, { error: 'nochannel' });
+      const now = Date.now();
+      if (now - resetCode.last < 6e4) return json(res, 429, { error: 'wait' });
+      resetCode.code = String(randomInt(100000, 1000000)); resetCode.exp = now + 10 * 6e4; resetCode.tries = 0; resetCode.last = now;
+      send(`Подолог әкімші панелі: құпия сөзді ауыстыру коды ${resetCode.code}\nКод 10 минут жарамды. Сіз сұрамасаңыз, ешкімге бермеңіз.`);
+      return json(res, 200, { ok: true, channels: channels() });
+    }
+    if (path === '/api/admin/reset' && req.method === 'POST') {
+      if (!sameOrigin(req)) return json(res, 403, { error: 'origin' });
+      const { code, password } = await body(req, 1024);
+      if (!resetCode.code || Date.now() > resetCode.exp || resetCode.tries >= 5) { resetCode.code = ''; return json(res, 400, { error: 'expired' }); }
+      resetCode.tries++;
+      if (!timingSafeEqual(sha(String(code || '').trim()), sha(resetCode.code))) return json(res, 400, { error: 'code' });
+      if (!passValid(password)) return json(res, 400, { error: 'short' });
+      resetCode.code = ''; await setPass(password); sessions.clear();
+      return json(res, 200, { ok: true });
+    }
     if (path.startsWith('/api/admin/')) {
       if (!isAdmin(req)) return json(res, 401, { error: 'login' });
       if (req.method !== 'GET' && !sameOrigin(req)) return json(res, 403, { error: 'origin' });
+      if (path === '/api/admin/password' && req.method === 'POST') {
+        const { current, password } = await body(req, 1024);
+        if (!passOk(current)) return json(res, 400, { error: 'current' });
+        if (!passValid(password)) return json(res, 400, { error: 'short' });
+        await setPass(password);
+        const mine = cookie(req, 'pd_admin'); for (const k of sessions.keys()) if (k !== mine) sessions.delete(k);
+        return json(res, 200, { ok: true });
+      }
       if (path === '/api/admin/logout' && req.method === 'POST') { sessions.delete(cookie(req, 'pd_admin')); return json(res, 200, { ok: true }, { 'set-cookie': 'pd_admin=; Path=/; Max-Age=0' }); }
       if (path === '/api/admin/reviews' && req.method === 'GET') return json(res, 200, { reviews: [...reviews].sort((a, b) => b.createdAt.localeCompare(a.createdAt)) });
       if (path === '/api/admin/suggestions' && req.method === 'GET') return json(res, 200, { suggestions: [...suggestions].sort((a, b) => b.createdAt.localeCompare(a.createdAt)) });
